@@ -1,0 +1,41 @@
+/src
+Main.java
+- /model
+	- /entities
+		- Entity.java
+		- Player.java
+		- Enemy.java
+	- /weapons
+		- Weapon.java
+		- MeleeWeapon.java
+		- RangedWeapon.java
+	- /states
+		- BurningState.java
+		- SlowedState.java
+	- /factories
+		- EnemyFactory.java
+	- /managers
+		- SpawnManager.java
+		- CollisionManager.java
+		- LevelManager.java
+		- UpgradeManager.java
+	- /events (observers)
+		- GameEvent.java
+		- LevelUpEvent.java
+		- EnemyKilledEvent.java
+		- PlayerDammagedEvent.java
+- /view
+- GameView.java
+	- /ui
+		- HUD.java
+		- HealthBar.java
+		- XPBar.java
+		- GameOverScreen.java
+	- /renderers
+		- EntityRenderer.java
+		- PlayerRenderer.java
+		- EnemyRenderer.java
+- /controller
+	- InputHandler.java (keyboard input)
+	- GameController.java (main controller)
+	- GameLoop.java (update loop)
