@@ -80,7 +80,7 @@ public class Entities {
     @Override
     public String toString() {
         return "Entities{" +
-                "name='" + name +
+                "name=" + name +
                 ", x=" + x +
                 ", y=" + y +
                 ", hp=" + hp +
