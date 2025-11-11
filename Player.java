@@ -7,8 +7,8 @@ public class Player extends Entities {
 
     @Override
     public void attack(Entities target) {
-        System.out.println(name + " attacks " + target.getName() + " for " + attackDmg + " damage!");
-        target.takeDamage(attackDmg);
+        System.out.println(name + " attacks " + target.getName() + " for " + attackMultiplier + " damage!");
+        target.takeDamage(attackMultiplier);
     }
 }
 

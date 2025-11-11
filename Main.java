@@ -8,5 +8,9 @@ public class Main {
 
         Entities t = new Troll(3,3);
         System.out.println(t.toString());
+
+        p.move(1, 0);
+
+        System.out.println(p.toString());
     }
 }

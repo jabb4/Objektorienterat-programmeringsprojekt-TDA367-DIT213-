@@ -1,20 +1,20 @@
-public class Entities {
+public abstract class Entities {
     protected String name;
     protected double x, y;
     protected double hp;
     protected double speed;
     protected int size;
     protected double maxHP;
-    protected double attackDmg;
+    protected double attackMultiplier;
 
-    public Entities(String name, double x, double y, double hp, int size, double maxHP, double attackDmg){
+    public Entities(String name, double x, double y, double hp, int size, double maxHP, double attackMultiplier){
         this.name = name;
         this.x = x;
         this.y = y;
         this.hp = hp;
         this.size = size;
         this.maxHP = maxHP;
-        this.attackDmg = attackDmg;
+        this.attackMultiplier = attackMultiplier;
     }
 
     public double getHp() {
@@ -53,8 +53,17 @@ public class Entities {
         this.speed = speed;
     }
 
-    public void setHp(double hp) {
+    protected void setHp(double hp){
         this.hp = hp;
+    }
+
+    protected void increaseHp(double hp) {
+        if((this.hp + hp) >= maxHP){
+            this.hp = maxHP;
+        }
+        else{
+            this.hp += hp;
+        }
     }
 
     public void setName(String name) {
@@ -65,16 +74,16 @@ public class Entities {
         return name;
     }
 
-    public void move(double x, double y){
-        this.x = x * speed;
-        this.y = y * speed;
+    public void move(int dx, int dy){
+        this.x = x + (dx*speed);
+        this.y = y + (dy*speed);
     }
 
     public void takeDamage(double dmg){
         hp -= dmg;
     }
     public void attack(Entities target){
-        target.takeDamage(attackDmg);
+        target.takeDamage(attackMultiplier);
     }
 
     @Override
