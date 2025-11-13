@@ -8,8 +8,7 @@ public abstract class Entity {
     protected int size;
     protected double maxHP;
     protected double attackMultiplier;
-    // speed???
-    // boolean isAlive???
+    protected boolean isAlive = true;
 
     public Entity(String name, double x, double y, double hp, int size, double maxHP, double attackMultiplier){
         this.name = name;
@@ -85,7 +84,13 @@ public abstract class Entity {
 
     public void takeDamage(double dmg){
         hp -= dmg;
+
+        if (this.hp <= 0) {
+            this.isAlive = false;
+            this.hp = 0;
+        }
     }
+
     public void attack(Entity target){
         target.takeDamage(attackMultiplier);
     }
