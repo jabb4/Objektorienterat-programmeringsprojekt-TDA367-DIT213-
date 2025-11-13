@@ -1,7 +1,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Scanner;
 
 public class CombatManager
 {
@@ -9,22 +9,30 @@ public class CombatManager
     public static void main(String[] args)
     {
         Player player = new Player(2, 2);
-        Enemy goblin = new Goblin(5, 2);
-        Enemy goblin2 = new Goblin(6, 2);
+        Enemy goblin = new Goblin(0, 0);
+        Enemy goblin2 = new Goblin(10, 0);
         Enemy goblin3 = new Goblin(3, 2);
         CombatManager combatManager = new CombatManager(player, new ArrayList<>(List.of(goblin, goblin2)));
         combatManager.addEnemy(goblin3);
         combatManager.removeEnemy(goblin3);
-        System.out.println("player and goblin true? :" + isHit(player.getX(), player.getY(), 10, goblin.getX(), goblin.getY(), 1));
-        //System.out.println(":" + isHit(player.getX(), player.getY(), 1, goblin.getX(), goblin.getY(), 1.5));
-        //combatManager.attack(false, goblin.getX(), goblin.getY(), 1);
 
-        //combatManager.attack(false, goblin.getX(), goblin.getY(), 1, 50);
-        combatManager.attack(true, player.getX(), player.getY(), 1, 50);
-
-        //System.out.println(isHit(goblin.getX(), goblin.getY(), 1, player.getX(), player.getY(), player.size));
+        combatManager.attack(false, goblin.getX(), goblin.getY(), 1, 50);
+        //combatManager.attack(true, player.getX(), player.getY(), 1, 50);
 
 
+        Scanner sc = new Scanner(System.in);
+        System.out.println("\n\n");
+        System.out.println("Goblin1 with position (" + goblin.getX() + ", " + goblin.getY() + ")" + "    with size(radius):" + goblin.getSize());
+        System.out.println("Goblin2 with position (" + goblin2.getX() + ", " + goblin2.getY() + ")" + "    with size(radius):" + goblin2.getSize());
+        System.out.println("write your attack with: x-coordinate y-coordinate range attackRange Damage");
+        while(true)
+        {
+            double x = sc.nextDouble();
+            double y = sc.nextDouble();
+            double range = sc.nextDouble();
+            int dmg  = sc.nextInt();
+            combatManager.attack(true, x, y, range, dmg);
+        }
     }
     // save the player and list of enemies
     private final Player player;
@@ -60,7 +68,7 @@ public class CombatManager
                 if(isHit(x, y, range, enemy.getX(), enemy.getY(), enemy.getSize()))
                 {
                     enemy.takeDamage(dmg);
-                    System.out.println("attacked at: (" + x + ", " + y + "), Enemy at: "  + enemy.toString());
+                    System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" Enemy at: "  + enemy.toString());
                 }
             }
         }
@@ -89,7 +97,6 @@ public class CombatManager
 
         return(distance < rangeSum);
     }
-
     /**
      *
      * @param enemy enemy to add to list of enemies
