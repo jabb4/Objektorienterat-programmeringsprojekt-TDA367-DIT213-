@@ -4,7 +4,7 @@ public class Player extends Entity {
 
     public Player(double x, double y) {
         super("Player", x, y, 100, 10, 100, 20);
-        this.speed = 5; // What is a good speed value?
+        this.speed = 100; // 100 pixels per second (because of deltaTime)
     }
 
     @Override

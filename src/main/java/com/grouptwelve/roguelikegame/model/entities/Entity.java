@@ -81,9 +81,9 @@ public abstract class Entity {
         return name;
     }
 
-    public void move(int dx, int dy){
-        this.x = x + (dx*speed);
-        this.y = y + (dy*speed);
+    public void move(int dx, int dy, double deltaTime){
+        this.x += dx * speed * deltaTime;
+        this.y += dy * speed * deltaTime;
     }
 
     public void takeDamage(double dmg){
