@@ -81,8 +81,8 @@ public class InputHandler {
         
         if (isMoveLeft()) dx -= 1;
         if (isMoveRight()) dx += 1;
-        if (isMoveUp()) dy += 1;
-        if (isMoveDown()) dy -= 1;
+        if (isMoveUp()) dy -= 1;
+        if (isMoveDown()) dy += 1;
         
         return new int[]{dx, dy};
     }
