@@ -82,8 +82,15 @@ public abstract class Entity {
     }
 
     public void move(int dx, int dy, double deltaTime){
-        this.x += dx * speed * deltaTime;
-        this.y += dy * speed * deltaTime;
+        // Normalize diagonal movement to maintain consistent speed
+        if (dx != 0 && dy != 0) {
+            double length = Math.sqrt(dx * dx + dy * dy);
+            this.x += (dx / length) * speed * deltaTime;
+            this.y += (dy / length) * speed * deltaTime;
+        } else {
+            this.x += dx * speed * deltaTime;
+            this.y += dy * speed * deltaTime;
+        }
     }
 
     public void takeDamage(double dmg){
