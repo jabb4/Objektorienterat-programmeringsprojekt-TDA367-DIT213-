@@ -20,6 +20,10 @@ public abstract class Entity {
         this.attackMultiplier = attackMultiplier;
     }
 
+    public boolean isAlive() {
+        return isAlive;
+    }
+
     public double getHp() {
         return hp;
     }
