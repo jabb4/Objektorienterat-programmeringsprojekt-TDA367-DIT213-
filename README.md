@@ -8,7 +8,7 @@ Project repo for Objektorienterat programmeringsprojekt TDA367 / DIT213 course
 **Base Features:**
 - Topdown view
 - Enemies spawn continuously and chase player
-- Player gains XP from killing enemies
+- EntitiesPackage.Player gains XP from killing enemies
 - Level up system with upgrade choices
 - Multiple weapon types with different behaviors
 - Unique enemies with different attack patterns
@@ -16,7 +16,7 @@ Project repo for Objektorienterat programmeringsprojekt TDA367 / DIT213 course
 - Reset every run
 
 **Expansion Ideas:**
-- Weapon evolution/combination system (weapons merge to form new ones)
+- Weapons.Weapon evolution/combination system (weapons merge to form new ones)
 - Power-up/pickup system with different effects
 - Environmental hazards (fire, snow) that damage or slows both player and enemies
 - Different dammage types
@@ -31,10 +31,10 @@ Project repo for Objektorienterat programmeringsprojekt TDA367 / DIT213 course
 - Scoreboard
 
 **Design Patterns:**
-- Factory: Enemy/weapon creation
+- Factory: EntitiesPackage.Enemy/weapon creation
 - Observer: Weather conditions
-- Composite: Weapon/armor combinations
-- State: Player/enemy states (invulnerable, running, burning, poisoned)
+- Composite: Weapons.Weapon/armor combinations
+- State: EntitiesPackage.Player/enemy states (invulnerable, running, burning, poisoned)
 
 **MVP (Minimal Viable Product):**
 - Single player character that can move in 4 directions

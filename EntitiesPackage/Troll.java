@@ -1,0 +1,12 @@
+package EntitiesPackage;
+
+import EntitiesPackage.Enemy;
+import Weapons.Club;
+
+public class Troll extends Enemy {
+    public Troll(double x, double y){
+        super("EntitiesPackage.Troll", x, y, 70, 15, 70);
+        this.speed = 1;
+        this.weapon = new Club();
+    }
+}

@@ -1,3 +1,8 @@
+package EntitiesPackage;
+
+import Weapons.Weapon;
+
+
 public class Entities {
     protected String name;
     protected double x, y;
@@ -5,16 +10,17 @@ public class Entities {
     protected double speed;
     protected int size;
     protected double maxHP;
-    protected double attackDmg;
+    //protected double attackDmg;
+    protected Weapon weapon;
 
-    public Entities(String name, double x, double y, double hp, int size, double maxHP, double attackDmg){
+    public Entities(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
         this.x = x;
         this.y = y;
         this.hp = hp;
         this.size = size;
         this.maxHP = maxHP;
-        this.attackDmg = attackDmg;
+        //this.attackDmg = attackDmg;
     }
 
     public double getHp() {
@@ -73,13 +79,27 @@ public class Entities {
     public void takeDamage(double dmg){
         hp -= dmg;
     }
-    public void attack(Entities target){
+    /*public void attack(EntitiesPackage.Entities target){
         target.takeDamage(attackDmg);
+    }*/
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
     }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public void attack(Entities target) {
+        if (weapon != null)
+            weapon.attack(this, target);
+    }
+
+
 
     @Override
     public String toString() {
-        return "Entities{" +
+        return "EntitiesPackage.Entities{" +
                 "name=" + name +
                 ", x=" + x +
                 ", y=" + y +

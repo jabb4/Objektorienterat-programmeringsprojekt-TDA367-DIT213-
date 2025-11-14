@@ -1,4 +1,8 @@
 
+import EntitiesPackage.Enemy;
+import EntitiesPackage.Goblin;
+import EntitiesPackage.Player;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -36,7 +40,7 @@ public class CombatManager
     }
     // save the player and list of enemies
     private final Player player;
-    private List<Enemy>  enemies;
+    private List<Enemy> enemies;
 
     //create manager with initial player and enemies, maybe not enemies here because are they ever enemies when starting the game?
     public CombatManager(Player player, List<Enemy> enemies)
@@ -55,7 +59,7 @@ public class CombatManager
      * @return void, dont return anything, only deal damage to target without confirming to attacker if the attack hit or not
      */
     //add attack function with Entity instead of x,y,range
-    //could instead return List<Enemy> and then let weapon attack on enemies. good for not exposing specific weapond buffs here in combatManger. Now I assume there are no weapond buffs
+    //could instead return List<EntitiesPackage.Enemy> and then let weapon attack on enemies. good for not exposing specific weapond buffs here in combatManger. Now I assume there are no weapond buffs
     //add knockback?
 
     public void attack(boolean isFriendly, double x, double y, double range, double dmg)
@@ -68,7 +72,7 @@ public class CombatManager
                 if(isHit(x, y, range, enemy.getX(), enemy.getY(), enemy.getSize()))
                 {
                     enemy.takeDamage(dmg);
-                    System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" Enemy at: "  + enemy.toString());
+                    System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" EntitiesPackage.Enemy at: "  + enemy.toString());
                 }
             }
         }
@@ -77,7 +81,7 @@ public class CombatManager
             if(isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
 
                 player.takeDamage(dmg);
-                System.out.println("attacked at: (" + x + ", " + y + "), Player at: "  + player.toString());
+                System.out.println("attacked at: (" + x + ", " + y + "), EntitiesPackage.Player at: "  + player.toString());
             }
         }
     }

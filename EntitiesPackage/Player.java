@@ -1,14 +1,18 @@
+package EntitiesPackage;
+
+import EntitiesPackage.Entities;
+
 public class Player extends Entities {
 
     public Player(double x, double y) {
-        super("Player", x, y, 100, 10, 100, 20);
+        super("EntitiesPackage.Player", x, y, 100, 10, 100);
         this.speed = 5; //Vet inte vilken speed är bra.
     }
 
-    @Override
-    public void attack(Entities target) {
+    /*@Override
+    public void attack(EntitiesPackage.Entities target) {
         System.out.println(name + " attacks " + target.getName() + " for " + attackDmg + " damage!");
         target.takeDamage(attackDmg);
-    }
+    }*/
 }
 
