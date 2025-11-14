@@ -53,7 +53,7 @@ public class GameView {
         
         // Render player
         Player player = game.getPlayer();
-        Circle playerCircle = new Circle(player.getX(), player.getY(), 5);
+        Circle playerCircle = new Circle(player.getX(), player.getY(), player.getSize());
         playerCircle.setFill(Color.LIGHTBLUE);
         gamePane.getChildren().add(playerCircle);
 
