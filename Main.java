@@ -1,3 +1,4 @@
+import EffectsPackage.FireEffect;
 import EntitiesPackage.Entities;
 import EntitiesPackage.Goblin;
 import EntitiesPackage.Player;
@@ -16,22 +17,31 @@ public class Main {
 
         Entities t = new Troll(3,3);
         System.out.println(t.toString());
+        System.out.println(" ");
 
-        p.setWeapon(new Sword());
-        System.out.println(p.getWeapon().getDamage());
-
-        System.out.println("EntitiesPackage.Goblin hp: " + g.getHp());
-        System.out.println("EntitiesPackage.Player attacks");
-        p.attack(g);
-        System.out.println("EntitiesPackage.Goblin hp: " + g.getHp());
+        System.out.println(p.getName() + " has a: " + p.getWeapon().toString());
+        System.out.println(g.getName() + " has a: " + g.getWeapon().toString());
+        System.out.println(t.getName() + " has a: " + t.getWeapon().toString());
+        System.out.println(" ");
 
 
-        System.out.println("Weapons.Sword damage: " + p.getWeapon().getDamage());
-        p.getWeapon().upgrade(new DamageUpgrade(10));
-        System.out.println("Weapons.Sword damage: " + p.getWeapon().getDamage());
+        System.out.println(p.getName() + " attackerar Troll!");
+        p.attack(t);
+        System.out.println(t.getName() + " har nu: " + t.getHp() + " hp!");
+        System.out.println(" ");
 
-        System.out.println("EntitiesPackage.Player attacks");
-        p.attack(g);
-        System.out.println("EntitiesPackage.Goblin hp: " + g.getHp());
+        p.getWeapon().addRange(2);
+        p.getWeapon().addDamage(15);
+        p.getWeapon().addEffect(new FireEffect(5));
+
+        System.out.println(p.getName() + " has upgradet his weapon to: " + p.getWeapon().toString() + " " + p.getWeapon().getEffects().toString());
+        System.out.println(" ");
+
+        System.out.println(p.getName() + " attackerar Troll!");
+        p.attack(t);
+        System.out.println(t.getName() + " har nu: " + t.getHp() + " hp!");
+
+
+
     }
 }

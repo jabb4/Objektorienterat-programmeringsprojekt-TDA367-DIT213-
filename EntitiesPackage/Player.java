@@ -1,12 +1,14 @@
 package EntitiesPackage;
 
 import EntitiesPackage.Entities;
+import Weapons.Sword;
 
 public class Player extends Entities {
 
     public Player(double x, double y) {
-        super("EntitiesPackage.Player", x, y, 100, 10, 100);
+        super("Player", x, y, 100, 10, 100);
         this.speed = 5; //Vet inte vilken speed är bra.
+        this.weapon = new Sword();
     }
 
     /*@Override

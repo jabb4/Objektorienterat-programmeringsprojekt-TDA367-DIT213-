@@ -26,6 +26,10 @@ public abstract class Weapon implements WeaponInterface {
     @Override
     public double getRange() { return range; }
 
+    public void addRange(double amount) {
+        this.range += amount;
+    }
+
     @Override
     public List<EffectInterface> getEffects() { return effects; }
 
@@ -38,4 +42,10 @@ public abstract class Weapon implements WeaponInterface {
     public void upgrade(UpgradeInterface upgrade) {
         upgrade.applyTo(this);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " [DMG=" + damage + ", RANGE=" + range + "]";
+    }
+
 }

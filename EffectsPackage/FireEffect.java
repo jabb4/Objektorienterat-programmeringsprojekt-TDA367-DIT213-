@@ -2,7 +2,7 @@ package EffectsPackage;
 
 import EntitiesPackage.Entities;
 
-public class FireEffect implements EffectInterface {
+public class FireEffect extends Effects {
 
     private double burnDamage;
 

@@ -96,16 +96,16 @@ public class Entities {
     }
 
 
-
     @Override
     public String toString() {
-        return "EntitiesPackage.Entities{" +
+        return "Entities{" +
                 "name=" + name +
                 ", x=" + x +
                 ", y=" + y +
                 ", hp=" + hp +
                 ", speed=" + speed +
                 ", size=" + size +
+                ", weapon=" + weapon +
                 '}';
     }
 }
