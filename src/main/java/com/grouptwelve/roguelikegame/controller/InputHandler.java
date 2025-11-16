@@ -11,11 +11,15 @@ import java.util.Set;
  */
 public class InputHandler {
     private final Set<KeyCode> pressedKeys;
+    private  GameController controller;
     
     public InputHandler() {
         this.pressedKeys = new HashSet<>();
     }
-    
+    public void setGameController(GameController controller)
+    {
+        this.controller = controller;
+    }
     /**
      * Sets up keyboard event listeners on the given scene.
      * Should be called once during initialization.
@@ -24,13 +28,20 @@ public class InputHandler {
      */
     public void setupInputHandling(Scene scene) {
         scene.setOnKeyPressed(event -> {
+            //System.out.println(pressedKeys);
+            if(!pressedKeys.contains(event.getCode()))
+            {
+                controller.onKeyPress(event.getCode());
+            }
             pressedKeys.add(event.getCode());
+
         });
         
         scene.setOnKeyReleased(event -> {
             pressedKeys.remove(event.getCode());
         });
     }
+
     
     /**
      * Checks if a specific key is currently pressed.
@@ -69,6 +80,8 @@ public class InputHandler {
     public boolean isMoveRight() {
         return isKeyPressed(KeyCode.D) || isKeyPressed(KeyCode.RIGHT);
     }
+
+
     
     /**
      * Calculates the movement direction as discrete values (-1, 0, or 1).

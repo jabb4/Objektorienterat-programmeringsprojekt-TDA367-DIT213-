@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.controller;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
+import javafx.scene.input.KeyCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class GameController {
         this.game = game;
         this.gameView = gameView;
         this.inputHandler = inputHandler;
+        inputHandler.setGameController(this);
         this.lastUpdate = 0;
     }
     
@@ -64,7 +66,21 @@ public class GameController {
         gameView.updateGameTimeLabel(game.getGameTime());
         updateStatusDisplay();
     }
-    
+
+    public void onKeyPress(KeyCode key)
+    {
+        switch (key)
+        {
+            case KeyCode.K:
+                System.out.println("k");
+                game.playerAttack();
+           // case KeyCode.X
+                // x event
+                //add more cases for each key event
+        }
+
+
+    }
     /**
      * Renders the current game state.
      */

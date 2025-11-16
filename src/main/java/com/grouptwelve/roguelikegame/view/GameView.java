@@ -1,13 +1,16 @@
 package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.entities.Player;
-import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
+import java.util.EnumMap;
+import java.util.List;
 
 /**
  * Handles all rendering and visual presentation of the game.
@@ -59,6 +62,18 @@ public class GameView {
 
         // TODO: Render enemies
         // NOTE: use game.getEnemies and iterate through all the elements to render them all.
+        List<Enemy> enemies = game.getEnemies();
+
+        for(Enemy enemy : enemies)
+        {
+            if(enemy.getAliveStatus())
+            {
+                Circle enemyCircl = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
+                enemyCircl.setFill(Color.RED);
+                gamePane.getChildren().add(enemyCircl);
+            }
+
+        }
         
         // Update position label
         positionLabel.setText(String.format("Player Position: [%.1f, %.1f]", player.getX(), player.getY()));

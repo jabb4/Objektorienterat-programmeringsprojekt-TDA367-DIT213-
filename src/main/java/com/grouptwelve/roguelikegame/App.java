@@ -18,11 +18,12 @@ public class App extends Application {
         Game game = new Game();
         GameView gameView = new GameView();
         InputHandler inputHandler = new InputHandler();
-        
+
         Scene scene = new Scene(gameView.getRoot(), 800, 600);
         inputHandler.setupInputHandling(scene);
         
         GameController gameController = new GameController(game, gameView, inputHandler);
+
         gameController.start();
         
         stage.setTitle("Roguelike Game");
