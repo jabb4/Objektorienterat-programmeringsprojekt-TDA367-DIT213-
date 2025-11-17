@@ -1,5 +1,7 @@
 package com.grouptwelve.roguelikegame.model.entities;
 
+import javafx.scene.paint.Color;
+
 public abstract class Entity {
     protected String name;
     protected double x, y;
@@ -8,10 +10,11 @@ public abstract class Entity {
     protected int size;
     protected double maxHP;
     protected double attackMultiplier;
+    public Color color;
     // speed???
     // boolean isAlive???
 
-    public Entity(String name, double x, double y, double hp, int size, double maxHP, double attackMultiplier){
+    public Entity(String name, double x, double y, double hp, int size, double maxHP, double attackMultiplier, Color color){
         this.name = name;
         this.x = x;
         this.y = y;
@@ -19,6 +22,7 @@ public abstract class Entity {
         this.size = size;
         this.maxHP = maxHP;
         this.attackMultiplier = attackMultiplier;
+        this.color = color;
     }
 
     public double getHp() {
@@ -100,5 +104,9 @@ public abstract class Entity {
                 ", speed=" + speed +
                 ", size=" + size +
                 '}';
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

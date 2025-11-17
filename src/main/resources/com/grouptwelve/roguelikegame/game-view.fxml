@@ -77,8 +77,7 @@
 
         </HBox>
 
-
-        <!-- Status/feedback label (top-right) -->
+        <!-- Status/feedback label -->
         <Label fx:id="actionLabel" AnchorPane.topAnchor="10" AnchorPane.rightAnchor="10"/>
 
     </AnchorPane>
