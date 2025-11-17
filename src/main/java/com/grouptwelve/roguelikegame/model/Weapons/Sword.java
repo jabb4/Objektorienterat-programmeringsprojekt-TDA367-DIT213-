@@ -1,8 +1,5 @@
 package com.grouptwelve.roguelikegame.model.Weapons;
 
-import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entities;
-
 public class Sword extends Weapon {
 
     public Sword() {
@@ -10,7 +7,7 @@ public class Sword extends Weapon {
     }
 /*
     @Override
-    public void attack(Entities attacker, Entities target) {
+    public void attack(Entitity attacker, Entitity target) {
         target.takeDamage(damage);
 
         // Apply effects

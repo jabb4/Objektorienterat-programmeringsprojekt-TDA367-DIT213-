@@ -3,14 +3,12 @@ package com.grouptwelve.roguelikegame.model.Weapons;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
 //import EffectsPackage;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entities;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 //import EntitiesPackage.Goblin;
 //import EntitiesPackage.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class CombatManager
 {

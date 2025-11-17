@@ -1,27 +1,28 @@
-package com.grouptwelve.roguelikegame.model.entities;
+package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
-public abstract class Entity {
+import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
+
+
+public class Entitity {
     protected String name;
     protected double x, y;
     protected double hp;
     protected double speed;
     protected int size;
     protected double maxHP;
-    protected double attackMultiplier;
-    protected boolean isAlive = true;
+    //protected double attackDmg;
+    protected Weapon weapon;
+    protected boolean isAlive;
 
-    public Entity(String name, double x, double y, double hp, int size, double maxHP, double attackMultiplier){
+    public Entitity(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
         this.x = x;
         this.y = y;
         this.hp = hp;
         this.size = size;
         this.maxHP = maxHP;
-        this.attackMultiplier = attackMultiplier;
-    }
-
-    public boolean isAlive() {
-        return isAlive;
+        this.isAlive = true;
+        //this.attackDmg = attackDmg;
     }
 
     public double getHp() {
@@ -60,17 +61,8 @@ public abstract class Entity {
         this.speed = speed;
     }
 
-    protected void setHp(double hp){
+    public void setHp(double hp) {
         this.hp = hp;
-    }
-
-    protected void increaseHp(double hp) {
-        if((this.hp + hp) >= maxHP){
-            this.hp = maxHP;
-        }
-        else{
-            this.hp += hp;
-        }
     }
 
     public void setName(String name) {
@@ -81,7 +73,7 @@ public abstract class Entity {
         return name;
     }
 
-    public void move(int dx, int dy, double deltaTime){
+    public void move(double dx, double dy, double deltaTime){
         // Normalize diagonal movement to maintain consistent speed
         if (dx != 0 && dy != 0) {
             double length = Math.sqrt(dx * dx + dy * dy);
@@ -93,28 +85,50 @@ public abstract class Entity {
         }
     }
 
-    public void takeDamage(double dmg){
+    public void takeDamage(double dmg)
+    {
         hp -= dmg;
+        if(hp < 0)
+        {
+            isAlive = false;
+        }
+    }
+    /*public void attack(EntitiesPackage.Entitity target){
+        target.takeDamage(attackDmg);
+    }*/
+    public boolean getAliveStatus()
+    {
+        return isAlive;
+    }
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
+    }
 
-        if (this.hp <= 0) {
-            this.isAlive = false;
-            this.hp = 0;
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public void attack() {
+
+        if (weapon != null)
+        {
+            weapon.attack(this instanceof Player, x, y);
+
         }
     }
 
-    public void attack(Entity target){
-        target.takeDamage(attackMultiplier);
-    }
 
     @Override
     public String toString() {
-        return "Entities{" +
+        return "Entitity{" +
                 "name=" + name +
                 ", x=" + x +
                 ", y=" + y +
                 ", hp=" + hp +
                 ", speed=" + speed +
                 ", size=" + size +
+                ", weapon=" + weapon +
                 '}';
     }
 }
+

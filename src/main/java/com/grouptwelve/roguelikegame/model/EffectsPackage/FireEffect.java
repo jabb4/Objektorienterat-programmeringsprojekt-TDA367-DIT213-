@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.EffectsPackage;
 
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entities;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entitity;
 
 public class FireEffect extends Effects {
 
@@ -11,7 +11,7 @@ public class FireEffect extends Effects {
     }
 
     @Override
-    public void apply(Entities target) {
+    public void apply(Entitity target) {
         target.takeDamage(burnDamage);
         System.out.println(target.getName() + " is burning!");
     }

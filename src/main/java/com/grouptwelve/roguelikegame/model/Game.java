@@ -1,9 +1,9 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Goblin;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Troll;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
 import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
 
 import java.util.ArrayList;

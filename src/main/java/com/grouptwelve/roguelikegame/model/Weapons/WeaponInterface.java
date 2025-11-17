@@ -1,7 +1,6 @@
 package com.grouptwelve.roguelikegame.model.Weapons;
 
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entities;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 
 import java.util.List;
