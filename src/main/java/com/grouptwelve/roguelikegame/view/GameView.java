@@ -25,7 +25,7 @@ public class GameView {
     
     public GameView() {
         gamePane = new Pane();
-        gamePane.setPrefSize(800, 500);
+        gamePane.setPrefSize(8000, 5000);
         gamePane.setStyle("-fx-background-color: #2a2a2a;");
 
         // Labels

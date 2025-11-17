@@ -19,7 +19,7 @@ public class App extends Application {
         GameView gameView = new GameView();
         InputHandler inputHandler = new InputHandler();
 
-        Scene scene = new Scene(gameView.getRoot(), 800, 600);
+        Scene scene = new Scene(gameView.getRoot(), 8000, 6000);
         inputHandler.setupInputHandling(scene);
         
         GameController gameController = new GameController(game, gameView, inputHandler);
