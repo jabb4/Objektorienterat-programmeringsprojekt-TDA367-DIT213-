@@ -7,7 +7,7 @@ public class Club extends Weapon {
     }
 /*
     @Override
-    public void attack(Entitity attacker, Entitity target) {
+    public void attack(Entity attacker, Entity target) {
         target.takeDamage(damage);
 
         // Apply effects

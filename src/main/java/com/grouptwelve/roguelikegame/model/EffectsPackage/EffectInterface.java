@@ -1,8 +1,8 @@
 package com.grouptwelve.roguelikegame.model.EffectsPackage;
 
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entitity;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
 
 public interface EffectInterface {
-    void apply(Entitity target);
+    void apply(Entity target);
 }
 

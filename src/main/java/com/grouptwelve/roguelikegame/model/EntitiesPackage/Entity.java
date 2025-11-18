@@ -3,7 +3,7 @@ package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
 
-public class Entitity {
+public abstract class Entity {
     protected String name;
     protected double x, y;
     protected double hp;
@@ -14,7 +14,7 @@ public class Entitity {
     protected Weapon weapon;
     protected boolean isAlive;
 
-    public Entitity(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
+    public Entity(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
         this.x = x;
         this.y = y;
@@ -93,7 +93,7 @@ public class Entitity {
             isAlive = false;
         }
     }
-    /*public void attack(EntitiesPackage.Entitity target){
+    /*public void attack(EntitiesPackage.Entity target){
         target.takeDamage(attackDmg);
     }*/
     public boolean getAliveStatus()
@@ -120,7 +120,7 @@ public class Entitity {
 
     @Override
     public String toString() {
-        return "Entitity{" +
+        return "Entity{" +
                 "name=" + name +
                 ", x=" + x +
                 ", y=" + y +

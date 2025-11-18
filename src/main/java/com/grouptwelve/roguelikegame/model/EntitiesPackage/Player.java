@@ -2,7 +2,7 @@ package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.Weapons.Sword;
 
-public class Player extends Entitity {
+public class Player extends Entity {
 
     public Player(double x, double y) {
         super("Player", x, y, 100, 10, 100);
@@ -11,7 +11,7 @@ public class Player extends Entitity {
     }
 
     /*@Override
-    public void attack(EntitiesPackage.Entitity target) {
+    public void attack(EntitiesPackage.Entity target) {
         System.out.println(name + " attacks " + target.getName() + " for " + attackDmg + " damage!");
         target.takeDamage(attackDmg);
     }*/
