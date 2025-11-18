@@ -44,6 +44,7 @@ public class Game {
         double playerY = player.getY() ;
         for (Enemy enemy : enemies)
         {
+            if(!enemy.getAliveStatus()) continue;
             double dx =  ((playerX - enemy.getX()));
             double dy =  ((playerY - enemy.getY()));
             double distance =  Math.sqrt(dx*dx + dy*dy);

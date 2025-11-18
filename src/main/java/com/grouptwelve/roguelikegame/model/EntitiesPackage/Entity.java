@@ -13,6 +13,8 @@ public abstract class Entity {
     //protected double attackDmg;
     protected Weapon weapon;
     protected boolean isAlive;
+    protected double dirX;
+    protected double dirY;
 
     public Entity(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
@@ -74,6 +76,13 @@ public abstract class Entity {
     }
 
     public void move(double dx, double dy, double deltaTime){
+        if(dx != 0 || dy != 0 )
+        {
+            dirX = dx;
+            dirY = dy;
+
+        }
+
         // Normalize diagonal movement to maintain consistent speed
         if (dx != 0 && dy != 0) {
             double length = Math.sqrt(dx * dx + dy * dy);
@@ -104,17 +113,25 @@ public abstract class Entity {
         this.weapon = weapon;
     }
 
+    //fix later
     public Weapon getWeapon() {
         return weapon;
     }
 
     public void attack() {
 
-        if (weapon != null)
-        {
-            weapon.attack(this instanceof Player, x, y);
+        if (weapon == null) return;
+        System.out.println(dirX + " " + dirY);
+        weapon.attack(this instanceof Player,getAttackPointX() , getAttackPointY());
 
-        }
+    }
+    public double getAttackPointX()
+    {
+        return x + dirX * 20;
+    }
+    public double getAttackPointY()
+    {
+        return y + dirY* 20;
     }
 
 

@@ -94,12 +94,13 @@ public class CombatManager
 
     public void attack(boolean isFriendly, double x, double y, double range, double dmg, List<EffectInterface> effects)
     {
-
+        System.out.println(x + " " + y + " range" + range);
         if (isFriendly)
         {
             //loop though alla enemies and check if attack hit an enemy
             for (Enemy enemy : enemies)
             {
+                if(!enemy.getAliveStatus()) continue; // enemy is already dead
                 if(isHit(x, y, range, enemy.getX(), enemy.getY(), enemy.getSize()))
                 {
                     enemy.takeDamage(dmg);

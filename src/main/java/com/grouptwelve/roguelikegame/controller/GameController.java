@@ -74,6 +74,7 @@ public class GameController {
             case KeyCode.K:
                 System.out.println("k");
                 game.playerAttack();
+                gameView.drawAttack(game.getPlayer().getAttackPointX(), game.getPlayer().getAttackPointY(), game.getPlayer().getWeapon().getRange());
            // case KeyCode.X
                 // x event
                 //add more cases for each key event
