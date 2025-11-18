@@ -9,4 +9,13 @@ public class Troll extends Enemy {
         this.speed = 0;
         this.weapon = new Club();
     }
+
+    static {
+        EntityFactory.getInstance().reigisterEnitity("Troll", new Troll(0,0));
+    }
+
+    @Override
+    public Entity createEntity(double x, double y) {
+        return new Troll(x, y);
+    }
 }

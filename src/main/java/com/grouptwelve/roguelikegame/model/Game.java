@@ -19,9 +19,10 @@ public class Game {
     
     public Game() {
         // Initialize game state
-        this.player = new Player(400, 300);
-        Goblin testGob = new Goblin(700, 100);
-        Troll testTroll = new Troll(100, 100);
+        LoadEntities.load();
+        this.player = EntityFactory.getInstance().createEntity("Player", 400, 300);
+        Goblin testGob = EntityFactory.getInstance().createEntity("Goblin", 700, 100);
+        Troll testTroll = EntityFactory.getInstance().createEntity("Troll", 100, 100);
         this.enemies = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
         CombatManager.getInstance().addEnemy(testGob);
         CombatManager.getInstance().addEnemy(testTroll);

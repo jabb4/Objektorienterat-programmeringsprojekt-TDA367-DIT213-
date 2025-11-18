@@ -147,5 +147,7 @@ public abstract class Entity {
                 ", weapon=" + weapon +
                 '}';
     }
+
+    public abstract Entity createEntity(double x, double y);
 }
 
