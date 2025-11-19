@@ -1,6 +1,8 @@
 package com.grouptwelve.roguelikegame.model;
 
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.LoadEntities;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
@@ -19,9 +21,10 @@ public class Game {
     
     public Game() {
         // Initialize game state
-        this.player = new Player(400, 300);
-        Goblin testGob = new Goblin(700, 100);
-        Troll testTroll = new Troll(100, 100);
+        LoadEntities.load();
+        this.player = (Player) EntityFactory.getInstance().createEntity("Player", 400, 300);
+        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity("Goblin", 700, 100);
+        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity("Troll", 100, 100);
         this.enemies = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
         CombatManager.getInstance().addEnemy(testGob);
         CombatManager.getInstance().addEnemy(testTroll);

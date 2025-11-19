@@ -10,10 +10,19 @@ public class Player extends Entity {
         this.weapon = new Sword();
     }
 
+    static {
+        EntityFactory.getInstance().registerEntity("Player", new Player(0,0));
+    }
+
     /*@Override
     public void attack(EntitiesPackage.Entity target) {
         System.out.println(name + " attacks " + target.getName() + " for " + attackDmg + " damage!");
         target.takeDamage(attackDmg);
     }*/
+
+    @Override
+    public Player createEntity(double x, double y) {
+        return new Player(x, y);
+    }
 }
 
