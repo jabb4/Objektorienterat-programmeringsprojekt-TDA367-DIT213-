@@ -14,7 +14,7 @@ public class Goblin extends Enemy {
 
     // Put the Goblin into the EntityFactory (this is run when the class is loaded into memory for the first time)
     static {
-        EntityFactory.getInstance().reigisterEnitity("Goblin", new Goblin(0,0));
+        EntityFactory.getInstance().registerEntity("Goblin", new Goblin(0,0));
     }
 
     @Override

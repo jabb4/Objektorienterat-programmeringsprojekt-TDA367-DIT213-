@@ -11,7 +11,7 @@ public class EntityFactory {
 
     private final HashMap<String,Entity> entityRegistry = new HashMap<>();
 
-    public void reigisterEnitity(String name, Entity entity){
+    public void registerEntity(String name, Entity entity){
         entityRegistry.put(name,entity);
     }
 

@@ -13,7 +13,7 @@ public class Troll extends Enemy {
     }
 
     static {
-        EntityFactory.getInstance().reigisterEnitity("Troll", new Troll(0,0));
+        EntityFactory.getInstance().registerEntity("Troll", new Troll(0,0));
     }
 
     @Override

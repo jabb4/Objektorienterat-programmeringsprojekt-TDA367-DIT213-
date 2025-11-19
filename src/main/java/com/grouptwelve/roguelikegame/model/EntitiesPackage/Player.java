@@ -11,7 +11,7 @@ public class Player extends Entity {
     }
 
     static {
-        EntityFactory.getInstance().reigisterEnitity("Player", new Player(0,0));
+        EntityFactory.getInstance().registerEntity("Player", new Player(0,0));
     }
 
     /*@Override
