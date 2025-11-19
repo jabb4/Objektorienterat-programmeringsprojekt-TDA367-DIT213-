@@ -16,7 +16,11 @@ public class EntityFactory {
     }
 
     public Entity createEntity(String name, double x, double y){
-        return ((Entity)entityRegistry.get(name)).createEntity(x,y);
+        Entity entity = entityRegistry.get(name);
+        if (entity == null){
+            throw new IllegalArgumentException("Entity name '" + name + "' is not registered in the entity registry.");
+        }
+        return entity.createEntity(x,y);
     }
 
 
