@@ -1,4 +1,4 @@
-package EntitiesPackage;
+package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import java.util.HashMap;
 

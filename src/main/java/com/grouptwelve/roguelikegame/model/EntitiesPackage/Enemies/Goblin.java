@@ -1,6 +1,8 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies;
 
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
 import com.grouptwelve.roguelikegame.model.Weapons.Sword;
 
 public class Goblin extends Enemy {
