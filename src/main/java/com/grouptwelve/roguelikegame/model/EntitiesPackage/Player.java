@@ -21,7 +21,7 @@ public class Player extends Entity {
     }*/
 
     @Override
-    public Entity createEntity(double x, double y) {
+    public Player createEntity(double x, double y) {
         return new Player(x, y);
     }
 }

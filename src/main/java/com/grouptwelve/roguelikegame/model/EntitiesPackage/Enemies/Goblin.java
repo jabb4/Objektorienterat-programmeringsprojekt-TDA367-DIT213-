@@ -18,7 +18,7 @@ public class Goblin extends Enemy {
     }
 
     @Override
-    public Entity createEntity(double x, double y) {
+    public Goblin createEntity(double x, double y) {
         return new Goblin(x, y);
     }
 }

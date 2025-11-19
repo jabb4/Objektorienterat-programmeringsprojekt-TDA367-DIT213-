@@ -17,7 +17,7 @@ public class Troll extends Enemy {
     }
 
     @Override
-    public Entity createEntity(double x, double y) {
+    public Troll createEntity(double x, double y) {
         return new Troll(x, y);
     }
 }
