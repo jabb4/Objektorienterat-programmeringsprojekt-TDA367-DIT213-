@@ -19,14 +19,19 @@ public class Game {
     private Player player;
     private List<Enemy> enemiesAlive;
     private double gameTime;
+
+    private static final Game instance = new Game();
+    public static Game getInstance() {
+        return instance;
+    }
     
-    public Game() {
+    private Game() {
         // Initialize game state
         LoadEntities.load();
         this.player = (Player) EntityFactory.getInstance().createEntity("Player", 400, 300);
         this.enemiesAlive = new ArrayList<>();
         this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy("Goblin", 10,20));
-        CombatManager.getInstance().addEnemy(enemiesAlive.getFirst());
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy("Troll", 500,500));
         this.gameTime = 0;
     }
     
@@ -46,7 +51,6 @@ public class Game {
         double playerY = player.getY() ;
         for (Enemy enemy : enemiesAlive)
         {
-            if(!enemy.getAliveStatus()) continue;
             double dx =  ((playerX - enemy.getX()));
             double dy =  ((playerY - enemy.getY()));
             double distance =  Math.sqrt(dx*dx + dy*dy);

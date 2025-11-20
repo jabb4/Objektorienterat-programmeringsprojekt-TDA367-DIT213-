@@ -97,7 +97,7 @@ public abstract class Entity {
     public void takeDamage(double dmg)
     {
         hp -= dmg;
-        if(hp < 0)
+        if(hp <= 0)
         {
             isAlive = false;
         }
