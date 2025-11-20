@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="68ae5281-a280-4fd9-83da-a06bcc7cf014" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CombatManager" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CombatManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/Weapons/CombatManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EntitiesPackage/Entities.java" beforeDir="false" afterPath="$PROJECT_DIR$/EntitiesPackage/Entities.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Weapons/Club.java" beforeDir="false" afterPath="$PROJECT_DIR$/Weapons/Club.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Weapons/Sword.java" beforeDir="false" afterPath="$PROJECT_DIR$/Weapons/Sword.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Weapons/Weapon.java" beforeDir="false" afterPath="$PROJECT_DIR$/Weapons/Weapon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Weapons/WeaponInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/Weapons/WeaponInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/CombatManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/CombatManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Objektorienterat-programmeringsprojekt-TDA367-DIT213-/Main.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="CombatManager" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "WeaponFrfr",
+    "last_opened_file_path": "C:/Users/alexa/IdeaProjects/Objektorienterat-programmeringsprojekt-TDA367-DIT213-",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="Weapons" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+</project>
