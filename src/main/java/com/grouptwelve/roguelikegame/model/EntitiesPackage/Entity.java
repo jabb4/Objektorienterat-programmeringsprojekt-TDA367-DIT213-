@@ -109,6 +109,11 @@ public abstract class Entity {
     {
         return isAlive;
     }
+    public void  revive()
+    {
+        this.isAlive = true;
+        this.hp = this.maxHP;
+    }
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
     }
