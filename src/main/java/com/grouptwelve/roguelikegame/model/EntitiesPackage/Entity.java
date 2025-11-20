@@ -28,23 +28,23 @@ public abstract class Entity {
     }
 
     public double getHp() {
-        return hp;
+        return this.hp;
     }
 
     public double getSpeed() {
-        return speed;
+        return this.speed;
     }
 
     public double getX() {
-        return x;
+        return this.x;
     }
 
     public double getY() {
-        return y;
+        return this.y;
     }
 
     public int getSize() {
-        return size;
+        return this.size;
     }
 
     public void setX(double x) {
@@ -72,42 +72,43 @@ public abstract class Entity {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void move(double dx, double dy, double deltaTime){
         if(dx != 0 || dy != 0 )
         {
-            dirX = dx;
-            dirY = dy;
-
+            this.dirX = dx;
+            this.dirY = dy;
         }
 
         // Normalize diagonal movement to maintain consistent speed
         if (dx != 0 && dy != 0) {
             double length = Math.sqrt(dx * dx + dy * dy);
-            this.x += (dx / length) * speed * deltaTime;
-            this.y += (dy / length) * speed * deltaTime;
+            this.x += (dx / length) * this.speed * deltaTime;
+            this.y += (dy / length) * this.speed * deltaTime;
         } else {
-            this.x += dx * speed * deltaTime;
-            this.y += dy * speed * deltaTime;
+            this.x += dx * this.speed * deltaTime;
+            this.y += dy * this.speed * deltaTime;
         }
     }
 
     public void takeDamage(double dmg)
     {
-        hp -= dmg;
-        if(hp <= 0)
+        this.hp -= dmg;
+
+        if(this.hp <= 0)
         {
-            isAlive = false;
+            this.isAlive = false;
         }
     }
+
     /*public void attack(EntitiesPackage.Entity target){
         target.takeDamage(attackDmg);
     }*/
     public boolean getAliveStatus()
     {
-        return isAlive;
+        return this.isAlive;
     }
     public void  revive()
     {
@@ -120,25 +121,24 @@ public abstract class Entity {
 
     //fix later
     public Weapon getWeapon() {
-        return weapon;
+        return this.weapon;
     }
 
     public void attack() {
-
-        if (weapon == null) return;
-        System.out.println(dirX + " " + dirY);
-        weapon.attack(this instanceof Player,getAttackPointX() , getAttackPointY());
-
+        if (this.weapon == null) return;
+        System.out.println(this.dirX + " " + this.dirY);
+        this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
     }
+
     public double getAttackPointX()
     {
-        return x + dirX * 20;
-    }
-    public double getAttackPointY()
-    {
-        return y + dirY* 20;
+        return this.x + this.dirX * 20;
     }
 
+    public double getAttackPointY()
+    {
+        return this.y + this.dirY* 20;
+    }
 
     @Override
     public String toString() {
