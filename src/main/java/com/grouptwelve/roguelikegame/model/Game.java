@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model;
 
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.LoadEntities;
@@ -16,18 +17,16 @@ import java.util.List;
  */
 public class Game {
     private Player player;
-    private List<Enemy> enemies;
+    private List<Enemy> enemiesAlive;
     private double gameTime;
     
     public Game() {
         // Initialize game state
         LoadEntities.load();
         this.player = (Player) EntityFactory.getInstance().createEntity("Player", 400, 300);
-        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity("Goblin", 700, 100);
-        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity("Troll", 100, 100);
-        this.enemies = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
-        CombatManager.getInstance().addEnemy(testGob);
-        CombatManager.getInstance().addEnemy(testTroll);
+        this.enemiesAlive = new ArrayList<>();
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy("Goblin", 10,20));
+        CombatManager.getInstance().addEnemy(enemiesAlive.getFirst());
         this.gameTime = 0;
     }
     
@@ -45,7 +44,7 @@ public class Game {
         //dont want to get() in for loop each time so do it before
         double playerX = player.getX() ;
         double playerY = player.getY() ;
-        for (Enemy enemy : enemies)
+        for (Enemy enemy : enemiesAlive)
         {
             if(!enemy.getAliveStatus()) continue;
             double dx =  ((playerX - enemy.getX()));
@@ -86,7 +85,7 @@ public class Game {
     }
     
     public List<Enemy> getEnemies() {
-        return enemies;
+        return enemiesAlive;
     }
 
     public double getGameTime() {
