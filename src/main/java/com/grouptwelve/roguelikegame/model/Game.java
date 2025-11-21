@@ -1,12 +1,7 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.LoadEntities;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
-import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +10,26 @@ import java.util.List;
  * Core game model containing all game state and logic.
  */
 public class Game {
-    private Player player;
-    private List<Enemy> enemies;
+    private final Player player;
+    private final List<Enemy> enemiesAlive;
     private double gameTime;
+
+    private static final Game instance = new Game();
+    public static Game getInstance() {
+        return instance;
+    }
     
-    public Game() {
+    private Game() {
         // Initialize game state
         LoadEntities.load();
-        this.player = (Player) EntityFactory.getInstance().createEntity("Player", 400, 300);
-        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity("Goblin", 700, 100);
-        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity("Troll", 100, 100);
-        this.enemies = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
-        CombatManager.getInstance().addEnemy(testGob);
-        CombatManager.getInstance().addEnemy(testTroll);
+        this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
+        this.enemiesAlive = new ArrayList<>();
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 300,500));
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 500,20));
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 40,500));
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 90,87));
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 100,100));
         this.gameTime = 0;
     }
     
@@ -45,9 +47,8 @@ public class Game {
         //dont want to get() in for loop each time so do it before
         double playerX = player.getX() ;
         double playerY = player.getY() ;
-        for (Enemy enemy : enemies)
+        for (Enemy enemy : enemiesAlive)
         {
-            if(!enemy.getAliveStatus()) continue;
             double dx =  ((playerX - enemy.getX()));
             double dy =  ((playerY - enemy.getY()));
             double distance =  Math.sqrt(dx*dx + dy*dy);
@@ -86,7 +87,7 @@ public class Game {
     }
     
     public List<Enemy> getEnemies() {
-        return enemies;
+        return enemiesAlive;
     }
 
     public double getGameTime() {
