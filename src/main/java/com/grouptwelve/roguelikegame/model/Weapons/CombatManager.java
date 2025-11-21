@@ -49,23 +49,21 @@ public class CombatManager
         {
             //loop though alla enemies and check if attack hit an enemy
             List<Enemy> enemies = this.game.getEnemies();
-            for (int i=0; i<enemies.size(); i++)
+            for (int i=enemies.size()-1; i>=0; i--)
             {
                 Enemy enemy = enemies.get(i);
 
                 if(isHit(x, y, range, enemy.getX(), enemy.getY(), enemy.getSize()))
                 {
                     enemy.takeDamage(dmg);
-                    for(EffectInterface effectInterface : effects)
-                    {
-                        effectInterface.apply(enemy);
-                    }
                     if(!enemy.getAliveStatus()){
                         EnemyPool.getInstance().returnEnemy(enemy);
                         enemies.remove(enemy);
-                        if (i>=enemies.size()-1) {
-                            break;
-                        } else continue;
+                        continue;
+                    }
+                    for(EffectInterface effectInterface : effects)
+                    {
+                        effectInterface.apply(enemy);
                     }
                     System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" EntitiesPackage.Enemy at: "  + enemy);
                 }

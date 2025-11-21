@@ -5,13 +5,13 @@ import com.grouptwelve.roguelikegame.model.Weapons.Sword;
 public class Player extends Entity {
 
     public Player(double x, double y) {
-        super("Player", x, y, 100, 10, 100);
+        super("Player",Entities.PLAYER, x, y, 100, 10, 100);
         this.speed = 100; // Pixels per second
         this.weapon = new Sword();
     }
 
     static {
-        EntityFactory.getInstance().registerEntity("Player", new Player(0,0));
+        EntityFactory.getInstance().registerEntity(Entities.PLAYER, new Player(0,0));
     }
 
     /*@Override

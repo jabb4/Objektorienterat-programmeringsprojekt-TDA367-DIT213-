@@ -5,6 +5,7 @@ import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
 public abstract class Entity {
     protected String name;
+    protected Entities type;
     protected double x, y;
     protected double hp;
     protected double speed;
@@ -16,8 +17,9 @@ public abstract class Entity {
     protected double dirX;
     protected double dirY;
 
-    public Entity(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
+    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
+        this.type = type;
         this.x = x;
         this.y = y;
         this.hp = hp;
@@ -72,8 +74,10 @@ public abstract class Entity {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
+
+    public Entities getType() {return this.type;}
 
     public void move(double dx, double dy, double deltaTime){
         if(dx != 0 || dy != 0 )
