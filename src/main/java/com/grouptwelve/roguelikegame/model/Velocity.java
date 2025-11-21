@@ -1,0 +1,41 @@
+package com.grouptwelve.roguelikegame.model;
+
+public class Velocity {
+    private double x;
+    private double y;
+    private double maxSpeed;
+
+    public Velocity(double maxSpeed) {
+        this.x = 0;
+        this.y = 0;
+        this.maxSpeed = maxSpeed;
+    }
+
+    public void set(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void stop() {
+        this.x = 0;
+        this.y = 0;
+    }
+
+    public void setMaxSpeed(double maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
+    }
+
+    public double getMaxSpeed() {
+        return this.maxSpeed;
+    }
+
+    // TODO: add(dx, dy) for knockback, scale(factor) for e.g freezing zones
+}
