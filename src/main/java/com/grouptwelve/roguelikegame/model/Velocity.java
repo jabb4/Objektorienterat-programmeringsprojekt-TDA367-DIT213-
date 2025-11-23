@@ -1,5 +1,8 @@
 package com.grouptwelve.roguelikegame.model;
 
+/**
+ * Represents the velocity of an entity.
+ */
 public class Velocity {
     private double x;
     private double y;
@@ -11,6 +14,8 @@ public class Velocity {
         this.maxSpeed = maxSpeed;
     }
 
+    // ==================== Velocity Manipulation ====================
+
     public void set(double x, double y) {
         this.x = x;
         this.y = y;
@@ -21,9 +26,9 @@ public class Velocity {
         this.y = 0;
     }
 
-    public void setMaxSpeed(double maxSpeed) {
-        this.maxSpeed = maxSpeed;
-    }
+    // TODO: add(dx, dy) for knockback, scale(factor) for slowing effects or speed buffs
+
+    // ==================== Getters ====================
 
     public double getX() {
         return this.x;
@@ -37,5 +42,9 @@ public class Velocity {
         return this.maxSpeed;
     }
 
-    // TODO: add(dx, dy) for knockback, scale(factor) for e.g freezing zones
+    // ==================== Setters ====================
+
+    public void setMaxSpeed(double maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
 }
