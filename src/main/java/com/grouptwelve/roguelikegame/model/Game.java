@@ -6,6 +6,9 @@ import com.grouptwelve.roguelikegame.model.EntitiesPackage.LoadEntities;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
+import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
+import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
+import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
 
 import java.util.ArrayList;
@@ -14,7 +17,7 @@ import java.util.List;
 /**
  * Core game model containing all game state and logic.
  */
-public class Game {
+public class Game implements GameEventListener {
     private Player player;
     private List<Enemy> enemies;
     private double gameTime;
@@ -30,7 +33,24 @@ public class Game {
         CombatManager.getInstance().addEnemy(testTroll);
         this.gameTime = 0;
     }
-    
+
+    // ==================== Game Event Handlers ====================
+
+    @Override
+    public void onMovement(MovementEvent event) {
+        setPlayerMovement(event.getDx(), event.getDy());
+    }
+
+    @Override
+    public void onAttack(AttackEvent event) {
+        playerAttack();
+    }
+
+    // TODO: Add other event handlers when features are added
+    // onPlayerLevelUp();
+
+    // ==================== Game Logic ====================
+
     /**
      * Updates the game state by one frame.
      * 
@@ -39,47 +59,55 @@ public class Game {
     public void update(double deltaTime) {
         gameTime += deltaTime;
 
-        // TODO: Add enemy AI here
-        // NOTE: use for loop to access each enemy in the enemies list
+        // Updates player states
+        player.update(deltaTime);
 
-        //dont want to get() in for loop each time so do it before
+        // Enemy AI
+        // TODO: Move this to Enemy.update()
         double playerX = player.getX() ;
         double playerY = player.getY() ;
         for (Enemy enemy : enemies)
         {
             if(!enemy.getAliveStatus()) continue;
-            double dx =  ((playerX - enemy.getX()));
-            double dy =  ((playerY - enemy.getY()));
+
+            double dx = playerX - enemy.getX();
+            double dy = playerY - enemy.getY();
             double distance =  Math.sqrt(dx*dx + dy*dy);
 
-            //normalize
-            dx /= distance;
-            dy /= distance;
+            // Set velocity toward player
+            if (distance > 0) {
+                enemy.setMovementDirection(dx / distance, dy / distance);
+            } else {
+                enemy.setMovementDirection(0,0);
+            }
 
-
-
-
-            enemy.move(dx, dy, deltaTime);
+            // Updates enemy states
+            enemy.update(deltaTime);
         }
-
     }
-    
 
+    /**
+     * Triggers a player attack.
+     */
     public void playerAttack()
     {
         System.out.println();
         player.attack();
     }
+
     /**
-     * Moves the player based on input direction.
+     * Sets player movement direction based on input.
      *
      * @param dx Horizontal direction (-1, 0, or 1)
      * @param dy Vertical direction (-1, 0, or 1)
-     * @param deltaTime Time elapsed since last update (in seconds)
      */
-    public void movePlayer(int dx, int dy, double deltaTime) {
-        player.move(dx, dy, deltaTime);
+    public void setPlayerMovement(int dx, int dy) {
+        player.setMovementDirection(dx, dy);
     }
+
+    // TODO: Add more game actions
+
+    // ==================== Getters ====================
     
     public Player getPlayer() {
         return player;
