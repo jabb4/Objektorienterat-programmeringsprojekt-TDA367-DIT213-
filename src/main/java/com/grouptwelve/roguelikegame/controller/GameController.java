@@ -56,7 +56,9 @@ public class GameController {
     private void update(double deltaTime) {
         // Handle input
         int[] dir = inputHandler.getMovementDirection();
-        game.movePlayer(dir[0], dir[1], deltaTime);
+        //fix to not to this every update
+        game.movePlayer(dir[0], dir[1]);
+
         
         // Update game logic
         game.update(deltaTime);
@@ -69,12 +71,14 @@ public class GameController {
 
     public void onKeyPress(KeyCode key)
     {
+
         switch (key)
         {
+
             case KeyCode.K:
                 System.out.println("k");
                 game.playerAttack();
-                gameView.drawAttack(game.getPlayer().getAttackPointX(), game.getPlayer().getAttackPointY(), game.getPlayer().getWeapon().getRange());
+               // gameView.drawAttack(game.getPlayer().getAttackPointX(), game.getPlayer().getAttackPointY(), game.getPlayer().getWeapon().getRange());
            // case KeyCode.X
                 // x event
                 //add more cases for each key event

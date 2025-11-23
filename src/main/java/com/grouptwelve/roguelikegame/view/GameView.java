@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.view;
 
+import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * Handles all rendering and visual presentation of the game.
  */
-public class GameView {
+public class GameView implements ModelListener{
     private final VBox root;
     private final Pane gamePane;
     private final Pane gamePaneSlow;
@@ -53,6 +54,8 @@ public class GameView {
         uiBox.setStyle("-fx-padding: 10; -fx-background-color: #1a1a1a;");
         
         root = new VBox(gameContainer, uiBox);
+
+        DrawEventManager.getInstance().subscribe(this);
     }
     
     /**
@@ -96,6 +99,7 @@ public class GameView {
      * @param y y-coordinate for attack
      * @param size size to draw attackCircle
      */
+    @Override
     public void drawAttack(double x, double y, double size) {
         System.out.println(x + " " + y + " " + size);
         Circle attackCircle = new Circle(x, y, size);
@@ -142,4 +146,12 @@ public class GameView {
     public Pane getRoot() {
         return root;
     }
+
+    @Override
+    public void playerDied()
+    {
+        System.out.println("YOU DIED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //draw death test
+    }
+
 }

@@ -3,7 +3,7 @@ package com.grouptwelve.roguelikegame.model.Weapons;
 public class Club extends Weapon {
 
     public Club() {
-        super(20, 3); // damage, range
+        super(20, 40); // damage, range
     }
 /*
     @Override

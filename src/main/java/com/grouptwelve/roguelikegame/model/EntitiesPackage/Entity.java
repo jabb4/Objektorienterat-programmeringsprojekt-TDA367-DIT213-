@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
+import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
 
@@ -16,6 +17,8 @@ public abstract class Entity {
     protected boolean isAlive;
     protected double dirX;
     protected double dirY;
+
+
 
     public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
@@ -79,22 +82,24 @@ public abstract class Entity {
 
     public Entities getType() {return this.type;}
 
-    public void move(double dx, double dy, double deltaTime){
-        if(dx != 0 || dy != 0 )
-        {
-            this.dirX = dx;
-            this.dirY = dy;
-        }
+    public abstract void update(double deltaTime);
+
+    protected void move(double deltaTime){
+
+        this.x += this.dirX * this.speed * deltaTime;
+        this.y += this.dirY * this.speed * deltaTime;
 
         // Normalize diagonal movement to maintain consistent speed
+        /*
         if (dx != 0 && dy != 0) {
             double length = Math.sqrt(dx * dx + dy * dy);
             this.x += (dx / length) * this.speed * deltaTime;
             this.y += (dy / length) * this.speed * deltaTime;
         } else {
-            this.x += dx * this.speed * deltaTime;
-            this.y += dy * this.speed * deltaTime;
+
         }
+
+         */
     }
 
     public void takeDamage(double dmg)
@@ -128,12 +133,18 @@ public abstract class Entity {
         return this.weapon;
     }
 
+    /**
+     * use weapon to attack at attackPosition
+     * tell eventManger to draw this event
+     */
     public void attack() {
         if (this.weapon == null) return;
         System.out.println(this.dirX + " " + this.dirY);
         this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
-    }
+        DrawEventManager.getInstance().drawAttack(this.getAttackPointX() , this.getAttackPointY(), weapon.getRange());
 
+    }
+    //fix later
     public double getAttackPointX()
     {
         return this.x + this.dirX * 20;

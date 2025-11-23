@@ -41,45 +41,32 @@ public class Game {
     public void update(double deltaTime) {
         gameTime += deltaTime;
 
-        // TODO: Add enemy AI here
-        // NOTE: use for loop to access each enemy in the enemies list
-
-        //dont want to get() in for loop each time so do it before
+        player.update(deltaTime);
         double playerX = player.getX() ;
         double playerY = player.getY() ;
         for (Enemy enemy : enemiesAlive)
         {
-            double dx =  ((playerX - enemy.getX()));
-            double dy =  ((playerY - enemy.getY()));
-            double distance =  Math.sqrt(dx*dx + dy*dy);
-
-            //normalize
-            dx /= distance;
-            dy /= distance;
-
-
-
-
-            enemy.move(dx, dy, deltaTime);
+            enemy.setTargetPos(playerX, playerY);
+            enemy.update(deltaTime);
         }
-
     }
-    
 
+    /**
+     * called by controller when attack key is pressed
+     */
     public void playerAttack()
     {
-        System.out.println();
         player.attack();
     }
     /**
-     * Moves the player based on input direction.
+     * sets the direction of player to input
      *
      * @param dx Horizontal direction (-1, 0, or 1)
      * @param dy Vertical direction (-1, 0, or 1)
-     * @param deltaTime Time elapsed since last update (in seconds)
      */
-    public void movePlayer(int dx, int dy, double deltaTime) {
-        player.move(dx, dy, deltaTime);
+
+    public void movePlayer(int dx, int dy) {
+        player.setDir(dx, dy);
     }
     
     public Player getPlayer() {
