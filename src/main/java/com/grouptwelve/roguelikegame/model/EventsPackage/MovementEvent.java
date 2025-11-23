@@ -12,7 +12,7 @@ public class MovementEvent {
     public MovementEvent(int dx, int dy) {
         this.dx = dx;
         this.dy = dy;
-        this.isMoving = (dx == 0 || dy == 0);
+        this.isMoving = (dx != 0 || dy != 0);
     }
 
     // ==================== Getters ====================
