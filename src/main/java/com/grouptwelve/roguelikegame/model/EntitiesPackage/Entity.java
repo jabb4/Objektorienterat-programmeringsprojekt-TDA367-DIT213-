@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
+import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
 
@@ -7,124 +8,78 @@ public abstract class Entity {
     protected String name;
     protected double x, y;
     protected double hp;
-    protected double speed;
-    protected int size;
     protected double maxHP;
-    //protected double attackDmg;
-    protected Weapon weapon;
     protected boolean isAlive;
+    protected int size;
+    protected Velocity velocity;
+    //protected double attackDmg;
+
+    // Facing direction (used for attack direction)
     protected double dirX;
     protected double dirY;
+
+    protected Weapon weapon;
 
     public Entity(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
         this.x = x;
         this.y = y;
         this.hp = hp;
-        this.size = size;
         this.maxHP = maxHP;
+        this.size = size;
+        this.velocity = new Velocity(100);
         this.isAlive = true;
         //this.attackDmg = attackDmg;
     }
 
-    public double getHp() {
-        return this.hp;
+    /**
+     * Updates the entity's state each frame
+     *
+     * @param deltaTime Time since last update
+     */
+    public void update(double deltaTime) {
+        // Apply velocity to position
+        x += velocity.getX() * deltaTime;
+        y += velocity.getY() * deltaTime;
     }
 
-    public double getSpeed() {
-        return this.speed;
-    }
-
-    public double getX() {
-        return this.x;
-    }
-
-    public double getY() {
-        return this.y;
-    }
-
-    public int getSize() {
-        return this.size;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
-    public void setHp(double hp) {
-        this.hp = hp;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void move(double dx, double dy, double deltaTime){
-        if(dx != 0 || dy != 0 )
-        {
+    /**
+     * Sets the movement direction and updates velocity.
+     *
+     * @param dx x-component of movement vector
+     * @param dy y-component of movement vector
+     */
+    public void setMovementDirection(double dx, double dy) {
+        if (dx != 0 || dy != 0) {
             this.dirX = dx;
             this.dirY = dy;
-        }
 
-        // Normalize diagonal movement to maintain consistent speed
-        if (dx != 0 && dy != 0) {
+            // Normalize the vector (for diagonal movement)
             double length = Math.sqrt(dx * dx + dy * dy);
-            this.x += (dx / length) * this.speed * deltaTime;
-            this.y += (dy / length) * this.speed * deltaTime;
+            double normDx = dx / length;
+            double normDy = dy / length;
+
+            // Scale by maxSpeed to get velocity
+            velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
         } else {
-            this.x += dx * this.speed * deltaTime;
-            this.y += dy * this.speed * deltaTime;
+            // Stop moving
+            velocity.stop();
         }
     }
 
-    public void takeDamage(double dmg)
-    {
-        this.hp -= dmg;
+    // ==================== Combat ====================
 
-        if(this.hp <= 0)
-        {
-            this.isAlive = false;
-        }
-    }
-
-    /*public void attack(EntitiesPackage.Entity target){
-        target.takeDamage(attackDmg);
-    }*/
-    public boolean getAliveStatus()
-    {
-        return this.isAlive;
-    }
-    public void setWeapon(Weapon weapon) {
-        this.weapon = weapon;
-    }
-
-    //fix later
-    public Weapon getWeapon() {
-        return this.weapon;
-    }
-
+    /**
+     * Attacks using the weapon through CombatManager
+     */
     public void attack() {
         if (this.weapon == null) return;
         System.out.println(this.dirX + " " + this.dirY);
         this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
     }
-
+    /*public void attack(EntitiesPackage.Entity target){
+        target.takeDamage(attackDmg);
+    }*/
     public double getAttackPointX()
     {
         return this.x + this.dirX * 20;
@@ -135,6 +90,79 @@ public abstract class Entity {
         return this.y + this.dirY* 20;
     }
 
+    /**
+     * Applies damage to itself. Sets isAlive to false if HP drops to 0 or below.
+     *
+     * @param dmg Amount of damage to apply
+     */
+    public void takeDamage(double dmg)
+    {
+        this.hp -= dmg;
+
+        if(this.hp <= 0)
+        {
+            this.isAlive = false;
+        }
+    }
+
+    // ==================== Getters ====================
+
+    public String getName() {
+        return this.name;
+    }
+
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
+    }
+
+    public double getHp() {
+        return this.hp;
+    }
+
+    public int getSize() {
+        return this.size;
+    }
+
+    public boolean getAliveStatus()
+    {
+        return this.isAlive;
+    }
+
+    //fix later
+    public Weapon getWeapon() {
+        return this.weapon;
+    }
+
+    // ==================== Setters ====================
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setHp(double hp) {
+        this.hp = hp;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
+    }
+
     @Override
     public String toString() {
         return "Entity{" +
@@ -142,7 +170,6 @@ public abstract class Entity {
                 ", x=" + x +
                 ", y=" + y +
                 ", hp=" + hp +
-                ", speed=" + speed +
                 ", size=" + size +
                 ", weapon=" + weapon +
                 '}';
