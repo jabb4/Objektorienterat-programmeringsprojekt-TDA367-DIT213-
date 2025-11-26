@@ -1,12 +1,14 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
+import com.grouptwelve.roguelikegame.model.DrawEventManager;
+
 public abstract class Enemy extends Entity {
     double targetDist;
     double attackRange;
     double attackCooldown;
     double cooldownRemaining;
-    public Enemy(String name, double x, double y, double hp, int size, double maxHP) {
-        super(name, x, y, hp, size, maxHP);
+    public Enemy(String name, Entities type, double x, double y, double hp, int size, double maxHP) {
+        super(name, type, x, y, hp, size, maxHP);
         this.velocity.setMaxSpeed(50); // Default enemy velocity
         this.attackRange = 50;
         this.attackCooldown = 0.2;
@@ -19,6 +21,7 @@ public abstract class Enemy extends Entity {
         // Normalize the vector (for diagonal movement)
         // Normalize the vector (for diagonal movement)
         double length = Math.sqrt(dx * dx + dy * dy);
+        targetDist = length;
         double normDx = dx / length;
         double normDy = dy / length;
         this.dirX = normDx;

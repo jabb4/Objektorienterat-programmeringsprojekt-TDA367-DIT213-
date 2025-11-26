@@ -1,11 +1,13 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.Velocity;
+import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
 
 public abstract class Entity {
     protected String name;
+    protected Entities type;
     protected double x, y;
     protected double hp;
     protected double maxHP;
@@ -20,8 +22,9 @@ public abstract class Entity {
 
     protected Weapon weapon;
 
-    public Entity(String name, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
+    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
+        this.type = type;
         this.x = x;
         this.y = y;
         this.hp = hp;
@@ -48,14 +51,6 @@ public abstract class Entity {
 
 
     // ==================== Combat ====================
-
-    /**
-     * Attacks using the weapon through CombatManager
-     */
-    public void attack() {
-        if (this.weapon == null) return;
-        this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
-    }
 
     public double getAttackPointX()
     {
@@ -108,11 +103,17 @@ public abstract class Entity {
     {
         return this.isAlive;
     }
+    public void revive()
+    {
+        this.hp = maxHP;
+        this.isAlive= true;
+    }
 
     //fix later
     public Weapon getWeapon() {
         return this.weapon;
     }
+
 
     // ==================== Setters ====================
 
@@ -136,9 +137,27 @@ public abstract class Entity {
         this.size = size;
     }
 
+    public Entities getType() {return this.type;}
+
+
+
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
     }
+
+
+    /**
+     * use weapon to attack at attackPosition
+     * tell eventManger to draw this event
+     */
+    public void attack() {
+        if (this.weapon == null) return;
+        System.out.println(this.dirX + " " + this.dirY);
+        this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
+        DrawEventManager.getInstance().drawAttack(this.getAttackPointX() , this.getAttackPointY(), weapon.getRange());
+
+    }
+
 
     @Override
     public String toString() {

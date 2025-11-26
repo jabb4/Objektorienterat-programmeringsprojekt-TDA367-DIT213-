@@ -10,6 +10,8 @@ public abstract class Weapon implements WeaponInterface {
 
     protected double damage;
     protected double range;
+    private double attackCooldown;
+    private double cooldownRemaining;
     protected List<EffectInterface> effects = new ArrayList<>();
 
     public Weapon(double damage, double range) {

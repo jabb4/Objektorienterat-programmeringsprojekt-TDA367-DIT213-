@@ -17,7 +17,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
 
-        Game game = new Game();
+        Game game = Game.getInstance();
         GameView gameView = new GameView();
         InputHandler inputHandler = new InputHandler();
 

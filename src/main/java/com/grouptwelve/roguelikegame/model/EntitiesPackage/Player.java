@@ -1,12 +1,14 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
+import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Weapons.Sword;
 
-public class Player extends Entity {
+import java.util.EventListener;
 
+public class Player extends Entity {
     private boolean wantMove;
     public Player(double x, double y) {
-        super("Player", x, y, 100, 10, 100);
+        super("Player",Entities.PLAYER, x, y, 100, 10, 100);
         this.velocity.setMaxSpeed(100);
         this.weapon = new Sword();
         this.wantMove = false;
@@ -45,9 +47,19 @@ public class Player extends Entity {
             velocity.stop();
         }
     }
+    @Override
+    public void takeDamage(double dmg)
+    {
+        this.hp -= dmg;
+
+        if(this.hp <= 0)
+        {
+            DrawEventManager.getInstance().playerDied();
+        }
+    }
 
     static {
-        EntityFactory.getInstance().registerEntity("Player", new Player(0,0));
+        EntityFactory.getInstance().registerEntity(Entities.PLAYER, new Player(0,0));
     }
 
     @Override
