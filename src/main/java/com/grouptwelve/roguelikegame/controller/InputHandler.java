@@ -16,11 +16,12 @@ import java.util.Set;
 public class InputHandler {
     private final Set<KeyCode> pressedKeys;
     private final Map<KeyCode, Command> keyBindings;
-    private InputEventListener listener;
+    private final InputEventListener listener;
 
-    public InputHandler() {
+    public InputHandler(InputEventListener listener) {
         this.pressedKeys = new HashSet<>();
         this.keyBindings = new HashMap<>();
+        this.listener = listener;
 
         // Movement keys
         keyBindings.put(KeyCode.W, Command.MOVE_UP);
@@ -38,15 +39,6 @@ public class InputHandler {
 
         // System keys
         // keyBindings.put(KeyCode.ESCAPE, Command.PAUSE);
-    }
-
-    /**
-     * Sets the listener that will be notified of command events.
-     *
-     * @param listener The listener to notify
-     */
-    public void setListener(InputEventListener listener) {
-        this.listener = listener;
     }
 
     /**
