@@ -9,11 +9,7 @@ public class Player extends Entity {
         this.velocity.setMaxSpeed(100);
         this.weapon = new Sword();
     }
-    /*@Override
-    public void attack(EntitiesPackage.Entity target) {
-        System.out.println(name + " attacks " + target.getName() + " for " + attackDmg + " damage!");
-        target.takeDamage(attackDmg);
-    }*/
+
     static {
         EntityFactory.getInstance().registerEntity("Player", new Player(0,0));
     }

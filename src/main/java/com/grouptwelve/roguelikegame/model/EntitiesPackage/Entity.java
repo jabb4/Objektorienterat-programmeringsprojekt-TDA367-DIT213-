@@ -74,12 +74,9 @@ public abstract class Entity {
      */
     public void attack() {
         if (this.weapon == null) return;
-        System.out.println(this.dirX + " " + this.dirY);
         this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
     }
-    /*public void attack(EntitiesPackage.Entity target){
-        target.takeDamage(attackDmg);
-    }*/
+
     public double getAttackPointX()
     {
         return this.x + this.dirX * 20;

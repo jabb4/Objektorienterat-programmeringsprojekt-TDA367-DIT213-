@@ -123,7 +123,7 @@ public class GameController implements InputEventListener {
      * @return AttackEvent containing attack information
      */
     private AttackEvent createAttackEvent() {
-        // TODO: Improve to accommodate Law of Demeter patterm
+        // TODO: Improve to accommodate Law of Demeter pattern
         return new AttackEvent(
                 game.getPlayer().getAttackPointX(),
                 game.getPlayer().getAttackPointY(),
