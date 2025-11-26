@@ -37,9 +37,11 @@ public class Player extends Entity {
             double normDy = dy / length;
 
             // Scale by maxSpeed to get velocity
+            wantMove = true;
             velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
         } else {
             // Stop moving
+            wantMove = false;
             velocity.stop();
         }
     }

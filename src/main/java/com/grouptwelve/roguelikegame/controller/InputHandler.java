@@ -16,14 +16,13 @@ import java.util.Set;
 public class InputHandler {
     private final Set<KeyCode> pressedKeys;
     private final Map<KeyCode, Command> keyBindings;
-    private final InputEventListener listener;
+    private InputEventListener listener;
 
-    public InputHandler(InputEventListener listener) {
+    public InputHandler() {
         this.pressedKeys = new HashSet<>();
         this.keyBindings = new HashMap<>();
-        this.listener = listener;
 
-        // Movement keys
+        // Movement keysi
         keyBindings.put(KeyCode.W, Command.MOVE_UP);
         keyBindings.put(KeyCode.UP, Command.MOVE_UP);
         keyBindings.put(KeyCode.S, Command.MOVE_DOWN);
@@ -40,6 +39,11 @@ public class InputHandler {
         // System keys
         // keyBindings.put(KeyCode.ESCAPE, Command.PAUSE);
     }
+    public void setListener(InputEventListener listener)
+    {
+        this.listener = listener;
+    }
+
 
     /**
      * Sets up keyboard event listeners on the given scene.

@@ -69,19 +69,8 @@ public class Game implements GameEventListener {
         for (Enemy enemy : enemies)
         {
             if(!enemy.getAliveStatus()) continue;
+            enemy.setTargetPos(playerX, playerY);
 
-            double dx = playerX - enemy.getX();
-            double dy = playerY - enemy.getY();
-            double distance =  Math.sqrt(dx*dx + dy*dy);
-
-            // Set velocity toward player
-            if (distance > 0) {
-                enemy.setMovementDirection(dx / distance, dy / distance);
-            } else {
-                enemy.setMovementDirection(0,0);
-            }
-
-            // Updates enemy states
             enemy.update(deltaTime);
         }
     }
