@@ -1,5 +1,14 @@
 package com.grouptwelve.roguelikegame.model;
 
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.LoadEntities;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
+
+import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
+import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
+import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
+import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 
@@ -9,7 +18,7 @@ import java.util.List;
 /**
  * Core game model containing all game state and logic.
  */
-public class Game {
+public class Game implements GameEventListener {
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private double gameTime;
@@ -18,7 +27,7 @@ public class Game {
     public static Game getInstance() {
         return instance;
     }
-    
+
     private Game() {
         // Initialize game state
         LoadEntities.load();
@@ -32,7 +41,24 @@ public class Game {
         this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 100,100));
         this.gameTime = 0;
     }
-    
+
+    // ==================== Game Event Handlers ====================
+
+    @Override
+    public void onMovement(MovementEvent event) {
+        setPlayerMovement(event.getDx(), event.getDy());
+    }
+
+    @Override
+    public void onAttack(AttackEvent event) {
+        playerAttack();
+    }
+
+    // TODO: Add other event handlers when features are added
+    // onPlayerLevelUp();
+
+    // ==================== Game Logic ====================
+
     /**
      * Updates the game state by one frame.
      * 
@@ -52,23 +78,27 @@ public class Game {
     }
 
     /**
-     * called by controller when attack key is pressed
+     * Triggers a player attack.
      */
     public void playerAttack()
     {
         player.attack();
     }
+
     /**
-     * sets the direction of player to input
+     * Sets player movement direction based on input.
      *
      * @param dx Horizontal direction (-1, 0, or 1)
      * @param dy Vertical direction (-1, 0, or 1)
      */
-
-    public void movePlayer(int dx, int dy) {
-        player.setDir(dx, dy);
+    public void setPlayerMovement(int dx, int dy) {
+        player.setMovementDirection(dx, dy);
     }
-    
+
+    // TODO: Add more game actions
+
+    // ==================== Getters ====================
+
     public Player getPlayer() {
         return player;
     }

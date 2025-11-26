@@ -3,43 +3,36 @@ package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 import com.grouptwelve.roguelikegame.model.DrawEventManager;
 
 public abstract class Enemy extends Entity {
-    private double targetDist;
-    protected double attackRange;
-    private double attackCooldown;
-    private double cooldownRemaining;
+    double targetDist;
+    double attackRange;
+    double attackCooldown;
+    double cooldownRemaining;
     public Enemy(String name, Entities type, double x, double y, double hp, int size, double maxHP) {
         super(name, type, x, y, hp, size, maxHP);
-        this.speed = 50; // Default
-        this.targetDist = 0;
-        this.attackRange = 40;
+        this.velocity.setMaxSpeed(50); // Default enemy velocity
+        this.attackRange = 50;
         this.attackCooldown = 0.2;
-
     }
-
-    /**
-     *  stores distance to target which is used for knowing when to attack in update.
-     *  updates direction variables so it points toward target with normalised values
-     * @param x x-coordinate for player most cases
-     * @param y y-coordinate for player most cases
-     */
-    public void setTargetPos(double x, double y)
+    public void setTargetPos(double tx, double ty)
     {
-        x =  ((x - this.x));
-        y =  ((y - this.y));
+        double dx = tx - this.x;
+        double dy = ty - this.y;
 
-        targetDist =  Math.sqrt(x*x + y*y);
+        // Normalize the vector (for diagonal movement)
+        // Normalize the vector (for diagonal movement)
+        double length = Math.sqrt(dx * dx + dy * dy);
+        targetDist = length;
+        double normDx = dx / length;
+        double normDy = dy / length;
+        this.dirX = normDx;
+        this.dirY = normDy;
 
-        //normalize
-        dirX = x/  targetDist;
-        dirY = y/ targetDist;
+        // Scale by maxSpeed to get velocity
+        velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
+
+
+
     }
-
-    /**
-     * enemies always walk towards player and if close enough stop and attack
-     * cooldown variables is meant as a attack indicator for the player, when enemies get close enough to player they wait a liitle before starting to attack so that the player has time to dodge.
-     * when enemies are in range of attacking they don't move
-     * @param deltaTime time between frames
-     */
     public void update(double deltaTime)
     {
 
@@ -63,5 +56,7 @@ public abstract class Enemy extends Entity {
 
         }
     }
+
+    // TODO: override update method and move enemy AI into there
 }
 
