@@ -8,6 +8,7 @@ import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Core game model containing all game state and logic.
@@ -16,6 +17,7 @@ public class Game implements GameEventListener {
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private double gameTime;
+    private int lastEnemySpawnTime = 0;
 
     private static final Game instance = new Game();
     public static Game getInstance() {
@@ -28,11 +30,6 @@ public class Game implements GameEventListener {
         this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
         this.enemiesAlive = new ArrayList<>();
         this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 300,500));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 500,20));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 40,500));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 90,87));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 100,100));
         this.gameTime = 0;
     }
 
@@ -68,6 +65,19 @@ public class Game implements GameEventListener {
         {
             enemy.setTargetPos(playerX, playerY);
             enemy.update(deltaTime);
+        }
+
+        // Spawn enemies
+        int enemyBaseSpawnRate = 5;
+        int enemyMaxSpawnAmount = 3;
+        if ((int)gameTime != lastEnemySpawnTime && (int)gameTime % enemyBaseSpawnRate == 0){
+            Random rand = new Random();
+            for (int i=0; i<= rand.nextInt(enemyMaxSpawnAmount+1); i++){
+                int spawnX =  rand.nextInt(400);
+                int spawnY =  rand.nextInt(400);
+                enemiesAlive.add(EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY));
+                lastEnemySpawnTime = (int)gameTime;
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * Object pool for managing Enemy instances to improve memory efficiency.
@@ -40,7 +41,14 @@ public class EnemyPool {
         enemy.setX(x);
         enemy.setY(y);
         return enemy;
+    }
 
+    public Enemy borrowRandomEnemy(double x, double y) {
+        Random rand = new Random();
+        int i = rand.nextInt(Entities.values().length-1)+1;
+        Entities enemy =  Entities.values()[i];
+
+        return borrowEnemy(enemy, x, y);
     }
 
     public void returnEnemy(Enemy enemy){
