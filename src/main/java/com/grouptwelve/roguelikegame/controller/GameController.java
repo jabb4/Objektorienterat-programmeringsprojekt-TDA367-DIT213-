@@ -31,7 +31,6 @@ public class GameController implements InputEventListener {
         this.eventListeners = new ArrayList<>();
         this.lastUpdate = 0;
 
-
         // Register listeners
         addEventListener(game);
         inputHandler.setListener(this);

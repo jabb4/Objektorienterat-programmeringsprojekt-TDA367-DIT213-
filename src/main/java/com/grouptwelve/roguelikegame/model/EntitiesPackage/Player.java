@@ -7,14 +7,14 @@ import java.util.EventListener;
 
 public class Player extends Entity {
     private boolean wantMove;
+
     public Player(double x, double y) {
         super("Player",Entities.PLAYER, x, y, 100, 10, 100);
         this.velocity.setMaxSpeed(100);
         this.weapon = new Sword();
         this.wantMove = false;
-
-
     }
+
     public void update(double deltaTime)
     {
         if (wantMove)
@@ -22,6 +22,7 @@ public class Player extends Entity {
             move((deltaTime));
         }
     }
+
     /**
      * Sets the movement direction and updates velocity.
      *
@@ -47,6 +48,7 @@ public class Player extends Entity {
             velocity.stop();
         }
     }
+
     @Override
     public void takeDamage(double dmg)
     {

@@ -1,24 +1,23 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
-import com.grouptwelve.roguelikegame.model.DrawEventManager;
-
 public abstract class Enemy extends Entity {
     double targetDist;
     double attackRange;
     double attackCooldown;
     double cooldownRemaining;
+
     public Enemy(String name, Entities type, double x, double y, double hp, int size, double maxHP) {
         super(name, type, x, y, hp, size, maxHP);
         this.velocity.setMaxSpeed(50); // Default enemy velocity
         this.attackRange = 50;
         this.attackCooldown = 0.2;
     }
+
     public void setTargetPos(double tx, double ty)
     {
         double dx = tx - this.x;
         double dy = ty - this.y;
 
-        // Normalize the vector (for diagonal movement)
         // Normalize the vector (for diagonal movement)
         double length = Math.sqrt(dx * dx + dy * dy);
         targetDist = length;
@@ -29,13 +28,11 @@ public abstract class Enemy extends Entity {
 
         // Scale by maxSpeed to get velocity
         velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
-
-
-
     }
+
+    @Override
     public void update(double deltaTime)
     {
-
         if(targetDist < attackRange)
         {
             // when enemy enters the attackRange timer starts and only resets if player leaves range or attack happened

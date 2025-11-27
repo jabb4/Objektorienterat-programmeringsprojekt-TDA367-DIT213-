@@ -44,7 +44,6 @@ public class InputHandler {
         this.listener = listener;
     }
 
-
     /**
      * Sets up keyboard event listeners on the given scene.
      * Should be called once during initialization.

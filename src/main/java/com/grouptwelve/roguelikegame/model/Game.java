@@ -1,16 +1,10 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.LoadEntities;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
-
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
-import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 
 import java.util.ArrayList;
 import java.util.List;
