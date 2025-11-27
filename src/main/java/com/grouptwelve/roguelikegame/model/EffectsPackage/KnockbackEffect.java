@@ -38,7 +38,6 @@ public class KnockbackEffect implements EffectInterface {
     @Override
     public void apply(Entity target) {
         target.applyKnockback(directionX, directionY, knockbackStrength);
-        System.out.println(target.getName() + " was knocked back!");
     }
 
     public double getKnockbackStrength() {
