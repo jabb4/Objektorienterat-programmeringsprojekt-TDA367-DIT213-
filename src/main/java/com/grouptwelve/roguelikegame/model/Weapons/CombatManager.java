@@ -1,6 +1,7 @@
 package com.grouptwelve.roguelikegame.model.Weapons;
 
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
+import com.grouptwelve.roguelikegame.model.EffectsPackage.KnockbackEffect;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
@@ -40,7 +41,6 @@ public class CombatManager
      */
     //add attack function with Entity instead of x,y,range
     //could instead return List<EntitiesPackage.Enemy> and then let weapon attack on enemies. good for not exposing specific weapond buffs here in combatManger. Now I assume there are no weapond buffs
-    //add knockback?
 
     public void attack(boolean isFriendly, double x, double y, double range, double dmg, List<EffectInterface> effects)
     {
@@ -61,8 +61,21 @@ public class CombatManager
                         enemies.remove(enemy);
                         continue;
                     }
+
+                    // Calculate knockback direction (from attack point to enemy)
+                    double dirX = enemy.getX() - x;
+                    double dirY = enemy.getY() - y;
+                    double length = Math.sqrt(dirX * dirX + dirY * dirY);
+                    if (length > 0) {
+                        dirX /= length;
+                        dirY /= length;
+                    }
+
                     for(EffectInterface effectInterface : effects)
                     {
+                        if (effectInterface instanceof KnockbackEffect) {
+                            ((KnockbackEffect) effectInterface).setDirection(dirX, dirY);
+                        }
                         effectInterface.apply(enemy);
                     }
                     System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" EntitiesPackage.Enemy at: "  + enemy);
@@ -73,9 +86,25 @@ public class CombatManager
         {
             if(isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
 
+                /*
+
+                PLAYER KNOCKBACK
+                double dirX = player.getX() - x;
+                double dirY = player.getY() - y;
+                double length = Math.sqrt(dirX * dirX + dirY * dirY);
+                if (length > 0) {
+                    dirX /= length;
+                    dirY /= length;
+                }
+                 */
+
                 player.takeDamage(dmg);
                 for(EffectInterface effectInterface : effects)
                 {
+//                    PLAYER KNOCKBACK
+//                    if (effectInterface instanceof KnockbackEffect) {
+//                        ((KnockbackEffect) effectInterface).setDirection(dirX, dirY);
+//                    }
                     effectInterface.apply(player);
                 }
                 System.out.println("attacked at: (" + x + ", " + y + "), EntitiesPackage.Player at: "  + player);

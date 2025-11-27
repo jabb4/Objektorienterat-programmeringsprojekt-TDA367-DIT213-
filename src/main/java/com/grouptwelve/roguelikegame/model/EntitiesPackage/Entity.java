@@ -36,11 +36,15 @@ public abstract class Entity {
     }
 
     /**
-     * Updates the entity's state each frame
+     * Updates the entity's state each frame.
+     * Currently, handles velocity and knockback.
      *
      * @param deltaTime Time since last update
      */
-    protected abstract void update(double deltaTime);
+    protected void update(double deltaTime) {
+        velocity.update(deltaTime);
+    }
+
 
     protected void move(double deltaTime)
     {
@@ -84,6 +88,17 @@ public abstract class Entity {
         System.out.println(this.dirX + " " + this.dirY);
         this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
         DrawEventManager.getInstance().drawAttack(this.getAttackPointX() , this.getAttackPointY(), weapon.getRange());
+    }
+
+    /**
+     * Applies a knockback force to this entity.
+     *
+     * @param dirX Normalized x direction of knockback
+     * @param dirY Normalized y direction of knockback
+     * @param strength The strength/speed of the knockback
+     */
+    public void applyKnockback(double dirX, double dirY, double strength) {
+        velocity.applyKnockback(dirX, dirY, strength);
     }
 
     // ==================== Getters ====================
