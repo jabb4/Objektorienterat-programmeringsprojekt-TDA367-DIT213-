@@ -24,15 +24,20 @@ public class KnockbackEffect implements EffectInterface {
     }
 
     /**
-     * Sets the direction of the knockback. Should be called before apply().
-     * The direction should be normalized (length of 1).
+     * Sets the direction of the knockback. The direction will be normalized automatically.
      *
      * @param dirX Normalized x component of direction
      * @param dirY Normalized y component of direction
      */
     public void setDirection(double dirX, double dirY) {
-        this.directionX = dirX;
-        this.directionY = dirY;
+        double length = Math.sqrt(dirX * dirX + dirY * dirY);
+        if (length != 0) {
+            this.directionX = dirX / length;
+            this.directionY = dirY / length;
+        } else {
+            this.directionX = 0;
+            this.directionY = 0;
+        }
     }
 
     @Override
