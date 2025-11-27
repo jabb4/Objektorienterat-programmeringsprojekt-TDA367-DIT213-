@@ -17,6 +17,8 @@ public class Player extends Entity {
 
     public void update(double deltaTime)
     {
+        super.update(deltaTime); // Handle knockback
+
         if (wantMove)
         {
             move((deltaTime));

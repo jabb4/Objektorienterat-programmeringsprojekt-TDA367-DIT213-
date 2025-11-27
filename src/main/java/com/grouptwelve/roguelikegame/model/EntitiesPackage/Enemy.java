@@ -33,8 +33,12 @@ public abstract class Enemy extends Entity {
     @Override
     public void update(double deltaTime)
     {
+        super.update(deltaTime);
+
         if(targetDist < attackRange)
         {
+            velocity.stop(); // Stop intentional movement, knockback still applies
+
             // when enemy enters the attackRange timer starts and only resets if player leaves range or attack happened
             if(cooldownRemaining > 0){
                 cooldownRemaining -= deltaTime;
@@ -49,11 +53,8 @@ public abstract class Enemy extends Entity {
         else
         {
             cooldownRemaining = attackCooldown;
-            move(deltaTime);
-
         }
+
+        move(deltaTime); // Always apply movement, which includes knockback
     }
-
-    // TODO: override update method and move enemy AI into there
 }
-
