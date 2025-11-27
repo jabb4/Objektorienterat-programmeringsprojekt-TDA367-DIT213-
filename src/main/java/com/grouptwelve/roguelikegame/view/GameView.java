@@ -1,10 +1,10 @@
 package com.grouptwelve.roguelikegame.view;
 
-import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import javafx.animation.PauseTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 
@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Handles all rendering and visual presentation of the game.
  */
-public class GameView implements ModelListener{
+public class GameView{
     private final VBox root;
     private final Pane gamePane;
     private final Pane gamePaneSlow;
@@ -55,7 +55,7 @@ public class GameView implements ModelListener{
         
         root = new VBox(gameContainer, uiBox);
 
-        DrawEventManager.getInstance().subscribe(this);
+
     }
     
     /**
@@ -99,8 +99,8 @@ public class GameView implements ModelListener{
      * @param y y-coordinate for attack
      * @param size size to draw attackCircle
      */
-    @Override
-    public void drawAttack(double x, double y, double size) {
+
+         public void drawAttack(double x, double y, double size) {
         System.out.println(x + " " + y + " " + size);
         Circle attackCircle = new Circle(x, y, size);
         attackCircle.setFill(Color.VIOLET);
@@ -147,11 +147,21 @@ public class GameView implements ModelListener{
         return root;
     }
 
-    @Override
+
     public void playerDied()
     {
+        playDeathShake(gamePane);
         System.out.println("YOU DIED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         //draw death test
+    }
+    public void playDeathShake(Pane gamePane) {
+        TranslateTransition shake = new TranslateTransition(Duration.millis(50), gamePane);
+        shake.setFromX(0);
+        shake.setByX(10);
+        shake.setCycleCount(10);
+        shake.setAutoReverse(true);
+        shake.setOnFinished(e -> gamePane.setTranslateX(0));
+        shake.play();
     }
 
 }

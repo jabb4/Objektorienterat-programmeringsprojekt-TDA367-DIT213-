@@ -1,7 +1,7 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
+import com.grouptwelve.roguelikegame.model.ControllEventManager;
 import com.grouptwelve.roguelikegame.model.Velocity;
-import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
 
@@ -87,7 +87,7 @@ public abstract class Entity {
         if (this.weapon == null) return;
         System.out.println(this.dirX + " " + this.dirY);
         this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
-        DrawEventManager.getInstance().drawAttack(this.getAttackPointX() , this.getAttackPointY(), weapon.getRange());
+        ControllEventManager.getInstance().drawAttack(this.getAttackPointX() , this.getAttackPointY(), weapon.getRange());
     }
 
     /**

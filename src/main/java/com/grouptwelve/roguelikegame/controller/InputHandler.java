@@ -37,7 +37,7 @@ public class InputHandler {
         // keyBindings.put(KeyCode.E, Command.ABILITY_1);
 
         // System keys
-        // keyBindings.put(KeyCode.ESCAPE, Command.PAUSE);
+         keyBindings.put(KeyCode.ESCAPE, Command.PAUSE);
     }
     public void setListener(InputEventListener listener)
     {

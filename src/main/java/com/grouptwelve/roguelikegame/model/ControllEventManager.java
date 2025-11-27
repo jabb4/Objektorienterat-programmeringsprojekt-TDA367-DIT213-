@@ -1,18 +1,19 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.view.ModelListener;
+import com.grouptwelve.roguelikegame.view.ControllerListener;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DrawEventManager
+public class ControllEventManager
 {
     //singleton instance
-    private static DrawEventManager instance;
+    private static ControllEventManager instance;
     //list of listeners to draw this events
-    private final List<ModelListener> listeners;
+    private final List<ControllerListener> listeners;
 
-    private DrawEventManager()
+    private ControllEventManager()
     {
         listeners = new ArrayList<>();
     }
@@ -20,11 +21,11 @@ public class DrawEventManager
     /**
      * @return singleton instance
      */
-    public static DrawEventManager getInstance()
+    public static ControllEventManager getInstance()
     {
         if(instance == null)
         {
-            instance = new DrawEventManager();
+            instance = new ControllEventManager();
         }
         return instance;
     }
@@ -33,11 +34,11 @@ public class DrawEventManager
      * used by listens to add self to the list
      * @param listener caller
      */
-    public void subscribe(ModelListener listener)
+    public void subscribe(ControllerListener listener)
     {
         listeners.add(listener);
     }
-    public void unsubscribe(ModelListener listener)
+    public void unsubscribe(ControllerListener listener)
     {
         listeners.remove(listener);
     }
@@ -50,7 +51,7 @@ public class DrawEventManager
      */
     public void drawAttack(double x, double y, double size)
     {
-        for(ModelListener listener : listeners)
+        for(ControllerListener listener : listeners)
         {
             listener.drawAttack(x, y, size);
         }
@@ -58,7 +59,7 @@ public class DrawEventManager
 
     public void playerDied()
     {
-        for (ModelListener listener:  listeners)
+        for (ControllerListener listener:  listeners)
         {
             listener.playerDied();
         }

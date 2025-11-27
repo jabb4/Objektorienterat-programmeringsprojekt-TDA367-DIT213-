@@ -1,9 +1,11 @@
 package com.grouptwelve.roguelikegame.controller;
 
+import com.grouptwelve.roguelikegame.model.ControllEventManager;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.view.ControllerListener;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
 
@@ -14,12 +16,13 @@ import java.util.Set;
 /**
  * Coordinates the game loop and events.
  */
-public class GameController implements InputEventListener {
+public class GameController implements InputEventListener, ControllerListener {
     private final Game game;
     private final GameView gameView;
     private final InputHandler inputHandler;
     private AnimationTimer gameLoop;
     private long lastUpdate;
+    private boolean paused;
 
     // All systems that want to observe game events
     private List<GameEventListener> eventListeners;
@@ -30,10 +33,12 @@ public class GameController implements InputEventListener {
         this.inputHandler = inputHandler;
         this.eventListeners = new ArrayList<>();
         this.lastUpdate = 0;
+        this.paused = false;
 
         // Register listeners
         addEventListener(game);
         inputHandler.setListener(this);
+        ControllEventManager.getInstance().subscribe(this);
 
         // TODO: Other systems that needs to react to events such as audio and animations.
         // addEventListener(audioManager);
@@ -79,6 +84,10 @@ public class GameController implements InputEventListener {
      * @param isPressed True if pressed, false if released
      */
     private void handleCommand(Command command, boolean isPressed) {
+        if (command == Command.PAUSE && isPressed) {
+            togglePause();
+        }
+        if(paused) return;
         // Handle movement commands (trigger on both press and release)
         if (command.isMovement()) {
             // Movement changed - recalculate and notify
@@ -92,10 +101,9 @@ public class GameController implements InputEventListener {
             notifyAttack(event);
         }
 
+
         // TODO: Handle other commands when implemented
-        // else if (command == Command.PAUSE && isPressed) {
-        //     togglePause();
-        // }
+
     }
 
     // ==================== Event Creation ====================
@@ -167,6 +175,11 @@ public class GameController implements InputEventListener {
             gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
         }
     }
+    private void togglePause()
+    {
+        this.paused = !paused;
+        System.out.println("paaaaaaaaaaaaaaaaaaaause!!!!!!!!!!!!!!!!!!!");
+    }
 
     private List<String> getStrings() {
         Set<Command> activeCommands = inputHandler.getActiveCommands();
@@ -230,6 +243,7 @@ public class GameController implements InputEventListener {
      */
     private void update(double deltaTime) {
         // Update game logic
+        if(paused) return;
         game.update(deltaTime);
 
         // Update time display
@@ -251,6 +265,17 @@ public class GameController implements InputEventListener {
         if (gameLoop != null) {
             gameLoop.stop();
         }
+    }
+
+    @Override
+    public void drawAttack(double x, double y, double size) {
+        gameView.drawAttack(x,y,size);
+    }
+
+    @Override
+    public void playerDied() {
+        gameView.playerDied();
+        paused = true;
     }
 
     // TODO: Implement pause and resume

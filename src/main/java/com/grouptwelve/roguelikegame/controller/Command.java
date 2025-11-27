@@ -8,7 +8,7 @@ public enum Command {
     MOVE_RIGHT,
 
     // Actions
-    ATTACK;
+    ATTACK,
     // ABILITY_1,
     // ABILITY_2,
     // ...
@@ -16,6 +16,7 @@ public enum Command {
 
     // System
     // PAUSE,
+    PAUSE;
     // FULLSCREEN,
 
     /**
