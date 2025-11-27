@@ -18,6 +18,9 @@ public class Game implements GameEventListener {
     private final List<Enemy> enemiesAlive;
     private double gameTime;
     private int lastEnemySpawnTime = 0;
+    private final Random rand = new Random();
+    private final int enemyBaseSpawnRate = 5;
+    private final int enemyMaxSpawnAmount = 3;
 
     private static final Game instance = new Game();
     public static Game getInstance() {
@@ -68,16 +71,13 @@ public class Game implements GameEventListener {
         }
 
         // Spawn enemies
-        int enemyBaseSpawnRate = 5;
-        int enemyMaxSpawnAmount = 3;
         if ((int)gameTime != lastEnemySpawnTime && (int)gameTime % enemyBaseSpawnRate == 0){
-            Random rand = new Random();
-            for (int i=0; i<= rand.nextInt(enemyMaxSpawnAmount+1); i++){
-                int spawnX =  rand.nextInt(400);
-                int spawnY =  rand.nextInt(400);
+            for (int i=0; i<= rand.nextInt(enemyMaxSpawnAmount); i++){
+                int spawnX =  rand.nextInt(400); // Change when we have decided on game dimensions etc.
+                int spawnY =  rand.nextInt(400); // Change when we have decided on game dimensions etc.
                 enemiesAlive.add(EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY));
-                lastEnemySpawnTime = (int)gameTime;
             }
+            lastEnemySpawnTime = (int)gameTime;
         }
     }
 
