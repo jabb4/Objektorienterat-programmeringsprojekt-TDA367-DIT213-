@@ -8,6 +8,7 @@ import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Core game model containing all game state and logic.
@@ -16,6 +17,10 @@ public class Game implements GameEventListener {
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private double gameTime;
+    private int lastEnemySpawnTime = 0;
+    private final Random rand = new Random();
+    private final int enemyBaseSpawnRate = 5;
+    private final int enemyMaxSpawnAmount = 3;
 
     private static final Game instance = new Game();
     public static Game getInstance() {
@@ -28,11 +33,6 @@ public class Game implements GameEventListener {
         this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
         this.enemiesAlive = new ArrayList<>();
         this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 300,500));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 500,20));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 40,500));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 90,87));
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.TROLL, 100,100));
         this.gameTime = 0;
     }
 
@@ -68,6 +68,16 @@ public class Game implements GameEventListener {
         {
             enemy.setTargetPos(playerX, playerY);
             enemy.update(deltaTime);
+        }
+
+        // Spawn enemies
+        if ((int)gameTime != lastEnemySpawnTime && (int)gameTime % enemyBaseSpawnRate == 0){
+            for (int i=0; i<= rand.nextInt(enemyMaxSpawnAmount); i++){
+                int spawnX =  rand.nextInt(400); // Change when we have decided on game dimensions etc.
+                int spawnY =  rand.nextInt(400); // Change when we have decided on game dimensions etc.
+                enemiesAlive.add(EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY));
+            }
+            lastEnemySpawnTime = (int)gameTime;
         }
     }
 
