@@ -57,11 +57,25 @@ public class ControllEventManager
         }
     }
 
-    public void playerDied()
+    public void playerDied(double x, double y)
     {
         for (ControllerListener listener:  listeners)
         {
-            listener.playerDied();
+            listener.playerDied(x, y);
+        }
+    }
+
+    /**
+     * Called when an enemy takes damage, to trigger visual feedback.
+     * @param x X coordinate of the hit
+     * @param y Y coordinate of the hit
+     * @param damage Amount of damage dealt
+     */
+    public void onEnemyHit(double x, double y, double damage)
+    {
+        for (ControllerListener listener : listeners)
+        {
+            listener.onEnemyHit(x, y, damage);
         }
     }
 }

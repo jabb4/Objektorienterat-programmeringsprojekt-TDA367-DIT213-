@@ -101,7 +101,6 @@ public class GameController implements InputEventListener, ControllerListener {
             notifyAttack(event);
         }
 
-
         // TODO: Handle other commands when implemented
 
     }
@@ -174,11 +173,6 @@ public class GameController implements InputEventListener, ControllerListener {
         } else {
             gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
         }
-    }
-    private void togglePause()
-    {
-        this.paused = !paused;
-        System.out.println("paaaaaaaaaaaaaaaaaaaause!!!!!!!!!!!!!!!!!!!");
     }
 
     private List<String> getStrings() {
@@ -273,11 +267,20 @@ public class GameController implements InputEventListener, ControllerListener {
     }
 
     @Override
-    public void playerDied() {
-        gameView.playerDied();
+    public void playerDied(double x, double y) {
+        gameView.playerDied(x, y);
         paused = true;
     }
 
-    // TODO: Implement pause and resume
-    // private void togglePause() with a isPaused attribute?
+    @Override
+    public void onEnemyHit(double x, double y, double damage) {
+        gameView.showDamageNumber(x, y, damage);
+        gameView.spawnHitParticles(x, y);
+    }
+
+    private void togglePause()
+    {
+        this.paused = !paused;
+        System.out.println("paaaaaaaaaaaaaaaaaaaause!!!!!!!!!!!!!!!!!!!");
+    }
 }
