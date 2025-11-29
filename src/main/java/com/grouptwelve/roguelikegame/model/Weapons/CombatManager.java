@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model.Weapons;
 
+import com.grouptwelve.roguelikegame.model.ControllEventManager;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.KnockbackEffect;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
@@ -56,6 +57,10 @@ public class CombatManager
                 if(isHit(x, y, range, enemy.getX(), enemy.getY(), enemy.getSize()))
                 {
                     enemy.takeDamage(dmg);
+                    
+                    // Fire hit event for visual feedback (damage numbers)
+                    ControllEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
+                    
                     if(!enemy.getAliveStatus()){
                         EnemyPool.getInstance().returnEnemy(enemy);
                         enemies.remove(enemy);
@@ -86,17 +91,15 @@ public class CombatManager
         {
             if(isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
 
-                /*
 
-                PLAYER KNOCKBACK
-                double dirX = player.getX() - x;
-                double dirY = player.getY() - y;
-                double length = Math.sqrt(dirX * dirX + dirY * dirY);
-                if (length > 0) {
-                    dirX /= length;
-                    dirY /= length;
-                }
-                 */
+//                PLAYER KNOCKBACK
+//                double dirX = player.getX() - x;
+//                double dirY = player.getY() - y;
+//                double length = Math.sqrt(dirX * dirX + dirY * dirY);
+//                if (length > 0) {
+//                    dirX /= length;
+//                    dirY /= length;
+//                }
 
                 player.takeDamage(dmg);
                 for(EffectInterface effectInterface : effects)
