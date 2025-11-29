@@ -1,28 +1,36 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.LoadEntities;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
-import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
+import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
+import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
+import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Core game model containing all game state and logic.
  */
-public class Game {
-    private Player player;
-    private List<Enemy> enemies;
+public class Game implements GameEventListener {
+    private final Player player;
+    private final List<Enemy> enemiesAlive;
     private double gameTime;
-    
-    public Game() {
+    private int lastEnemySpawnTime = 0;
+    private final Random rand = new Random();
+    private final int enemyBaseSpawnRate = 5;
+    private final int enemyMaxSpawnAmount = 3;
+
+    private static final Game instance = new Game();
+    public static Game getInstance() {
+        return instance;
+    }
+
+    private Game() {
         // Initialize game state
         LoadEntities.load();
         this.player = (Player) EntityFactory.getInstance().createEntity("Player", 400, 300);
@@ -35,7 +43,24 @@ public class Game {
         CombatManager.getInstance().addEnemy(testTroll);
         this.gameTime = 0;
     }
-    
+
+    // ==================== Game Event Handlers ====================
+
+    @Override
+    public void onMovement(MovementEvent event) {
+        setPlayerMovement(event.getDx(), event.getDy());
+    }
+
+    @Override
+    public void onAttack(AttackEvent event) {
+        playerAttack();
+    }
+
+    // TODO: Add other event handlers when features are added
+    // onPlayerLevelUp();
+
+    // ==================== Game Logic ====================
+
     /**
      * Updates the game state by one frame.
      * 
@@ -44,54 +69,54 @@ public class Game {
     public void update(double deltaTime) {
         gameTime += deltaTime;
 
-        // TODO: Add enemy AI here
-        // NOTE: use for loop to access each enemy in the enemies list
-
-        //dont want to get() in for loop each time so do it before
+        player.update(deltaTime);
         double playerX = player.getX() ;
         double playerY = player.getY() ;
-        for (Enemy enemy : enemies)
+        for (Enemy enemy : enemiesAlive)
         {
-            if(!enemy.getAliveStatus()) continue;
-            double dx =  ((playerX - enemy.getX()));
-            double dy =  ((playerY - enemy.getY()));
-            double distance =  Math.sqrt(dx*dx + dy*dy);
-
-            //normalize
-            dx /= distance;
-            dy /= distance;
-
-
-
-
-            enemy.move(dx, dy, deltaTime);
+            enemy.setTargetPos(playerX, playerY);
+            enemy.update(deltaTime);
         }
 
+        // Spawn enemies
+        if ((int)gameTime != lastEnemySpawnTime && (int)gameTime % enemyBaseSpawnRate == 0){
+            for (int i=0; i<= rand.nextInt(enemyMaxSpawnAmount); i++){
+                int spawnX =  rand.nextInt(400); // Change when we have decided on game dimensions etc.
+                int spawnY =  rand.nextInt(400); // Change when we have decided on game dimensions etc.
+                enemiesAlive.add(EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY));
+            }
+            lastEnemySpawnTime = (int)gameTime;
+        }
     }
-    
 
+    /**
+     * Triggers a player attack.
+     */
     public void playerAttack()
     {
-        System.out.println();
         player.attack();
     }
+
     /**
-     * Moves the player based on input direction.
+     * Sets player movement direction based on input.
      *
      * @param dx Horizontal direction (-1, 0, or 1)
      * @param dy Vertical direction (-1, 0, or 1)
-     * @param deltaTime Time elapsed since last update (in seconds)
      */
-    public void movePlayer(int dx, int dy, double deltaTime) {
-        player.move(dx, dy, deltaTime);
+    public void setPlayerMovement(int dx, int dy) {
+        player.setMovementDirection(dx, dy);
     }
-    
+
+    // TODO: Add more game actions
+
+    // ==================== Getters ====================
+
     public Player getPlayer() {
         return player;
     }
     
     public List<Enemy> getEnemies() {
-        return enemies;
+        return enemiesAlive;
     }
 
     public double getGameTime() {

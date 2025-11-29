@@ -1,60 +1,21 @@
-package com.grouptwelve.roguelikegame.model.Weapons;
+package com.grouptwelve.roguelikegame.model.WeaponsPackage;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
+import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
-//import EffectsPackage;
+import com.grouptwelve.roguelikegame.model.EffectsPackage.KnockbackEffect;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-//import EntitiesPackage.Goblin;
-//import EntitiesPackage.Player;
+import com.grouptwelve.roguelikegame.model.Game;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CombatManager
 {
-/*
-    public static void main(String[] args)
-    {
-        Player player = new Player(2, 2);
-        Enemy goblin = new Goblin(0, 0);
-        Enemy goblin2 = new Goblin(10, 0);
-        Enemy goblin3 = new Goblin(3, 2);
+    private final Game game;
+    private final Player player;
 
-        CombatManager combatManager = CombatManager.getInstance();
-        combatManager.addEnemy(goblin);
-        combatManager.addEnemy(goblin2);
-        combatManager.addEnemy(goblin3);
-
-        combatManager.removeEnemy(goblin3);
-
-        player.attack();
-        //combatManager.attack(true, player.getX(), player.getY(), 1, 50);
-
-
-        Scanner sc = new Scanner(System.in);
-        System.out.println("\n\n");
-        System.out.println("Goblin1 with position (" + goblin.getX() + ", " + goblin.getY() + ")" + "    with size(radius):" + goblin.getSize());
-        System.out.println("Goblin2 with position (" + goblin2.getX() + ", " + goblin2.getY() + ")" + "    with size(radius):" + goblin2.getSize());
-        System.out.println("write your attack with: x-coordinate y-coordinate");
-        while(true)
-        {
-            double x = sc.nextDouble();
-            double y = sc.nextDouble();
-            //double range = sc.nextDouble();
-            //int dmg  = sc.nextInt();
-            player.setX(x);
-            player.setY(y);
-            //player.getWeapon().addRange(range);
-
-
-            player.attack();
-        }
-
-
-    }
-
- */
     //singleton instance
     private static CombatManager instance;
     // save the player and list of enemies
@@ -71,6 +32,9 @@ public class CombatManager
     {
         this.enemies = new ArrayList<>();
         this.player = null;
+    private CombatManager() {
+        this.game = Game.getInstance();
+        this.player = game.getPlayer();
     }
 
     /**
@@ -81,10 +45,6 @@ public class CombatManager
         if(instance == null) instance = new CombatManager();
         return instance;
     }
-    public void setPlayer(Player player)
-    {
-        this.player = player;
-    }
 
     /**
      *does damage from position with range to either enemies or player
@@ -93,29 +53,52 @@ public class CombatManager
      * @param y y-coordinate
      * @param range range of the attack
      * @param dmg damage
-     * @return void, dont return anything, only deal damage to target without confirming to attacker if the attack hit or not
+     * @return void, don't return anything, only deal damage to target without confirming to attacker if the attack hit or not
      */
     //add attack function with Entity instead of x,y,range
     //could instead return List<EntitiesPackage.Enemy> and then let weapon attack on enemies. good for not exposing specific weapond buffs here in combatManger. Now I assume there are no weapond buffs
-    //add knockback?
 
     public void attack(boolean isFriendly, double x, double y, double range, double dmg, List<EffectInterface> effects)
     {
         System.out.println(x + " " + y + " range" + range);
         if (isFriendly)
         {
-            //loop though alla enemies and check if attack hit an enemy
-            for (Enemy enemy : enemies)
+            //loop though all enemies and check if attack hit an enemy
+            List<Enemy> enemies = this.game.getEnemies();
+            for (int i=enemies.size()-1; i>=0; i--)
             {
-                if(!enemy.getAliveStatus()) continue; // enemy is already dead
+                Enemy enemy = enemies.get(i);
+
                 if(isHit(x, y, range, enemy.getX(), enemy.getY(), enemy.getSize()))
                 {
                     enemy.takeDamage(dmg);
+                    
+                    // Fire hit event for visual feedback (damage numbers)
+                    ControlEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
+                    
+                    if(!enemy.getAliveStatus()){
+                        EnemyPool.getInstance().returnEnemy(enemy);
+                        enemies.remove(enemy);
+                        continue;
+                    }
+
+                    // Calculate knockback direction (from attack point to enemy)
+                    double dirX = enemy.getX() - x;
+                    double dirY = enemy.getY() - y;
+                    double length = Math.sqrt(dirX * dirX + dirY * dirY);
+                    if (length > 0) {
+                        dirX /= length;
+                        dirY /= length;
+                    }
+
                     for(EffectInterface effectInterface : effects)
                     {
+                        if (effectInterface instanceof KnockbackEffect) {
+                            ((KnockbackEffect) effectInterface).setDirection(dirX, dirY);
+                        }
                         effectInterface.apply(enemy);
                     }
-                    System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" EntitiesPackage.Enemy at: "  + enemy.toString());
+                    System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" EntitiesPackage.Enemy at: "  + enemy);
                 }
             }
         }
@@ -123,13 +106,37 @@ public class CombatManager
         {
             if(isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
 
+
+//                PLAYER KNOCKBACK
+//                double dirX = player.getX() - x;
+//                double dirY = player.getY() - y;
+//                double length = Math.sqrt(dirX * dirX + dirY * dirY);
+//                if (length > 0) {
+//                    dirX /= length;
+//                    dirY /= length;
+//                }
+
+
+//                PLAYER KNOCKBACK
+//                double dirX = player.getX() - x;
+//                double dirY = player.getY() - y;
+//                double length = Math.sqrt(dirX * dirX + dirY * dirY);
+//                if (length > 0) {
+//                    dirX /= length;
+//                    dirY /= length;
+//                }
+
                 // player.takeDamage(dmg);
                 gameController.takeDamage(player, dmg);
                 for(EffectInterface effectInterface : effects)
                 {
+//                    PLAYER KNOCKBACK
+//                    if (effectInterface instanceof KnockbackEffect) {
+//                        ((KnockbackEffect) effectInterface).setDirection(dirX, dirY);
+//                    }
                     effectInterface.apply(player);
                 }
-                System.out.println("attacked at: (" + x + ", " + y + "), EntitiesPackage.Player at: "  + player.toString());
+                System.out.println("attacked at: (" + x + ", " + y + "), EntitiesPackage.Player at: "  + player);
             }
         }
     }
@@ -148,22 +155,6 @@ public class CombatManager
         double rangeSum = range + size;
 
         return(distance < rangeSum);
-    }
-    /**
-     *
-     * @param enemy enemy to add to list of enemies
-     */
-    public void addEnemy(Enemy enemy)
-    {
-        enemies.add(enemy);
-    }
-    /**
-     *
-     * @param enemy to remove from list
-     */
-    public void removeEnemy(Enemy enemy)
-    {
-        enemies.remove(enemy);
     }
 }
 

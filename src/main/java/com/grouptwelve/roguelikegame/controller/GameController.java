@@ -1,6 +1,11 @@
 package com.grouptwelve.roguelikegame.controller;
 
+import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
+import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
+import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.view.ControllerListener;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
@@ -8,45 +13,38 @@ import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
+import java.util.Objects;
 
 /**
- * Coordinates the game loop, connecting user input to model updates and view rendering.
+ * Coordinates the game loop and events.
  */
-public class GameController {
+public class GameController implements InputEventListener, ControllerListener {
     private final Game game;
     private final GameView gameView;
     private final InputHandler inputHandler;
     private AnimationTimer gameLoop;
     private long lastUpdate;
+    private boolean paused;
+
+    // All systems that want to observe game events
+    private final List<GameEventListener> eventListeners;
     double deltaTime;
     private boolean paused = false;
     private boolean death = false;
     private boolean levelUp = false;
     private boolean levelUp2 = false;
-    
+
     public GameController(Game game, GameView gameView, InputHandler inputHandler) {
         this.game = game;
         this.gameView = gameView;
         this.inputHandler = inputHandler;
-        inputHandler.setGameController(this);
+        this.eventListeners = new ArrayList<>();
         this.lastUpdate = 0;
-
-        // Give CombatManager a reference to this controller
-        CombatManager.getInstance().setGameController(this);
-        CombatManager.getInstance().setPlayer(game.getPlayer());
-        
     }
     
     /**
@@ -77,15 +75,11 @@ public class GameController {
      * Updates the game state based on input and elapsed time.
      */
     private void update(double deltaTime) {
-        // Handle input
-        int[] dir = inputHandler.getMovementDirection();
-        game.movePlayer(dir[0], dir[1], deltaTime);
-        
         // Update game logic
+        if(paused) return;
         game.update(deltaTime);
-        
-        // Update UI displays
-        gameView.updateDirectionLabel(dir[0], dir[1]);
+
+        // Update time display
         gameView.updateGameTimeLabel(game.getGameTime());
         updateStatusDisplay();
     }
@@ -94,52 +88,22 @@ public class GameController {
     {
         switch (key)
         {
-            case K:
-                if (!paused) {
-                    System.out.println("k");
-                    game.playerAttack();
-                    gameView.showAttack(game.getPlayer().getAttackPointX(), game.getPlayer().getAttackPointY(), game.getPlayer().getWeapon().getRange(), 0.1);
-                }
-                break;
-            case ESCAPE:
-                if (!death) {
-                    System.out.println("esc");
-                    togglePause();
-                    break;
-                }
-            case DIGIT1: 
-                gameView.highlightItem(1);
-                break;
-            case DIGIT2:
-                gameView.highlightItem(2);
-                break;
-            case DIGIT3:
-                gameView.highlightItem(3);
-                break;
+            case KeyCode.K:
+                System.out.println("k");
+                game.playerAttack();
+                gameView.drawAttack(game.getPlayer().getAttackPointX(), game.getPlayer().getAttackPointY(), game.getPlayer().getWeapon().getRange());
+           // case KeyCode.X
+                // x event
+                //add more cases for each key event
         }
+
+
     }
     /**
      * Renders the current game state.
      */
     private void render() {
         gameView.render(game, deltaTime);
-    }
-    
-    /**
-     * Updates the status label based on active keys.
-     */
-    private void updateStatusDisplay() {
-        List<String> activeKeys = new ArrayList<>();
-        if (inputHandler.isMoveUp()) activeKeys.add("UP");
-        if (inputHandler.isMoveDown()) activeKeys.add("DOWN");
-        if (inputHandler.isMoveLeft()) activeKeys.add("LEFT");
-        if (inputHandler.isMoveRight()) activeKeys.add("RIGHT");
-        
-        if (activeKeys.isEmpty()) {
-            gameView.updateStatusLabel("No keys pressed");
-        } else {
-            gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
-        }
     }
     
     /**
@@ -151,6 +115,29 @@ public class GameController {
             gameLoop.stop();
         }
     } 
+
+    @Override
+    public void drawAttack(double x, double y, double size) {
+        gameView.drawAttack(x,y,size);
+    }
+
+    @Override
+    public void playerDied(double x, double y) {
+        gameView.playerDied(x, y);
+        paused = true;
+    }
+
+    @Override
+    public void onEnemyHit(double x, double y, double damage) {
+        gameView.showDamageNumber(x, y, damage);
+        gameView.spawnHitParticles(x, y);
+    }
+
+    private void togglePause()
+    {
+        this.paused = !paused;
+        System.out.println("paaaaaaaaaaaaaaaaaaaause!!!!!!!!!!!!!!!!!!!");
+    }
 
     public void togglePause() {
         paused = !paused;
