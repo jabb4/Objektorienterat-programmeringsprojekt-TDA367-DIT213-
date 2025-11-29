@@ -26,7 +26,7 @@ public abstract class Entity {
     protected boolean isHit;
     protected double hitTimer;
 
-    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
+    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP, double isHit, double hitTimer /*double attackDmg*/){
         this.name = name;
         this.type = type;
         this.x = x;
@@ -36,6 +36,8 @@ public abstract class Entity {
         this.size = size;
         this.velocity = new Velocity(100);
         this.isAlive = true;
+        this.isHit = false;
+        this.hitTimer = 0.0;
         //this.attackDmg = attackDmg;
     }
 
