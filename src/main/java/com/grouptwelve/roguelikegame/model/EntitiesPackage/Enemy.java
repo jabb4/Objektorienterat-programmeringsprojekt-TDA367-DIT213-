@@ -10,7 +10,7 @@ public abstract class Enemy extends Entity {
         super(name, type, x, y, hp, size, maxHP);
         this.velocity.setMaxSpeed(50); // Default enemy velocity
         this.attackRange = 50;
-        this.attackCooldown = 0.2;
+        this.attackCooldown = 0.5;
     }
 
     public void setTargetPos(double tx, double ty)

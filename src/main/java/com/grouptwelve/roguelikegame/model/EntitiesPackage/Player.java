@@ -10,7 +10,7 @@ public class Player extends Entity {
 
     public Player(double x, double y) {
         super("Player",Entities.PLAYER, x, y, 100, 10, 100);
-        this.velocity.setMaxSpeed(100);
+        this.velocity.setMaxSpeed(150);
         this.weapon = new Sword();
         this.wantMove = false;
     }
@@ -59,7 +59,7 @@ public class Player extends Entity {
 
         if(this.hp <= 0)
         {
-            ControllEventManager.getInstance().playerDied();
+            ControllEventManager.getInstance().playerDied(this.x, this.y);
 
         }
     }
