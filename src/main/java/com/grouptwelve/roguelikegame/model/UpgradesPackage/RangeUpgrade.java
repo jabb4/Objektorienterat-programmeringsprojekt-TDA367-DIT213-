@@ -1,10 +1,10 @@
 package com.grouptwelve.roguelikegame.model.UpgradesPackage;
 
-import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
+import com.grouptwelve.roguelikegame.model.WeaponsPackage.Weapon;
 
 public class RangeUpgrade implements UpgradeInterface {
 
-    private double extraRange;
+    private final double extraRange;
 
     public RangeUpgrade(double extraRange) {
         this.extraRange = extraRange;

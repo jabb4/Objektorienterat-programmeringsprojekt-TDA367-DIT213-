@@ -6,14 +6,14 @@ import com.grouptwelve.roguelikegame.view.ControllerListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControllEventManager
+public class ControlEventManager
 {
     //singleton instance
-    private static ControllEventManager instance;
+    private static ControlEventManager instance;
     //list of listeners to draw this events
     private final List<ControllerListener> listeners;
 
-    private ControllEventManager()
+    private ControlEventManager()
     {
         listeners = new ArrayList<>();
     }
@@ -21,11 +21,11 @@ public class ControllEventManager
     /**
      * @return singleton instance
      */
-    public static ControllEventManager getInstance()
+    public static ControlEventManager getInstance()
     {
         if(instance == null)
         {
-            instance = new ControllEventManager();
+            instance = new ControlEventManager();
         }
         return instance;
     }

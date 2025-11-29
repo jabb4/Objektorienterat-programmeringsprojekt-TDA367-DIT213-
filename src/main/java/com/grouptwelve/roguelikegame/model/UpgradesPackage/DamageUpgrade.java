@@ -1,10 +1,10 @@
 package com.grouptwelve.roguelikegame.model.UpgradesPackage;
 
-import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
+import com.grouptwelve.roguelikegame.model.WeaponsPackage.Weapon;
 
 public class DamageUpgrade implements UpgradeInterface {
 
-    private double extraDamage;
+    private final double extraDamage;
 
     public DamageUpgrade(double extraDamage) {
         this.extraDamage = extraDamage;

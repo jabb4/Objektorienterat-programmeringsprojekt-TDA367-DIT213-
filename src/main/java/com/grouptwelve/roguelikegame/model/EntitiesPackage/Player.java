@@ -1,9 +1,7 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
-import com.grouptwelve.roguelikegame.model.ControllEventManager;
-import com.grouptwelve.roguelikegame.model.Weapons.Sword;
-
-import java.util.EventListener;
+import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.WeaponsPackage.Sword;
 
 public class Player extends Entity {
     private boolean wantMove;
@@ -59,7 +57,7 @@ public class Player extends Entity {
 
         if(this.hp <= 0)
         {
-            ControllEventManager.getInstance().playerDied(this.x, this.y);
+            ControlEventManager.getInstance().playerDied(this.x, this.y);
 
         }
     }

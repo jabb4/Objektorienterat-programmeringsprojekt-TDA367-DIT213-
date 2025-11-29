@@ -10,9 +10,9 @@ package com.grouptwelve.roguelikegame.model.EventsPackage;
  * - View (draw attack visual feedback)
  */
 public class AttackEvent {
-   private double attackX;
-   private double attackY;
-   private double range;
+   private final double attackX;
+   private final double attackY;
+   private final double range;
 
     /**
      * Creates a new attack event.
@@ -40,6 +40,4 @@ public class AttackEvent {
     public double getRange() {
         return range;
     }
-
-    // TODO: Attack direction vector (for knockback feature)
 }

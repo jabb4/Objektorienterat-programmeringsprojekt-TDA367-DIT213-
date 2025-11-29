@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.controller;
 
-import com.grouptwelve.roguelikegame.model.ControllEventManager;
+import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
@@ -25,7 +25,7 @@ public class GameController implements InputEventListener, ControllerListener {
     private boolean paused;
 
     // All systems that want to observe game events
-    private List<GameEventListener> eventListeners;
+    private final List<GameEventListener> eventListeners;
 
     public GameController(Game game, GameView gameView, InputHandler inputHandler) {
         this.game = game;
@@ -38,7 +38,7 @@ public class GameController implements InputEventListener, ControllerListener {
         // Register listeners
         addEventListener(game);
         inputHandler.setListener(this);
-        ControllEventManager.getInstance().subscribe(this);
+        ControlEventManager.getInstance().subscribe(this);
 
         // TODO: Other systems that needs to react to events such as audio and animations.
         // addEventListener(audioManager);

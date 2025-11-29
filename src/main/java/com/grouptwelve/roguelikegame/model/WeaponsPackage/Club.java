@@ -1,4 +1,4 @@
-package com.grouptwelve.roguelikegame.model.Weapons;
+package com.grouptwelve.roguelikegame.model.WeaponsPackage;
 
 import com.grouptwelve.roguelikegame.model.EffectsPackage.HitEffect;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.KnockbackEffect;
@@ -12,16 +12,4 @@ public class Club extends Weapon {
         effects.add(new KnockbackEffect(KNOCKBACK_STRENGTH));
         effects.add(new HitEffect(HIT_FLASH_DURATION));
     }
-/*
-    @Override
-    public void attack(Entity attacker, Entity target) {
-        target.takeDamage(damage);
-
-        // Apply effects
-        for (EffectInterface e : effects) {
-            e.apply(target);
-        }
-    }
-
- */
 }

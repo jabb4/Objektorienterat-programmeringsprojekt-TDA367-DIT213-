@@ -1,4 +1,4 @@
-package com.grouptwelve.roguelikegame.model.Weapons;
+package com.grouptwelve.roguelikegame.model.WeaponsPackage;
 
 import com.grouptwelve.roguelikegame.model.EffectsPackage.HitEffect;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.KnockbackEffect;

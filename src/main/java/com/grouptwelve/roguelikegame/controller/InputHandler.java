@@ -22,7 +22,7 @@ public class InputHandler {
         this.pressedKeys = new HashSet<>();
         this.keyBindings = new HashMap<>();
 
-        // Movement keysi
+        // Movement keys
         keyBindings.put(KeyCode.W, Command.MOVE_UP);
         keyBindings.put(KeyCode.UP, Command.MOVE_UP);
         keyBindings.put(KeyCode.S, Command.MOVE_DOWN);

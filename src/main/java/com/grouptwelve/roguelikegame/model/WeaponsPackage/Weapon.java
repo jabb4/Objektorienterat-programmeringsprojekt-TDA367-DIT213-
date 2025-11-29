@@ -1,4 +1,4 @@
-package com.grouptwelve.roguelikegame.model.Weapons;
+package com.grouptwelve.roguelikegame.model.WeaponsPackage;
 
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
@@ -10,6 +10,8 @@ public abstract class Weapon implements WeaponInterface {
 
     protected double damage;
     protected double range;
+    // TODO: Implement weapon-based attack cooldown for player attacks
+    // Currently unused - enemy cooldown is handled in Enemy.java
     private double attackCooldown;
     private double cooldownRemaining;
     protected List<EffectInterface> effects = new ArrayList<>();

@@ -1,6 +1,6 @@
-package com.grouptwelve.roguelikegame.model.Weapons;
+package com.grouptwelve.roguelikegame.model.WeaponsPackage;
 
-import com.grouptwelve.roguelikegame.model.ControllEventManager;
+import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.KnockbackEffect;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
@@ -48,7 +48,7 @@ public class CombatManager
         System.out.println(x + " " + y + " range" + range);
         if (isFriendly)
         {
-            //loop though alla enemies and check if attack hit an enemy
+            //loop though all enemies and check if attack hit an enemy
             List<Enemy> enemies = this.game.getEnemies();
             for (int i=enemies.size()-1; i>=0; i--)
             {
@@ -59,7 +59,7 @@ public class CombatManager
                     enemy.takeDamage(dmg);
                     
                     // Fire hit event for visual feedback (damage numbers)
-                    ControllEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
+                    ControlEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
                     
                     if(!enemy.getAliveStatus()){
                         EnemyPool.getInstance().returnEnemy(enemy);
