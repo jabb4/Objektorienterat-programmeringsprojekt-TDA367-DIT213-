@@ -22,6 +22,10 @@ public abstract class Entity {
 
     protected Weapon weapon;
 
+    // Hit effect state
+    protected boolean isHit;
+    protected double hitTimer;
+
     public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
         this.name = name;
         this.type = type;
@@ -43,8 +47,12 @@ public abstract class Entity {
      */
     protected void update(double deltaTime) {
         velocity.update(deltaTime);
+        
+        // Update hit effect timer
+        if (isHit && (hitTimer -= deltaTime) <= 0) {
+            isHit = false;
+        }
     }
-
 
     protected void move(double deltaTime)
     {
@@ -141,6 +149,10 @@ public abstract class Entity {
 
     public Entities getType() {return this.type;}
 
+    public boolean isHit() {
+        return this.isHit;
+    }
+
     // ==================== Setters ====================
 
     public void setName(String name) {
@@ -163,9 +175,18 @@ public abstract class Entity {
         this.size = size;
     }
 
-
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
+    }
+
+    /**
+     * Sets the hit state for visual feedback.
+     * @param hit Whether the entity is currently hit
+     * @param duration How long the hit effect should last
+     */
+    public void setHit(boolean hit, double duration) {
+        this.isHit = hit;
+        this.hitTimer = duration;
     }
 
     @Override
