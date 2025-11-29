@@ -3,8 +3,6 @@ package com.grouptwelve.roguelikegame.model.entities.enemies;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 
 import javafx.scene.paint.Color;
-import javafx.scene.canvas.GraphicsContext;
-
 public class Enemy extends Entity {
 
     public Enemy(String name, double x, double y, double hp, int size, double maxHP, double attackDmg, Color color) {

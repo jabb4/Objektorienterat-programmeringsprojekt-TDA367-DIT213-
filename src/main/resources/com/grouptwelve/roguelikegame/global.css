@@ -1,0 +1,72 @@
+/* global.css */
+
+* {
+    /* JavaFX runtime */
+    -fx-font-family: "Press Start 2P";
+    /* Standard CSS for editors and compatibility */
+    font-family: "Press Start 2P", sans-serif;
+    -fx-font-size: 14px; /* optional global size */
+    font-size: 14px;      /* optional standard CSS property */
+}
+
+/* Optional reusable class */
+.title {
+    -fx-font-family: "Press Start 2P";
+    font-family: "Press Start 2P", sans-serif;
+    -fx-font-size: 100px;
+    font-size: 100px;
+    -fx-text-alignment: center;
+}
+
+.test-button {
+    -fx-background-color: transparent; /* makes background transparent */
+    background-color: transparent;
+    -fx-border-color: white;  
+    border-color: white;          /* optional: border to see the button */
+    -fx-border-width: 1px;
+    border-width: 1px;
+    -fx-text-fill: white;              /* text color */
+}
+.test-button:hover {
+    -fx-background-color: rgba(255,255,255,0.1); /* optional hover effect */
+    background-color: rgba(255,255,255,0.1);
+}
+.test-button:focused {
+    -fx-border-color: yellow;       /* highlight the border when focused */
+    -fx-border-width: 2px;
+    -fx-background-color: rgba(255, 255, 0, 0.2);  /* subtle highlight */
+}
+
+
+.levelup-button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+    -fx-wrap-text: true;
+    -fx-padding: 10;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+}
+
+.levelup-button:hover {
+    -fx-background-color: rgba(255,255,255,0.2);
+}
+
+.levelup-button:focused {
+    -fx-border-color: yellow;
+    -fx-background-color: rgba(255,255,0,0.2);
+}
+
+.fire-buff {
+    -fx-background-color: rgba(170,34,34,0.3);
+}
+.speed-buff {
+    -fx-background-color: rgba(34,170,34,0.3);
+}
+.health-buff {
+    -fx-background-color: rgba(34,34,170,0.3);
+}

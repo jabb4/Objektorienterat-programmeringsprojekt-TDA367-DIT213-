@@ -1,4 +1,4 @@
-package com.grouptwelve.roguelikegame;
+package com.grouptwelve.roguelikegame.controller;
 
 import java.io.IOException;
 
@@ -39,9 +39,12 @@ public class OptionsController {
 
         Stage stage = (Stage) root.getScene().getWindow();
 
-        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("menu-view.fxml"));
+        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));
         Scene menuScene = new Scene(menuLoader.load(), 800, 600);
         
+        // Attach global CSS
+        menuScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
+
         stage.setScene(menuScene);
         stage.show();
     }

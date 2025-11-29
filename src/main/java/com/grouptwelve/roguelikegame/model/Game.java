@@ -8,6 +8,9 @@ import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
 import com.grouptwelve.roguelikegame.model.Weapons.CombatManager;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +27,9 @@ public class Game {
         LoadEntities.load();
         this.player = (Player) EntityFactory.getInstance().createEntity("Player", 400, 300);
         Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity("Goblin", 700, 100);
+        testGob.setHpBar(new Rectangle(200, 5, Color.RED));
         Troll testTroll = (Troll) EntityFactory.getInstance().createEntity("Troll", 100, 100);
+        testTroll.setHpBar(new Rectangle(200, 5, Color.RED));
         this.enemies = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
         CombatManager.getInstance().addEnemy(testGob);
         CombatManager.getInstance().addEnemy(testTroll);

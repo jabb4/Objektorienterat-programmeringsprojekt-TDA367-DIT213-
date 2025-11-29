@@ -2,6 +2,8 @@ package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
+import javafx.scene.shape.Rectangle;
+
 
 public abstract class Entity {
     protected String name;
@@ -30,6 +32,11 @@ public abstract class Entity {
     public double getHp() {
         return hp;
     }
+
+    public double getMaxHp() {
+        return maxHP;
+    }
+
 
     public double getSpeed() {
         return speed;
@@ -97,7 +104,7 @@ public abstract class Entity {
     public void takeDamage(double dmg)
     {
         hp -= dmg;
-        if(hp < 0)
+        if(hp <= 0)
         {
             isAlive = false;
         }

@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model.Weapons;
 
+import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
 //import EffectsPackage;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
@@ -59,6 +60,12 @@ public class CombatManager
     // save the player and list of enemies
     private Player player;
     private List<Enemy> enemies;
+    
+    private GameController gameController;
+
+    public void setGameController(GameController controller) {
+        this.gameController = controller;
+    }
 
     private CombatManager()
     {
@@ -116,7 +123,8 @@ public class CombatManager
         {
             if(isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
 
-                player.takeDamage(dmg);
+                // player.takeDamage(dmg);
+                gameController.takeDamage(player, dmg);
                 for(EffectInterface effectInterface : effects)
                 {
                     effectInterface.apply(player);

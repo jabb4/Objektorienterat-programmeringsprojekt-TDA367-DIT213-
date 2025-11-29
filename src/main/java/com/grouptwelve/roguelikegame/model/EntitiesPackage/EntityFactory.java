@@ -1,6 +1,8 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 public class EntityFactory {
     private static final EntityFactory instance = new EntityFactory();
@@ -21,6 +23,10 @@ public class EntityFactory {
             throw new IllegalArgumentException("Entity name '" + name + "' is not registered in the entity registry.");
         }
         return entity.createEntity(x,y);
+    }
+
+    public Set<String> getRegisteredEntityNames() {
+        return Collections.unmodifiableSet(entityRegistry.keySet());
     }
 
 

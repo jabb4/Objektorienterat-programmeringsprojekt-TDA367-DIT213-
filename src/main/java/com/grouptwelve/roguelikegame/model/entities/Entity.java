@@ -29,6 +29,10 @@ public abstract class Entity {
         return hp;
     }
 
+    public double getMaxHp() {
+        return maxHP;
+    }
+
     public double getSpeed() {
         return speed;
     }
