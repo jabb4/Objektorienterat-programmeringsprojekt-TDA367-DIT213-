@@ -3,7 +3,9 @@ package com.grouptwelve.roguelikegame.view;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
+import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -12,9 +14,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Handles all rendering and visual presentation of the game.
@@ -73,24 +77,27 @@ public class GameView{
         playerCircle.setFill(Color.LIGHTBLUE);
         gamePane.getChildren().add(playerCircle);
 
-        // TODO: Render enemies
-        // NOTE: use game.getEnemies and iterate through all the elements to render them all.
+        // Render enemies
         List<Enemy> enemies = game.getEnemies();
-
         for(Enemy enemy : enemies)
         {
             if(enemy.getAliveStatus())
             {
-                Circle enemyCircl = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
-                enemyCircl.setFill(Color.RED);
-                gamePane.getChildren().add(enemyCircl);
+                Circle enemyCircle = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
+                
+                // Hit effect
+                if (enemy.isHit()) {
+                    enemyCircle.setFill(Color.WHITE);
+                } else {
+                    enemyCircle.setFill(Color.RED);
+                }
+                
+                gamePane.getChildren().add(enemyCircle);
             }
 
         }
-        
-        // Update position label
+        // Update position label (TEMPORARY FOR DEBUGGING)
         positionLabel.setText(String.format("Player Position: [%.1f, %.1f]", player.getX(), player.getY()));
-        
     }
 
     /**
@@ -114,7 +121,7 @@ public class GameView{
     }
     
     /**
-     * Updates the direction label.
+     * Updates the direction label. (TEMPORARY FOR DEBUGGING)
      * 
      * @param dx Horizontal direction
      * @param dy Vertical direction
@@ -124,7 +131,7 @@ public class GameView{
     }
     
     /**
-     * Updates the status label.
+     * Updates the status label. (TEMPORARY FOR DEBUGGING)
      * 
      * @param status Status text to display
      */
@@ -148,20 +155,141 @@ public class GameView{
     }
 
 
-    public void playerDied()
+    /**
+     * Plays the player death effect with ripple/shockwave, screen shake, and red flash.
+     * 
+     * @param x X position of the player
+     * @param y Y position of the player
+     */
+    public void playerDied(double x, double y)
     {
-        playDeathShake(gamePane);
         System.out.println("YOU DIED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        //draw death test
-    }
-    public void playDeathShake(Pane gamePane) {
-        TranslateTransition shake = new TranslateTransition(Duration.millis(50), gamePane);
-        shake.setFromX(0);
-        shake.setByX(10);
-        shake.setCycleCount(10);
-        shake.setAutoReverse(true);
-        shake.setOnFinished(e -> gamePane.setTranslateX(0));
-        shake.play();
+        
+        // Brief freeze frame before effects start
+        PauseTransition freeze = new PauseTransition(Duration.millis(100));
+        freeze.setOnFinished(e -> {
+            spawnRipple(x, y);
+            showRedFlash();
+        });
+        freeze.play();
     }
 
+    /**
+     * Creates an expanding ripple/shockwave effect from the death location.
+     * 
+     * @param x X position of the ripple center
+     * @param y Y position of the ripple center
+     */
+    private void spawnRipple(double x, double y) {
+        int rippleCount = 3;
+        
+        for (int i = 0; i < rippleCount; i++) {
+            Circle ripple = new Circle(x, y, 10);
+            ripple.setFill(Color.TRANSPARENT);
+            ripple.setStroke(Color.WHITE);
+            ripple.setStrokeWidth(3);
+            gamePaneSlow.getChildren().add(ripple);
+            
+            // Delay each ripple slightly
+            PauseTransition delay = new PauseTransition(Duration.millis(i * 150));
+            delay.setOnFinished(e -> {
+                // Expand outward
+                ScaleTransition expand = new ScaleTransition(Duration.millis(500), ripple);
+                expand.setFromX(1);
+                expand.setFromY(1);
+                expand.setToX(15);
+                expand.setToY(15);
+                
+                // Fade out as it expands
+                FadeTransition fade = new FadeTransition(Duration.millis(500), ripple);
+                fade.setFromValue(1.0);
+                fade.setToValue(0.0);
+                fade.setOnFinished(ev -> gamePaneSlow.getChildren().remove(ripple));
+                
+                expand.play();
+                fade.play();
+            });
+            delay.play();
+        }
+    }
+
+    /**
+     * Shows a brief red flash overlay on the screen.
+     */
+    private void showRedFlash() {
+        Rectangle flash = new Rectangle(0, 0, 800, 500);
+        flash.setFill(Color.RED);
+        flash.setOpacity(0.4);
+        gamePaneSlow.getChildren().add(flash);
+        
+        FadeTransition fadeFlash = new FadeTransition(Duration.millis(300), flash);
+        fadeFlash.setFromValue(0.4);
+        fadeFlash.setToValue(0.0);
+        fadeFlash.setOnFinished(e -> gamePaneSlow.getChildren().remove(flash));
+        fadeFlash.play();
+    }
+
+    /**
+     * Displays a floating damage number that rises and fades out.
+     * 
+     * @param x X position of the damage
+     * @param y Y position of the damage
+     * @param damage Amount of damage to display
+     */
+    public void showDamageNumber(double x, double y, double damage) {
+        Label dmgLabel = new Label(String.format("%.0f", damage));
+        dmgLabel.setTextFill(Color.WHITE);
+        dmgLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+        dmgLabel.setLayoutX(x - 10);
+        dmgLabel.setLayoutY(y - 30);
+        gamePaneSlow.getChildren().add(dmgLabel);
+
+        // Float up animation
+        TranslateTransition floatUp = new TranslateTransition(Duration.millis(400), dmgLabel);
+        floatUp.setByY(-25);
+
+        // Fade out animation
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(400), dmgLabel);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(e -> gamePaneSlow.getChildren().remove(dmgLabel));
+
+        floatUp.play();
+        fadeOut.play();
+    }
+
+    /**
+     * Spawns particle effects at the hit location.
+     * Particles burst outward and fade, self-cleaning via JavaFX animations.
+     * 
+     * @param x X position of the hit
+     * @param y Y position of the hit
+     */
+    public void spawnHitParticles(double x, double y) {
+        Random rand = new Random();
+        int particleCount = 8;
+        
+        for (int i = 0; i < particleCount; i++) {
+            Circle particle = new Circle(x, y, 3, Color.WHITE);
+            gamePaneSlow.getChildren().add(particle);
+            
+            // Random direction and distance
+            double angle = rand.nextDouble() * 2 * Math.PI;
+            double distance = 30 + rand.nextDouble() * 20;
+            
+            // Move outward
+            TranslateTransition move = new TranslateTransition(Duration.millis(300), particle);
+            move.setByX(Math.cos(angle) * distance);
+            move.setByY(Math.sin(angle) * distance);
+            
+            // Fade out
+            FadeTransition fade = new FadeTransition(Duration.millis(300), particle);
+            fade.setFromValue(1.0);
+            fade.setToValue(0.0);
+            fade.setOnFinished(e -> gamePaneSlow.getChildren().remove(particle));
+            
+            move.play();
+            fade.play();
+        }
+    }
 }
