@@ -15,55 +15,40 @@ public abstract class Enemy extends Entity {
         this.attackCooldown = 0.2;
     }
 
-    public void setTargetPos(double tx, double ty)
+    public void setTargetPos(double targetX, double targetY, List<Enemy> enemies)
     {
-        double dx = tx - this.x;
-        double dy = ty - this.y;
 
-        // Normalize the vector (for diagonal movement)
-        double length = Math.sqrt(dx * dx + dy * dy);
-        targetDist = length;
-        double normDx = dx / length;
-        double normDy = dy / length;
+        double targetdx = targetX - this.x;
+        double targetdy = targetY - this.y;
+        this.targetDist = Math.sqrt(targetdx * targetdx + targetdy * targetdy);
+        double normDx = targetdx / this.targetDist;
+        double normDy = targetdy / this.targetDist;
         this.dirX = normDx;
         this.dirY = normDy;
 
         // Scale by maxSpeed to get velocity
         velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
-    }
 
-    public void avoidCollision(List<Enemy> enemies)
-    {
+
+        // This is to avoid collision with other enemies
         for (Enemy other : enemies) {
             if (other == this) continue;
 
-            double dx = this.x - other.x;
-            double dy = this.y - other.y;
+            double dx = this.x - other.getX();
+            double dy = this.y - other.getY();
             double dist = Math.sqrt(dx * dx + dy * dy);
 
             // If they are overlapping (distance is less than physical size)
             if (dist < this.size + other.getSize()) {
-
                 // Handle edge case: perfect overlap (avoid division by zero)
-                if (dist == 0) {
-                    dx = Math.random() - 0.5;
-                    dy = Math.random() - 0.5;
-                    dist = 0.001;
-                }
+                if (dist == 0) {dist = 0.00001;}
 
-                double overlap = this.size + other.getSize() - dist;
 
-                // 2. Calculate direction to push 'this' enemy away
-                double pushX = dx / dist;
-                double pushY = dy / dist;
 
-                // 3. DIRECT POSITION CORRECTION
-                // Move 'this' enemy out immediately.
-                // We use a factor of 0.5 because the *other* enemy will also run this code,
-                // so they effectively push each other apart equally.
-                double pushStrength = 2;
 
-                this.velocity.set(100,100);
+                this.velocity.set(velocity.getX(), velocity.getY());
+
+                System.out.println(velocity.getX() + " " + velocity.getY());
             }
         }
     }

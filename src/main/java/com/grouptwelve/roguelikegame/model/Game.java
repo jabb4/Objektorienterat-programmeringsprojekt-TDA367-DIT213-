@@ -66,8 +66,7 @@ public class Game implements GameEventListener {
         double playerY = player.getY() ;
         for (Enemy enemy : enemiesAlive)
         {
-            enemy.setTargetPos(playerX, playerY);
-            enemy.avoidCollision(enemiesAlive);
+            enemy.setTargetPos(playerX, playerY, enemiesAlive);
             enemy.update(deltaTime);
         }
 
