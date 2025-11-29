@@ -1,10 +1,13 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
+import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatManager;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -33,14 +36,14 @@ public class Game implements GameEventListener {
     private Game() {
         // Initialize game state
         LoadEntities.load();
-        this.player = (Player) EntityFactory.getInstance().createEntity("Player", 400, 300);
-        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity("Goblin", 700, 100);
+        this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
+        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity(Entities.GOBLIN, 700, 100);
         testGob.setHpBar(new Rectangle(200, 5, Color.RED));
-        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity("Troll", 100, 100);
+        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity(Entities.TROLL, 100, 100);
         testTroll.setHpBar(new Rectangle(200, 5, Color.RED));
-        this.enemies = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
-        CombatManager.getInstance().addEnemy(testGob);
-        CombatManager.getInstance().addEnemy(testTroll);
+        this.enemiesAlive = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
+        // CombatManager.getInstance().addEnemy(testGob);
+        // CombatManager.getInstance().addEnemy(testTroll);
         this.gameTime = 0;
     }
 
@@ -121,5 +124,30 @@ public class Game implements GameEventListener {
 
     public double getGameTime() {
         return gameTime;
+    }
+
+    public void resetPlayer() {
+        player.revive();
+        player.setX(400);
+        player.setY(300);
+    }
+
+    public void reset() {
+        this.gameTime = 0;
+        this.lastEnemySpawnTime = 0;
+
+        // Reset the player
+        resetPlayer();
+
+        // Clear enemies
+        enemiesAlive.clear();
+
+        // Spawn initial test enemies again
+        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity(Entities.GOBLIN, 700, 100);
+        testGob.setHpBar(new Rectangle(200, 5, Color.RED));
+        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity(Entities.TROLL, 100, 100);
+        testTroll.setHpBar(new Rectangle(200, 5, Color.RED));
+        enemiesAlive.add(testGob);
+        enemiesAlive.add(testTroll);
     }
 }

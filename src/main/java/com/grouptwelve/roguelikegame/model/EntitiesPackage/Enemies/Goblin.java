@@ -10,6 +10,7 @@ public class Goblin extends Enemy {
         super("Goblin", Entities.GOBLIN, x, y, 30, 5, 30);
         this.velocity.setMaxSpeed(70);
         this.weapon = new Sword();
+        this.attackRange = this.weapon.getRange();
     }
 
     // Put the Goblin into the EntityFactory (this is run when the class is loaded into memory for the first time)

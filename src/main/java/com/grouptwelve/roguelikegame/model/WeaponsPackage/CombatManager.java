@@ -14,10 +14,9 @@ import java.util.List;
 public class CombatManager
 {
     private final Game game;
-    private final Player player;
-
     //singleton instance
     private static CombatManager instance;
+
     // save the player and list of enemies
     private Player player;
     private List<Enemy> enemies;
@@ -30,9 +29,7 @@ public class CombatManager
 
     private CombatManager()
     {
-        this.enemies = new ArrayList<>();
         this.player = null;
-    private CombatManager() {
         this.game = Game.getInstance();
         this.player = game.getPlayer();
     }
@@ -72,15 +69,15 @@ public class CombatManager
                 if(isHit(x, y, range, enemy.getX(), enemy.getY(), enemy.getSize()))
                 {
                     enemy.takeDamage(dmg);
-                    
-                    // Fire hit event for visual feedback (damage numbers)
-                    ControlEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
-                    
+                                        
                     if(!enemy.getAliveStatus()){
                         EnemyPool.getInstance().returnEnemy(enemy);
                         enemies.remove(enemy);
                         continue;
                     }
+
+                    // Fire hit event for visual feedback (damage numbers)
+                    ControlEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
 
                     // Calculate knockback direction (from attack point to enemy)
                     double dirX = enemy.getX() - x;

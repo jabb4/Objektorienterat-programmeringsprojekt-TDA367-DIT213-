@@ -25,7 +25,7 @@ public class EntityFactory {
         return entity.createEntity(x,y);
     }
 
-    public Set<String> getRegisteredEntityNames() {
+    public Set<Entities> getRegisteredEntityNames() {
         return Collections.unmodifiableSet(entityRegistry.keySet());
     }
 

@@ -30,8 +30,9 @@ public class MenuController {
         Parent root = loader.load();  // FXML creates the GameView instance
 
         GameView gameView = loader.getController();
-        Game game = new Game();
+        Game game = Game.getInstance();
         gameView.setGame(game);
+        game.reset();
         InputHandler inputHandler = new InputHandler();
 
         Scene gameScene = new Scene(root, 800, 600);

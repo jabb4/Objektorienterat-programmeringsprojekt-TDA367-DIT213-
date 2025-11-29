@@ -5,6 +5,7 @@ import com.grouptwelve.roguelikegame.model.WeaponsPackage.Sword;
 
 public class Player extends Entity {
     private boolean wantMove;
+    private double attackRange;
 
     public Player(double x, double y) {
         super("Player",Entities.PLAYER, x, y, 100, 10, 100);

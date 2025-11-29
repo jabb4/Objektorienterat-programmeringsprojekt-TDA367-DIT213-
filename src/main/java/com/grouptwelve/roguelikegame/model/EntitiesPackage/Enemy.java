@@ -3,16 +3,20 @@ package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 import javafx.scene.shape.Rectangle;
 
 public abstract class Enemy extends Entity {
+    protected Rectangle hpBar;
     double targetDist;
-    double attackRange;
+    protected double attackRange;
     double attackCooldown;
     double cooldownRemaining;
 
     public Enemy(String name, Entities type, double x, double y, double hp, int size, double maxHP) {
         super(name, type, x, y, hp, size, maxHP);
         this.velocity.setMaxSpeed(50); // Default enemy velocity
-        this.attackRange = 50;
         this.attackCooldown = 0.5;
+
+        if (this.weapon != null) {
+            this.attackRange = this.weapon.getRange();
+        }
     }
 
     public void setTargetPos(double tx, double ty)
@@ -32,9 +36,15 @@ public abstract class Enemy extends Entity {
         velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
     }
 
+    public Rectangle getHpBar() { return hpBar; }
+    public void setHpBar(Rectangle hpBar) { this.hpBar = hpBar; }
+    public double getMaxHp() { return maxHP; }
+
     @Override
     public void update(double deltaTime)
     {
+        if (!this.getAliveStatus()) return; // Skip if enemy is dead
+
         super.update(deltaTime);
 
         if(targetDist < attackRange)
@@ -60,14 +70,5 @@ public abstract class Enemy extends Entity {
         move(deltaTime); // Always apply movement, which includes knockback
     }
 }
-    protected Rectangle hpBar;
 
-    public Enemy(String name, double x, double y, double hp, int size, double maxHP) {
-        super(name, x, y, hp, size, maxHP);
-        this.speed = 50; // Default
-    }
-
-    public Rectangle getHpBar() { return hpBar; }
-    public void setHpBar(Rectangle hpBar) { this.hpBar = hpBar; }
-}
 
