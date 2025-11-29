@@ -33,6 +33,7 @@ public class GameView{
     private final Label directionLabel;
     private final Label statusLabel;
     private final Label gameTimeLabel;
+    private final Random rand = new Random();
 
     
     public GameView() {
@@ -266,7 +267,6 @@ public class GameView{
      * @param y Y position of the hit
      */
     public void spawnHitParticles(double x, double y) {
-        Random rand = new Random();
         int particleCount = 8;
         
         for (int i = 0; i < particleCount; i++) {
