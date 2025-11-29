@@ -1,5 +1,7 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
+import java.util.List;
+
 public abstract class Enemy extends Entity {
     double targetDist;
     double attackRange;
@@ -28,6 +30,42 @@ public abstract class Enemy extends Entity {
 
         // Scale by maxSpeed to get velocity
         velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
+    }
+
+    public void avoidCollision(List<Enemy> enemies)
+    {
+        for (Enemy other : enemies) {
+            if (other == this) continue;
+
+            double dx = this.x - other.x;
+            double dy = this.y - other.y;
+            double dist = Math.sqrt(dx * dx + dy * dy);
+
+            // If they are overlapping (distance is less than physical size)
+            if (dist < this.size + other.getSize()) {
+
+                // Handle edge case: perfect overlap (avoid division by zero)
+                if (dist == 0) {
+                    dx = Math.random() - 0.5;
+                    dy = Math.random() - 0.5;
+                    dist = 0.001;
+                }
+
+                double overlap = this.size + other.getSize() - dist;
+
+                // 2. Calculate direction to push 'this' enemy away
+                double pushX = dx / dist;
+                double pushY = dy / dist;
+
+                // 3. DIRECT POSITION CORRECTION
+                // Move 'this' enemy out immediately.
+                // We use a factor of 0.5 because the *other* enemy will also run this code,
+                // so they effectively push each other apart equally.
+                double pushStrength = 2;
+
+                this.velocity.set(100,100);
+            }
+        }
     }
 
     @Override
