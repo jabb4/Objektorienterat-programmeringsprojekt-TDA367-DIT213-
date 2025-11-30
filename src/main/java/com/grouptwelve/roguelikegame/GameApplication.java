@@ -21,8 +21,7 @@ public class GameApplication extends Application {
         stage.setScene(scene);
         stage.show(); 
     }
-
-    public static void main(String[] args) {
+     public static void main(String[] args) {
         launch();
     }
 }

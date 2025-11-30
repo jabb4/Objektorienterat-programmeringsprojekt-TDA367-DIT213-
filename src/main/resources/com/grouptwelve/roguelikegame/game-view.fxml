@@ -87,7 +87,7 @@
     </AnchorPane>
 
     <!-- Bottom-right buttons -->
-    <AnchorPane>
+    <AnchorPane fx:id="uiButtonsLayer">
         <VBox spacing="10" AnchorPane.bottomAnchor="20" AnchorPane.rightAnchor="20">
             <Button text="Spawn enemy" onAction="#onSpawnEnemy" styleClass="test-button" style="-fx-font-size: 8px;"/>
             <Button text="Remove enemy" onAction="#onRemoveEnemy" styleClass="test-button" style="-fx-font-size: 8px;"/>
@@ -249,12 +249,12 @@
         </VBox>
     </VBox>
 
-
     <!-- Pause menu overlay (centered, initially hidden) -->
-    <VBox fx:id="pauseMenu" spacing="20" alignment="CENTER" visible="false"
+    <VBox fx:id="pauseMenu" spacing="20" alignment="CENTER" visible="false" disable="true"
           style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
         <Label text="GAME PAUSED" style="-fx-font-size: 32px; -fx-text-fill: white;"/>
         <Button text="Resume" onAction="#onResume"/>
+        <Button text="Options" onAction="#onOptions"/>
         <Button text="Quit" onAction="#onQuit"/>
     </VBox>
 </StackPane>

@@ -91,7 +91,7 @@ public class GameController implements InputEventListener, ControllerListener {
      * @param isPressed True if pressed, false if released
      */
     private void handleCommand(Command command, boolean isPressed) {
-        if (command == Command.PAUSE && isPressed) {
+        if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus()) {
             togglePause();
         }
         if(paused) return;
@@ -227,6 +227,7 @@ public class GameController implements InputEventListener, ControllerListener {
      * Should be used for resuming game states
      */
     public void start() {
+        lastUpdate = System.nanoTime(); // Reset timer
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -282,6 +283,7 @@ public class GameController implements InputEventListener, ControllerListener {
 
     @Override
     public void playerDied(double x, double y) {
+        game.getPlayer().setAliveStatus(false);
         gameView.playerDied(x, y);
         stop();
     }
@@ -375,11 +377,6 @@ public class GameController implements InputEventListener, ControllerListener {
 
         // Update health bar
         gameView.updateHealthBar(entity.getHp(), entity.getMaxHP(), entity);
-
-        // If the entity is the player, trigger death menu
-        if (entity instanceof Player && !entity.getAliveStatus()) {
-            triggerDeath();
-        }
     }
 
     public void resume() {
@@ -392,6 +389,9 @@ public class GameController implements InputEventListener, ControllerListener {
     }
 
     public void back() throws IOException {
+        stop();
+        game.reset();
+        
         Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
         FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));
@@ -405,6 +405,9 @@ public class GameController implements InputEventListener, ControllerListener {
     }
 
     public void playAgain() throws IOException {
+        stop();
+        game.reset();
+
         Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));
@@ -412,7 +415,6 @@ public class GameController implements InputEventListener, ControllerListener {
 
         GameView gameView = loader.getController();
         Game game = Game.getInstance();
-        game.reset();
         gameView.setGame(game);
         InputHandler inputHandler = new InputHandler();
 
@@ -430,6 +432,9 @@ public class GameController implements InputEventListener, ControllerListener {
     }
 
     public void quit() throws IOException {
+        stop();
+        game.reset();
+
         Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
         FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));

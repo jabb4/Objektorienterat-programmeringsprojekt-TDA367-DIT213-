@@ -18,6 +18,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
@@ -40,6 +41,7 @@ public class GameView {
     @FXML private StackPane root;
     @FXML private Canvas gameCanvas;
     @FXML private AnchorPane gameLayer;
+    @FXML private AnchorPane uiButtonsLayer;
     @FXML private Rectangle hpBackground;
     @FXML private Rectangle hpFill;
     @FXML private Label hpLabel;
@@ -170,7 +172,14 @@ public class GameView {
 
     public void showPauseMenu(boolean show) {
         pauseMenu.setVisible(show);
+        pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
+        gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
+        uiButtonsLayer.setDisable(show);
         blur.setRadius(show ? 10 : 0);
+
+        if (show) {
+        Platform.runLater(() -> pauseMenu.getChildren().get(1).requestFocus());
+    }
     }
 
     public void showLevelMenu(boolean show) {
@@ -252,6 +261,11 @@ public class GameView {
     @FXML
     protected void onBack() throws IOException {
         gameController.back();
+    }
+
+    @FXML
+    protected void onOptions() throws IOException {
+        
     }
 
     @FXML

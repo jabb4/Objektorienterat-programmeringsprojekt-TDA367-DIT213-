@@ -130,6 +130,7 @@ public class Game implements GameEventListener {
         player.revive();
         player.setX(400);
         player.setY(300);
+        player.getVelocity().reset();
     }
 
     public void reset() {

@@ -144,6 +144,10 @@ public abstract class Entity {
         return this.size;
     }
 
+    public Velocity getVelocity() {
+        return this.velocity;
+    }
+
     public boolean getAliveStatus()
     {
         return this.isAlive;
@@ -190,6 +194,10 @@ public abstract class Entity {
 
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
+    }
+
+    public void setAliveStatus(boolean status) {
+        this.isAlive = status;
     }
 
     /**

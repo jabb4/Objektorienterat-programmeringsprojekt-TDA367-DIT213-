@@ -59,7 +59,6 @@ public class Player extends Entity {
         if(this.hp <= 0)
         {
             ControlEventManager.getInstance().playerDied(this.x, this.y);
-
         }
     }
 
