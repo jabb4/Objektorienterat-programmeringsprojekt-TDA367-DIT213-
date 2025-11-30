@@ -108,6 +108,14 @@ public class GameController implements InputEventListener, ControllerListener {
             notifyAttack(event);
         }
 
+        else if (command.isSelect() && isPressed) {
+            switch (command) {
+                case SELECT_1 -> gameView.highlightItem(1);
+                case SELECT_2 -> gameView.highlightItem(2);
+                case SELECT_3 -> gameView.highlightItem(3);
+        }
+        }
+
         // TODO: Handle other commands when implemented
 
     }

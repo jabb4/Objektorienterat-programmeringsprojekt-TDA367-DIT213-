@@ -85,6 +85,7 @@ public class GameView {
         // TEMPORARY IMAGE ON SLOT 1
         Image sword = new Image(getClass().getResourceAsStream("/com/grouptwelve/roguelikegame/img/sword1.png"));
         firstItemImage.setImage(sword);
+        highlightItem(1); // Weapon in first slot is selected automatically
 
         this.rand = new Random();
         this.gc = gameCanvas.getGraphicsContext2D();

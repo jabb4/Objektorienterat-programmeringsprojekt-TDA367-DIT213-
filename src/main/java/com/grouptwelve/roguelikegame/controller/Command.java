@@ -13,6 +13,10 @@ public enum Command {
     // ABILITY_2,
     // ...
 
+    SELECT_1,
+    SELECT_2,
+    SELECT_3,
+
 
     // System
     // PAUSE,
@@ -34,6 +38,13 @@ public enum Command {
     public boolean isAction() {
         return this == ATTACK; // ABILITY_1 ...
 
+    }
+
+    /**
+     * @return true if it is an select command
+     */
+    public boolean isSelect() {
+        return this == SELECT_1 || this == SELECT_2 || this == SELECT_3;
     }
 
     // isSystem() ...
