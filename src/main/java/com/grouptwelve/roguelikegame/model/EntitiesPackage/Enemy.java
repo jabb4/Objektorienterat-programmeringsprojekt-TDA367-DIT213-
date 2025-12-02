@@ -144,7 +144,7 @@ public abstract class Enemy extends Entity {
     
     /**
      * Checks if the enemy is currently winding up an attack.
-     * Can be used by the view to show attack wind-up animation .
+     * Can be used by the view to show attack wind-up animation.
      *
      * @return true if enemy is in wind-up state
      */
