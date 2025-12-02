@@ -52,6 +52,7 @@ public abstract class Weapon implements WeaponInterface {
      *
      * @return true if cooldown has elapsed, false otherwise
      */
+    @Override
     public boolean canAttack() {
         return cooldownRemaining <= 0;
     }
