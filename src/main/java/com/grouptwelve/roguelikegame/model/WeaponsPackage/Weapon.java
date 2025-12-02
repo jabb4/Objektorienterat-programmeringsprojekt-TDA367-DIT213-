@@ -41,6 +41,7 @@ public abstract class Weapon implements WeaponInterface {
      *
      * @param deltaTime Time since last update in seconds
      */
+    @Override
     public void update(double deltaTime) {
         if (cooldownRemaining > 0) {
             cooldownRemaining -= deltaTime;
