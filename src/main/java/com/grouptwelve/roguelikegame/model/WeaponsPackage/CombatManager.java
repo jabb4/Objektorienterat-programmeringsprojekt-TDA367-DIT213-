@@ -32,20 +32,21 @@ public class CombatManager
     }
 
     /**
-     *does damage from position with range to either enemies or player
-     * @param isFriendly  that tells if the attacker is friendly or enemy
-     * @param x x-coordinate for attack
-     * @param y y-coordinate
+     * Performs an attack from a position, hitting either enemies or the player.
+     *
+     * @param isFriendly true if the attacker is friendly (player), false for enemies
+     * @param x x-coordinate of the attack
+     * @param y y-coordinate of the attack
      * @param range range of the attack
-     * @param dmg damage
-     * @return void, don't return anything, only deal damage to target without confirming to attacker if the attack hit or not
+     * @param combatResult the damage calculation result (includes crit info)
+     * @param effects list of effects to apply on hit
      */
-    //add attack function with Entity instead of x,y,range
-    //could instead return List<EntitiesPackage.Enemy> and then let weapon attack on enemies. good for not exposing specific weapond buffs here in combatManger. Now I assume there are no weapond buffs
-
-    public void attack(boolean isFriendly, double x, double y, double range, double dmg, List<EffectInterface> effects)
+    public void attack(boolean isFriendly, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects)
     {
-        System.out.println(x + " " + y + " range" + range);
+        double dmg = combatResult.getDamage();
+        boolean isCritical = combatResult.isCritical();
+        
+        System.out.println(x + " " + y + " range" + range + (isCritical ? " CRIT!" : ""));
         if (isFriendly)
         {
             //loop though all enemies and check if attack hit an enemy
@@ -59,7 +60,11 @@ public class CombatManager
                     enemy.takeDamage(dmg);
                     
                     // Fire hit event for visual feedback (damage numbers)
-                    ControlEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
+                    if (isCritical) {
+                        ControlEventManager.getInstance().onEnemyCritHit(enemy.getX(), enemy.getY(), dmg);
+                    } else {
+                        ControlEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
+                    }
                     
                     if(!enemy.getAliveStatus()){
                         EnemyPool.getInstance().returnEnemy(enemy);

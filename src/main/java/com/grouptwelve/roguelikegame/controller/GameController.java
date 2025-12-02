@@ -275,7 +275,13 @@ public class GameController implements InputEventListener, ControllerListener {
 
   @Override
   public void onEnemyHit(double x, double y, double damage) {
-    gameView.showDamageNumber(x, y, damage);
+    gameView.showDamageNumber(x, y, damage, false);
+    gameView.spawnHitParticles(x, y);
+  }
+
+  @Override
+  public void onEnemyCritHit(double x, double y, double damage) {
+    gameView.showDamageNumber(x, y, damage, true);
     gameView.spawnHitParticles(x, y);
   }
 
