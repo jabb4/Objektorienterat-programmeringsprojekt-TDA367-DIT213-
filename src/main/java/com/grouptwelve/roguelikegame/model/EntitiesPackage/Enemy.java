@@ -178,4 +178,24 @@ public abstract class Enemy extends Entity {
     public double getLockedDirY() {
         return lockedDirY;
     }
+    
+    /**
+     * Revives the enemy and resets all state for reuse from pool.
+     * Ensures no lingering attack state from previous life.
+     */
+    @Override
+    public void revive() {
+        super.revive();
+        
+        // Reset attack state machine
+        attackState = AttackState.IDLE;
+        windUpRemaining = 0;
+        lockedDirX = 0;
+        lockedDirY = 0;
+        
+        // Reset weapon cooldown
+        if (weapon != null) {
+            weapon.resetCooldown();
+        }
+    }
 }

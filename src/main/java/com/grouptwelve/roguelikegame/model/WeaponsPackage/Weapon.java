@@ -59,7 +59,7 @@ public abstract class Weapon implements WeaponInterface {
     /**
      * Resets the cooldown timer after an attack.
      */
-    private void resetCooldown() {
+    public void resetCooldown() {
         cooldownRemaining = attackCooldown;
     }
 
