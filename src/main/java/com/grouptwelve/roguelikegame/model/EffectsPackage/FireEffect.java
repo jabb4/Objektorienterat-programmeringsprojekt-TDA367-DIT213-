@@ -10,6 +10,14 @@ public class FireEffect extends Effects {
         this.burnDamage = burnDamage;
     }
 
+    public void increaseDamage(double amount) {
+        this.burnDamage += amount;
+    }
+
+    public double getBurnDamage() {
+        return burnDamage;
+    }
+
     @Override
     public void apply(Entity target) {
         target.takeDamage(burnDamage);

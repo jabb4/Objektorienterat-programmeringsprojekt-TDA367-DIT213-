@@ -45,7 +45,7 @@ public class CombatManager
 
     public void attack(boolean isFriendly, double x, double y, double range, double dmg, List<EffectInterface> effects)
     {
-        System.out.println(x + " " + y + " range" + range);
+        //System.out.println(x + " " + y + " range" + range);
         if (isFriendly)
         {
             //loop though all enemies and check if attack hit an enemy
@@ -93,7 +93,7 @@ public class CombatManager
                         }
                         effectInterface.apply(enemy);
                     }
-                    System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" EntitiesPackage.Enemy at: "  + enemy);
+                    //System.out.println("attacked at: (" + x + ", " + y + "), with range:" + range +" EntitiesPackage.Enemy at: "  + enemy);
                 }
             }
         }
@@ -120,7 +120,7 @@ public class CombatManager
 //                    }
                     effectInterface.apply(player);
                 }
-                System.out.println("attacked at: (" + x + ", " + y + "), EntitiesPackage.Player at: "  + player);
+                //System.out.println("attacked at: (" + x + ", " + y + "), EntitiesPackage.Player at: "  + player);
             }
         }
     }

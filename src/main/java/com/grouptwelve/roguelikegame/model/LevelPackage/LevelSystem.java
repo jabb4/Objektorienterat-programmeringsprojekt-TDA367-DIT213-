@@ -17,7 +17,6 @@ public class LevelSystem {
         return false;
     }
 
-
     public int getLevel() { return level; }
     public int getXP() { return xp; }
     public int getXPToNext() { return xpToNext; }
