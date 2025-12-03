@@ -165,10 +165,10 @@ public abstract class Weapon implements WeaponInterface {
         effects.add(effect);
     }
 
-    @Override
+    /*@Override
     public void upgrade(UpgradeInterface upgrade) {
         upgrade.applyTo(this);
-    }
+    }*/
 
     @Override
     public String toString() {

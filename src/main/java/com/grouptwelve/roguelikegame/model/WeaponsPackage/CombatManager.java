@@ -45,7 +45,7 @@ public class CombatManager
     {
         double dmg = combatResult.getDamage();
         boolean isCritical = combatResult.isCritical();
-        
+
         System.out.println(x + " " + y + " range" + range + (isCritical ? " CRIT!" : ""));
         if (isFriendly)
         {
@@ -67,6 +67,13 @@ public class CombatManager
                     }
                     
                     if(!enemy.getAliveStatus()){
+                        player.gainXP(enemy.getXpValue());
+
+                        System.out.println("Enemy died! XP: "
+                                + player.getLevelSystem().getXP() + "/"
+                                + player.getLevelSystem().getXPToNext()
+                                + " | Level: " + player.getLevelSystem().getLevel());
+
                         EnemyPool.getInstance().returnEnemy(enemy);
                         enemies.remove(enemy);
                         continue;

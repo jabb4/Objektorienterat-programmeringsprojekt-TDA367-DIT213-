@@ -109,7 +109,7 @@ public class GameView{
      */
 
          public void drawAttack(double x, double y, double size) {
-        System.out.println(x + " " + y + " " + size);
+        //System.out.println(x + " " + y + " " + size);
         Circle attackCircle = new Circle(x, y, size);
         attackCircle.setFill(Color.VIOLET);
         gamePaneSlow.getChildren().add(attackCircle);

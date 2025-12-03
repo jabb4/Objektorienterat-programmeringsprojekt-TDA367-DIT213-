@@ -34,9 +34,9 @@ public interface WeaponInterface {
 
   double getRange();
 
+  void addRange(double amount);
+
   List<EffectInterface> getEffects();
 
   void addEffect(EffectInterface effect);
-
-  void upgrade(UpgradeInterface upgrade);
 }

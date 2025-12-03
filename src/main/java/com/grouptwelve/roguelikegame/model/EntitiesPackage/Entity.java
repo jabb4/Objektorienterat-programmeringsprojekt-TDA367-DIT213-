@@ -1,9 +1,13 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.EffectsPackage.ActiveEffectPackage.ActiveEffect;
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Weapon;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class Entity {
     protected String name;
@@ -14,7 +18,6 @@ public abstract class Entity {
     protected boolean isAlive;
     protected int size;
     protected Velocity velocity;
-    //protected double attackDmg;
 
     // Facing direction (used for attack direction)
     protected double dirX;
@@ -26,7 +29,10 @@ public abstract class Entity {
     protected boolean isHit;
     protected double hitTimer;
 
-    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP /*double attackDmg*/){
+    private List<ActiveEffect> activeEffects = new ArrayList<>();
+
+
+    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP){
         this.name = name;
         this.type = type;
         this.x = x;
@@ -38,7 +44,6 @@ public abstract class Entity {
         this.isAlive = true;
         this.isHit = false;
         this.hitTimer = 0.0;
-        //this.attackDmg = attackDmg;
     }
 
     /**
@@ -55,28 +60,41 @@ public abstract class Entity {
         if (weapon != null) {
             weapon.update(deltaTime);
         }
-        
+
         // Update hit effect timer
         if (isHit && (hitTimer -= deltaTime) <= 0) {
             isHit = false;
         }
+
+        // === Update all active effects ===
+        Iterator<ActiveEffect> it = activeEffects.iterator();
+        while (it.hasNext()) {
+            ActiveEffect effect = it.next();
+            effect.update(this, deltaTime);
+
+            if (effect.isFinished()) {
+                it.remove();
+            }
+        }
     }
 
-    protected void move(double deltaTime)
-    {
+
+    public void addEffect(ActiveEffect effect) {
+        activeEffects.add(effect);
+    }
+
+    protected void move(double deltaTime) {
         x += velocity.getX() * deltaTime;
         y += velocity.getY() * deltaTime;
     }
 
     // ==================== Combat ====================
 
-    public double getAttackPointX()
-    {
+    public double getAttackPointX() {
         return this.x + this.dirX * 20;
     }
 
-    public double getAttackPointY()
-    {
+    public double getAttackPointY() {
         return this.y + this.dirY* 20;
     }
 
@@ -89,8 +107,7 @@ public abstract class Entity {
     {
         this.hp -= dmg;
 
-        if(this.hp <= 0)
-        {
+        if (this.hp <= 0) {
             this.isAlive = false;
         }
     }
@@ -100,9 +117,9 @@ public abstract class Entity {
      */
     public void attack() {
         if (this.weapon == null) return;
-        
+
         boolean attackSucceeded = this.weapon.attack(this instanceof Player, this.getAttackPointX(), this.getAttackPointY());
-        
+
         if (attackSucceeded) {
             ControlEventManager.getInstance().drawAttack(this.getAttackPointX(), this.getAttackPointY(), weapon.getRange());
         }
@@ -117,6 +134,24 @@ public abstract class Entity {
      */
     public void applyKnockback(double dirX, double dirY, double strength) {
         velocity.applyKnockback(dirX, dirY, strength);
+    }
+
+    // ==================== Speed Control ====================
+
+    public double getMoveSpeed() {
+        return velocity.getMaxSpeed();
+    }
+
+    public void setMoveSpeed(double speed) {
+        velocity.setMaxSpeed(speed);
+    }
+
+    public void increaseMoveSpeed(double amount) {
+        velocity.setMaxSpeed(velocity.getMaxSpeed() + amount);
+    }
+
+    public void multiplyMoveSpeed(double multiplier) {
+        velocity.setMaxSpeed(velocity.getMaxSpeed() * multiplier);
     }
 
     // ==================== Getters ====================
@@ -137,6 +172,10 @@ public abstract class Entity {
         return this.hp;
     }
 
+    public double getMaxHP() {
+        return this.maxHP;
+    }
+
     public int getSize() {
         return this.size;
     }
@@ -149,7 +188,7 @@ public abstract class Entity {
     public void revive()
     {
         this.hp = maxHP;
-        this.isAlive= true;
+        this.isAlive = true;
     }
 
     //fix later
@@ -164,6 +203,10 @@ public abstract class Entity {
     }
 
     // ==================== Setters ====================
+
+    public void setMaxHP(double maxHP) {
+        this.maxHP = maxHP;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -213,4 +256,3 @@ public abstract class Entity {
 
     public abstract Entity createEntity(double x, double y);
 }
-
