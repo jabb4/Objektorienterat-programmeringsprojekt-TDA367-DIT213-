@@ -3,9 +3,9 @@ package com.grouptwelve.roguelikegame.model.UpgradesPackage.EffectsUpgrades;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.FireEffect;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.AttributeUpgrade;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.FlatAttributeUpgrade;
 
-public class FireEffectFlatDuration extends AttributeUpgrade {
+public class FireEffectFlatDuration extends FlatAttributeUpgrade {
 
     public FireEffectFlatDuration(double amount) {
         super(amount);

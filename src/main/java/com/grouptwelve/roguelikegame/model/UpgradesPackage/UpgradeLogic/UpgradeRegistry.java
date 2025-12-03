@@ -16,7 +16,7 @@ public class UpgradeRegistry {
     static {
 
         // Damage upgrades (flat 5–15, percent 3–10%)
-        upgrades.add(() -> new WeaponDamageFlatUpgrade(
+        upgrades.add(() -> new WeaponDamageFlatUpgradeFlat(
                 Rand.range(5, 15)
         ));
         upgrades.add(() -> new WeaponDamagePercentUpgrade(
@@ -24,7 +24,7 @@ public class UpgradeRegistry {
         ));
 
         // Speed upgrades (flat 10–30, percent 5–15%)
-        upgrades.add(() -> new SpeedFlatUpgrade(
+        upgrades.add(() -> new SpeedFlatUpgradeFlat(
                 Rand.range(10, 30)
         ));
         upgrades.add(() -> new SpeedPercentUpgrade(
@@ -32,7 +32,7 @@ public class UpgradeRegistry {
         ));
 
         // Max HP (flat 10–40, percent 5–15%)
-        upgrades.add(() -> new MaxHpFlatUpgrade(
+        upgrades.add(() -> new MaxHpFlatUpgradeFlat(
                 Rand.range(10, 40)
         ));
         upgrades.add(() -> new MaxHpPercentUpgrade(
@@ -40,6 +40,11 @@ public class UpgradeRegistry {
         ));
 
         // Fire Effect (dps 1–4, duration 1–3 seconds)
+        upgrades.add(() -> new FireEffectAddToWeapon(
+                Rand.rangeInt(1, 3),
+                Rand.rangeInt(3, 5)
+        ));
+
         upgrades.add(() -> new FireEffectFlatDmg(
                 Rand.range(1, 4)
         ));
@@ -48,7 +53,7 @@ public class UpgradeRegistry {
         ));
 
         // Range (flat 3–10, percent 5–15%)
-        upgrades.add(() -> new RangeFlatUpgrade(
+        upgrades.add(() -> new RangeFlatUpgradeFlat(
                 Rand.range(3, 10)
         ));
         upgrades.add(() -> new RangePercentUpgrade(

@@ -1,11 +1,11 @@
 package com.grouptwelve.roguelikegame.model.UpgradesPackage.WeaponUpgrades;
 
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.AttributeUpgrade;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.FlatAttributeUpgrade;
 
-public class RangeFlatUpgrade extends AttributeUpgrade {
+public class RangeFlatUpgradeFlat extends FlatAttributeUpgrade {
 
-    public RangeFlatUpgrade(double amount) {
+    public RangeFlatUpgradeFlat(double amount) {
         super(amount);
     }
 

@@ -1,11 +1,11 @@
 package com.grouptwelve.roguelikegame.model.UpgradesPackage.AttributeUpgrades;
 
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.AttributeUpgrade;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.FlatAttributeUpgrade;
 
-public class SpeedFlatUpgrade extends AttributeUpgrade {
+public class SpeedFlatUpgradeFlat extends FlatAttributeUpgrade {
 
-    public SpeedFlatUpgrade(double amount) {
+    public SpeedFlatUpgradeFlat(double amount) {
         super(amount);
     }
 

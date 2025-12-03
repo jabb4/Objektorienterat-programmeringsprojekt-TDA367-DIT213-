@@ -1,11 +1,11 @@
 package com.grouptwelve.roguelikegame.model.UpgradesPackage.AttributeUpgrades;
 
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.AttributeUpgrade;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.FlatAttributeUpgrade;
 
-public class MaxHpFlatUpgrade extends AttributeUpgrade {
+public class MaxHpFlatUpgradeFlat extends FlatAttributeUpgrade {
 
-    public MaxHpFlatUpgrade(double amount) {
+    public MaxHpFlatUpgradeFlat(double amount) {
         super(amount);
     }
 
