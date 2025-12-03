@@ -5,22 +5,24 @@ import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 
 public class FireEffectUpgrade implements UpgradeInterface {
+    private final double dps;
+    private final double duration;
 
-    private final double burnDamage;
-
-    public FireEffectUpgrade(double burnDamage) {
-        this.burnDamage = burnDamage;
+    public FireEffectUpgrade(double dps, double duration) {
+        this.dps = dps;
+        this.duration = duration;
     }
 
     @Override
     public void apply(Player player) {
-        player.getWeapon().addEffect(new FireEffect(burnDamage));
+        player.getWeapon().addEffect(new FireEffect(dps, duration));
     }
 
     @Override
     public String getName() {
-        return "Add Fire Effect (" + burnDamage + " burn)";
+        return "Add Fire Effect (" + dps + " DPS for " + duration + "s)";
     }
 }
+
 
 

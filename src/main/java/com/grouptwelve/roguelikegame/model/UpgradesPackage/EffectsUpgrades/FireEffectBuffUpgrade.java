@@ -16,10 +16,10 @@ public class FireEffectBuffUpgrade implements UpgradeInterface {
     @Override
     public void apply(Player player) {
         for (EffectInterface e : player.getWeapon().getEffects()) {
-            if (e instanceof FireEffect fire)
-            {
-                fire.increaseDamage(extraBurn);
+            if (e instanceof FireEffect fire) {
+                fire.increaseDPS(extraBurn);
             }
+
         }
     }
 

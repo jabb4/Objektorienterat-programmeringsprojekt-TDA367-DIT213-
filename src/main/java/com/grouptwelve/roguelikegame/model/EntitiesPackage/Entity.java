@@ -1,8 +1,13 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.EffectsPackage.ActiveEffectPackage.ActiveEffect;
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Weapon;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class Entity {
     protected String name;
@@ -22,6 +27,9 @@ public abstract class Entity {
     protected boolean isHit;
     protected double hitTimer;
 
+    private List<ActiveEffect> activeEffects = new ArrayList<>();
+
+
     public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP){
         this.name = name;
         this.type = type;
@@ -37,11 +45,29 @@ public abstract class Entity {
     }
 
     protected void update(double deltaTime) {
+        // Update movement
         velocity.update(deltaTime);
 
+        // Update hit flash timer
         if (isHit && (hitTimer -= deltaTime) <= 0) {
             isHit = false;
         }
+
+        // === Update all active effects ===
+        Iterator<ActiveEffect> it = activeEffects.iterator();
+        while (it.hasNext()) {
+            ActiveEffect effect = it.next();
+            effect.update(this, deltaTime);
+
+            if (effect.isFinished()) {
+                it.remove();
+            }
+        }
+    }
+
+
+    public void addEffect(ActiveEffect effect) {
+        activeEffects.add(effect);
     }
 
     protected void move(double deltaTime) {

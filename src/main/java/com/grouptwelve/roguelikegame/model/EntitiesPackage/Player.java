@@ -1,8 +1,10 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.EffectsPackage.FireEffect;
 import com.grouptwelve.roguelikegame.model.LevelPackage.LevelSystem;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.AttributeUpgrades.MaxHpUpgrade;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.EffectsUpgrades.FireEffectUpgrade;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.EffectsUpgrades.KnockbackUpgrade;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.WeaponUpgrades.DamageUpgrade;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.WeaponUpgrades.RangeUpgrade;
@@ -44,15 +46,23 @@ public class Player extends Entity {
         UpgradeInterface up3 = new SpeedUpgrade(20);
         UpgradeInterface up4 = new MaxHpUpgrade(20);
         UpgradeInterface up5 = new KnockbackUpgrade(50);
+        UpgradeInterface up6 = new FireEffectUpgrade(2, 5);
 
         up.apply(this);
         up2.apply(this);
         up3.apply(this);
         up4.apply(this);
         up5.apply(this);
+        up6.apply(this);
 
 
         System.out.println("Upgrade acquired: " + up.getName());
+        System.out.println("Upgrade acquired: " + up2.getName());
+        System.out.println("Upgrade acquired: " + up3.getName());
+        System.out.println("Upgrade acquired: " + up4.getName());
+        System.out.println("Upgrade acquired: " + up5.getName());
+        System.out.println("Upgrade acquired: " + up6.getName());
+        System.out.println(this.toString());
     }
 
 
@@ -113,6 +123,19 @@ public class Player extends Entity {
     public Player createEntity(double x, double y) {
         return new Player(x, y);
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "pos=(" + x + ", " + y + ")" +
+                ", hp=" + hp + "/" + maxHP +
+                ", level=" + levelSystem.getLevel() +
+                ", xp=" + levelSystem.getXP() + "/" + levelSystem.getXPToNext() +
+                ", speed=" + getMoveSpeed() +
+                ", weapon=" + weapon +
+                '}';
+    }
+
 
 }
 
