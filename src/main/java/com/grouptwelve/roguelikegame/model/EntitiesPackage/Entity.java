@@ -172,7 +172,7 @@ public abstract class Entity {
         return this.hp;
     }
 
-    public double getMaxHP {
+    public double getMaxHP() {
         return this.maxHP;
     }
 
