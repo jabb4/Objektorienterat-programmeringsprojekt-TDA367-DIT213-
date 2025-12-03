@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model;
 
+import com.grouptwelve.roguelikegame.model.EventsPackage.EnemyDeathEvent;
 import com.grouptwelve.roguelikegame.view.ControllerListener;
 
 
@@ -64,6 +65,14 @@ public class ControlEventManager
             listener.playerDied(x, y);
         }
     }
+
+    public void enemyDied(double x, double y, int xp) {
+        EnemyDeathEvent event = new EnemyDeathEvent(x, y, xp);
+        //for (ControllerListener listener : listeners) {
+        //    listener.onEnemyDeath(event);
+        //}
+    }
+
 
     /**
      * Called when an enemy takes damage, to trigger visual feedback.

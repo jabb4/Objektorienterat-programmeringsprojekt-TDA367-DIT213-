@@ -60,12 +60,22 @@ public class CombatManager
                     
                     // Fire hit event for visual feedback (damage numbers)
                     ControlEventManager.getInstance().onEnemyHit(enemy.getX(), enemy.getY(), dmg);
-                    
-                    if(!enemy.getAliveStatus()){
+
+                    if (!enemy.getAliveStatus()) {
+
+                        player.gainXP(enemy.getXpValue());
+
+                        System.out.println("Enemy died! XP: "
+                                + player.getLevelSystem().getXP() + "/"
+                                + player.getLevelSystem().getXPToNext()
+                                + " | Level: " + player.getLevelSystem().getLevel());
+
                         EnemyPool.getInstance().returnEnemy(enemy);
                         enemies.remove(enemy);
                         continue;
                     }
+
+
 
                     // Calculate knockback direction (from attack point to enemy)
                     double dirX = enemy.getX() - x;
@@ -130,5 +140,6 @@ public class CombatManager
 
         return(distance < rangeSum);
     }
+
 }
 

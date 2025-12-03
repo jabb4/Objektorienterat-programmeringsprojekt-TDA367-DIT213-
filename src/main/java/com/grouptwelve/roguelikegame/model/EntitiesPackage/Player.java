@@ -1,16 +1,36 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.LevelPackage.LevelSystem;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Sword;
 
 public class Player extends Entity {
     private boolean wantMove;
+
+    private LevelSystem levelSystem = new LevelSystem();
+
 
     public Player(double x, double y) {
         super("Player",Entities.PLAYER, x, y, 100, 10, 100);
         this.velocity.setMaxSpeed(150);
         this.weapon = new Sword();
         this.wantMove = false;
+    }
+
+    public void gainXP(int amount) {
+        boolean leveledUp = levelSystem.addXP(amount);
+        if (leveledUp) {
+            onLevelUp();
+        }
+    }
+
+    public LevelSystem getLevelSystem() {
+        return levelSystem;
+    }
+
+
+    private void onLevelUp() {
+        System.out.println("LEVEL UP! New level: " + levelSystem.getLevel());
     }
 
     @Override

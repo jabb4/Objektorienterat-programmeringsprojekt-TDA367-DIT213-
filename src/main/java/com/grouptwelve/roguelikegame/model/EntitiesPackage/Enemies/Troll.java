@@ -10,6 +10,7 @@ public class Troll extends Enemy {
         super("Troll", Entities.TROLL, x, y, 70, 15, 70);
         this.velocity.setMaxSpeed(50);
         this.weapon = new Club();
+        this.xpValue = 50;
     }
 
     static {

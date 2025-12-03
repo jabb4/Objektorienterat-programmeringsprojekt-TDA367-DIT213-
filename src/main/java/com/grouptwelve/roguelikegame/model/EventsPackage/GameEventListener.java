@@ -7,9 +7,10 @@ package com.grouptwelve.roguelikegame.model.EventsPackage;
 public interface GameEventListener {
     void onMovement(MovementEvent event);
     void onAttack(AttackEvent event);
+    void onEnemyDeath(EnemyDeathEvent event);
+
 
     // TODO: Extend with more events
-    // onEnemyDeath(EnemyDeathEvent event);
     // onPlayerDeath(PlayerDeathEvent event);
     // onPlayerDamaged(PlayerDamagedEvent event);
     // onLevelUp(LevelUpEvent event);

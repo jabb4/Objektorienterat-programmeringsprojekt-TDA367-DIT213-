@@ -6,6 +6,13 @@ public abstract class Enemy extends Entity {
     double attackCooldown;
     double cooldownRemaining;
 
+    protected int xpValue = 20; // default, Goblin/Troll override
+
+    public int getXpValue() {
+        return xpValue;
+    }
+
+
     public Enemy(String name, Entities type, double x, double y, double hp, int size, double maxHP) {
         super(name, type, x, y, hp, size, maxHP);
         this.velocity.setMaxSpeed(50); // Default enemy velocity

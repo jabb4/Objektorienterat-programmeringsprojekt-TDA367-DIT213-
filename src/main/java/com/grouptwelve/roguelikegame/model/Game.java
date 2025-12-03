@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.model;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
+import com.grouptwelve.roguelikegame.model.EventsPackage.EnemyDeathEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 
@@ -49,6 +50,11 @@ public class Game implements GameEventListener {
     }
 
     // TODO: Add other event handlers when features are added
+    @Override
+    public void onEnemyDeath(EnemyDeathEvent event) {
+        player.gainXP(event.xp);
+    }
+
     // onPlayerLevelUp();
 
     // ==================== Game Logic ====================
