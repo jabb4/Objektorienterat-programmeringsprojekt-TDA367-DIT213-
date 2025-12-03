@@ -78,4 +78,18 @@ public class ControlEventManager
             listener.onEnemyHit(x, y, damage);
         }
     }
+
+    /**
+     * Called when an enemy takes critical hit damage, to trigger visual feedback.
+     * @param x X coordinate of the hit
+     * @param y Y coordinate of the hit
+     * @param damage Amount of damage dealt
+     */
+    public void onEnemyCritHit(double x, double y, double damage)
+    {
+        for (ControllerListener listener : listeners)
+        {
+            listener.onEnemyCritHit(x, y, damage);
+        }
+    }
 }

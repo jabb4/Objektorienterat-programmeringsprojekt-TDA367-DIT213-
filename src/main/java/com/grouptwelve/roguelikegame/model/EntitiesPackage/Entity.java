@@ -43,12 +43,18 @@ public abstract class Entity {
 
     /**
      * Updates the entity's state each frame.
-     * Currently, handles velocity and knockback.
+     * Currently, handles velocity, knockback, weapon cooldown, and hit effects.
      *
      * @param deltaTime Time since last update
      */
     protected void update(double deltaTime) {
+        // Update velocity
         velocity.update(deltaTime);
+        
+        // Update weapon cooldown
+        if (weapon != null) {
+            weapon.update(deltaTime);
+        }
         
         // Update hit effect timer
         if (isHit && (hitTimer -= deltaTime) <= 0) {
@@ -90,14 +96,16 @@ public abstract class Entity {
     }
 
     /**
-     * use weapon to attack at attackPosition
-     * tell eventManger to draw this event
+     * Attempts to attack using the equipped weapon.
      */
     public void attack() {
         if (this.weapon == null) return;
-        System.out.println(this.dirX + " " + this.dirY);
-        this.weapon.attack(this instanceof Player, this.getAttackPointX() , this.getAttackPointY());
-        ControlEventManager.getInstance().drawAttack(this.getAttackPointX() , this.getAttackPointY(), weapon.getRange());
+        
+        boolean attackSucceeded = this.weapon.attack(this instanceof Player, this.getAttackPointX(), this.getAttackPointY());
+        
+        if (attackSucceeded) {
+            ControlEventManager.getInstance().drawAttack(this.getAttackPointX(), this.getAttackPointY(), weapon.getRange());
+        }
     }
 
     /**
