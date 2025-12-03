@@ -232,15 +232,24 @@ public class GameView{
 
     /**
      * Displays a floating damage number that rises and fades out.
+     * Critical hits are displayed larger and in a different color.
      * 
      * @param x X position of the damage
      * @param y Y position of the damage
      * @param damage Amount of damage to display
+     * @param isCritical Whether this was a critical hit
      */
-    public void showDamageNumber(double x, double y, double damage) {
-        Label dmgLabel = new Label(String.format("%.0f", damage));
-        dmgLabel.setTextFill(Color.WHITE);
-        dmgLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+    public void showDamageNumber(double x, double y, double damage, boolean isCritical) {
+        Label dmgLabel = new Label(String.format("%.0f", damage) + (isCritical ? "!" : ""));
+        
+        if (isCritical) {
+            dmgLabel.setTextFill(Color.GOLD);
+            dmgLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        } else {
+            dmgLabel.setTextFill(Color.WHITE);
+            dmgLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+        }
+        
         dmgLabel.setLayoutX(x - 10);
         dmgLabel.setLayoutY(y - 30);
         gamePaneSlow.getChildren().add(dmgLabel);

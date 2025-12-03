@@ -6,10 +6,13 @@ import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Club;
 
 public class Troll extends Enemy {
+    private static final double TROLL_WIND_UP_TIME = 0.5;
+
     public Troll(double x, double y){
         super("Troll", Entities.TROLL, x, y, 70, 15, 70);
         this.velocity.setMaxSpeed(50);
         this.weapon = new Club();
+        this.windUpTime = TROLL_WIND_UP_TIME;
         this.xpValue = 50;
     }
 

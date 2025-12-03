@@ -19,11 +19,13 @@ public abstract class Entity {
     protected int size;
     protected Velocity velocity;
 
+    // Facing direction (used for attack direction)
     protected double dirX;
     protected double dirY;
 
     protected Weapon weapon;
 
+    // Hit effect state
     protected boolean isHit;
     protected double hitTimer;
 
@@ -44,11 +46,22 @@ public abstract class Entity {
         this.hitTimer = 0.0;
     }
 
+    /**
+     * Updates the entity's state each frame.
+     * Currently, handles velocity, knockback, weapon cooldown, and hit effects.
+     *
+     * @param deltaTime Time since last update
+     */
     protected void update(double deltaTime) {
-        // Update movement
+        // Update velocity
         velocity.update(deltaTime);
+        
+        // Update weapon cooldown
+        if (weapon != null) {
+            weapon.update(deltaTime);
+        }
 
-        // Update hit flash timer
+        // Update hit effect timer
         if (isHit && (hitTimer -= deltaTime) <= 0) {
             isHit = false;
         }
@@ -82,10 +95,16 @@ public abstract class Entity {
     }
 
     public double getAttackPointY() {
-        return this.y + this.dirY * 20;
+        return this.y + this.dirY* 20;
     }
 
-    public void takeDamage(double dmg) {
+    /**
+     * Applies damage to itself. Sets isAlive to false if HP drops to 0 or below.
+     *
+     * @param dmg Amount of damage to apply
+     */
+    public void takeDamage(double dmg)
+    {
         this.hp -= dmg;
 
         if (this.hp <= 0) {
@@ -93,21 +112,26 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Attempts to attack using the equipped weapon.
+     */
     public void attack() {
         if (this.weapon == null) return;
-        this.weapon.attack(this instanceof Player, this.getAttackPointX(), this.getAttackPointY());
-        ControlEventManager.getInstance().drawAttack(this.getAttackPointX(), this.getAttackPointY(), weapon.getRange());
+
+        boolean attackSucceeded = this.weapon.attack(this instanceof Player, this.getAttackPointX(), this.getAttackPointY());
+
+        if (attackSucceeded) {
+            ControlEventManager.getInstance().drawAttack(this.getAttackPointX(), this.getAttackPointY(), weapon.getRange());
+        }
     }
 
-    public double getMaxHP() {
-        return this.maxHP;
-    }
-
-    public void setMaxHP(double maxHP) {
-        this.maxHP = maxHP;
-    }
-
-
+    /**
+     * Applies a knockback force to this entity.
+     *
+     * @param dirX Normalized x direction of knockback
+     * @param dirY Normalized y direction of knockback
+     * @param strength The strength/speed of the knockback
+     */
     public void applyKnockback(double dirX, double dirY, double strength) {
         velocity.applyKnockback(dirX, dirY, strength);
     }
@@ -132,31 +156,87 @@ public abstract class Entity {
 
     // ==================== Getters ====================
 
-    public String getName() { return this.name; }
-    public double getX() { return this.x; }
-    public double getY() { return this.y; }
-    public double getHp() { return this.hp; }
-    public int getSize() { return this.size; }
-    public boolean getAliveStatus() { return this.isAlive; }
+    public String getName() {
+        return this.name;
+    }
 
-    public void revive() {
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
+    }
+
+    public double getHp() {
+        return this.hp;
+    }
+
+    public double getMaxHP {
+        return this.maxHP;
+    }
+
+    public int getSize() {
+        return this.size;
+    }
+
+    public boolean getAliveStatus()
+    {
+        return this.isAlive;
+    }
+
+    public void revive()
+    {
         this.hp = maxHP;
         this.isAlive = true;
     }
 
-    public Weapon getWeapon() { return this.weapon; }
-    public Entities getType() { return this.type; }
-    public boolean isHit() { return this.isHit; }
+    //fix later
+    public Weapon getWeapon() {
+        return this.weapon;
+    }
+
+    public Entities getType() {return this.type;}
+
+    public boolean isHit() {
+        return this.isHit;
+    }
 
     // ==================== Setters ====================
 
-    public void setName(String name) { this.name = name; }
-    public void setX(double x) { this.x = x; }
-    public void setY(double y) { this.y = y; }
-    public void setHp(double hp) { this.hp = hp; }
-    public void setSize(int size) { this.size = size; }
-    public void setWeapon(Weapon weapon) { this.weapon = weapon; }
+    public void setMaxHP(double maxHP) {
+        this.maxHP = maxHP;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setHp(double hp) {
+        this.hp = hp;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
+    }
+
+    /**
+     * Sets the hit state for visual feedback.
+     * @param hit Whether the entity is currently hit
+     * @param duration How long the hit effect should last
+     */
     public void setHit(boolean hit, double duration) {
         this.isHit = hit;
         this.hitTimer = duration;
