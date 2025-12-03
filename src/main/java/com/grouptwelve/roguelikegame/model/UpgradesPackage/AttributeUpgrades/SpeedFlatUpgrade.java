@@ -1,14 +1,12 @@
 package com.grouptwelve.roguelikegame.model.UpgradesPackage.AttributeUpgrades;
 
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.AttributeUpgrade;
 
-public class SpeedUpgrade implements UpgradeInterface {
+public class SpeedFlatUpgrade extends AttributeUpgrade {
 
-    private final double amount; // e.g., +20 speed
-
-    public SpeedUpgrade(double amount) {
-        this.amount = amount;
+    public SpeedFlatUpgrade(double amount) {
+        super(amount);
     }
 
     @Override
@@ -18,6 +16,6 @@ public class SpeedUpgrade implements UpgradeInterface {
 
     @Override
     public String getName() {
-        return "Move Speed +" + amount;
+        return "+ " + amount + " Move Speed";
     }
 }

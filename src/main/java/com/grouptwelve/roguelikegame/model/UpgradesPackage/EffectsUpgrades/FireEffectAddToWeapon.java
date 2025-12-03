@@ -4,11 +4,11 @@ import com.grouptwelve.roguelikegame.model.EffectsPackage.FireEffect;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 
-public class FireEffectUpgrade implements UpgradeInterface {
+public class FireEffectAddToWeapon implements UpgradeInterface {
     private final double dps;
     private final double duration;
 
-    public FireEffectUpgrade(double dps, double duration) {
+    public FireEffectAddToWeapon(double dps, double duration) {
         this.dps = dps;
         this.duration = duration;
     }

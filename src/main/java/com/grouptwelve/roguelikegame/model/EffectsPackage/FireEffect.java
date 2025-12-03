@@ -14,9 +14,13 @@ public class FireEffect extends Effects {
         this.duration = duration;
     }
 
-    public void increaseDPS(double amount) {
+    public void increaseDmg(double amount) {
         this.dps += amount;
     }
+    public void increaseDuration(double amount) {
+        this.dps += amount;
+    }
+
 
     @Override
     public void apply(Entity target) {

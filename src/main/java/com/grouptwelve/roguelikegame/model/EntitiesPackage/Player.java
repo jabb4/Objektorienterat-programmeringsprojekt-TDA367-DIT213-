@@ -1,14 +1,8 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.ControlEventManager;
-import com.grouptwelve.roguelikegame.model.EffectsPackage.FireEffect;
 import com.grouptwelve.roguelikegame.model.LevelPackage.LevelSystem;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.AttributeUpgrades.MaxHpUpgrade;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.EffectsUpgrades.FireEffectUpgrade;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.EffectsUpgrades.KnockbackUpgrade;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.WeaponUpgrades.DamageUpgrade;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.WeaponUpgrades.RangeUpgrade;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.AttributeUpgrades.SpeedUpgrade;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.UpgradeRegistry;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Sword;
 
@@ -40,28 +34,10 @@ public class Player extends Entity {
     private void onLevelUp() {
         System.out.println("LEVEL UP! New level: " + levelSystem.getLevel());
 
-        // Example: pick a random upgrade manually for now:
-        UpgradeInterface up = new DamageUpgrade(5);
-        UpgradeInterface up2 = new RangeUpgrade(5);
-        UpgradeInterface up3 = new SpeedUpgrade(20);
-        UpgradeInterface up4 = new MaxHpUpgrade(20);
-        UpgradeInterface up5 = new KnockbackUpgrade(50);
-        UpgradeInterface up6 = new FireEffectUpgrade(2, 5);
+        UpgradeInterface upgrade = UpgradeRegistry.randomUpgrade();
+        upgrade.apply(this);
+        System.out.println("UPGRADE: " + upgrade.getName());
 
-        up.apply(this);
-        up2.apply(this);
-        up3.apply(this);
-        up4.apply(this);
-        up5.apply(this);
-        up6.apply(this);
-
-
-        System.out.println("Upgrade acquired: " + up.getName());
-        System.out.println("Upgrade acquired: " + up2.getName());
-        System.out.println("Upgrade acquired: " + up3.getName());
-        System.out.println("Upgrade acquired: " + up4.getName());
-        System.out.println("Upgrade acquired: " + up5.getName());
-        System.out.println("Upgrade acquired: " + up6.getName());
         System.out.println(this.toString());
     }
 

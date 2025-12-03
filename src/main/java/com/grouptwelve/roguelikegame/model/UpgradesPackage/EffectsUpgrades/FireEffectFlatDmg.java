@@ -5,11 +5,11 @@ import com.grouptwelve.roguelikegame.model.EffectsPackage.FireEffect;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 
-public class FireEffectBuffUpgrade implements UpgradeInterface {
+public class FireEffectFlatDmg implements UpgradeInterface {
 
     private final double extraBurn;
 
-    public FireEffectBuffUpgrade(double extraBurn) {
+    public FireEffectFlatDmg(double extraBurn) {
         this.extraBurn = extraBurn;
     }
 
@@ -17,7 +17,7 @@ public class FireEffectBuffUpgrade implements UpgradeInterface {
     public void apply(Player player) {
         for (EffectInterface e : player.getWeapon().getEffects()) {
             if (e instanceof FireEffect fire) {
-                fire.increaseDPS(extraBurn);
+                fire.increaseDmg(extraBurn);
             }
 
         }
