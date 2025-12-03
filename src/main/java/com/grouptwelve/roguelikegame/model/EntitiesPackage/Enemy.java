@@ -18,11 +18,11 @@ public abstract class Enemy extends Entity {
     public void setTargetPos(double targetX, double targetY, List<Enemy> enemies)
     {
 
-        double targetdx = targetX - this.x;
-        double targetdy = targetY - this.y;
-        this.targetDist = Math.sqrt(targetdx * targetdx + targetdy * targetdy);
-        double normDx = targetdx / this.targetDist;
-        double normDy = targetdy / this.targetDist;
+        double thisToTarget_dx = targetX - this.x;
+        double thisToTarget_dy = targetY - this.y;
+        this.targetDist = Math.sqrt(thisToTarget_dx * thisToTarget_dx + thisToTarget_dy * thisToTarget_dy);
+        double normDx = thisToTarget_dx / this.targetDist;
+        double normDy = thisToTarget_dy / this.targetDist;
         this.dirX = normDx;
         this.dirY = normDy;
 
@@ -34,21 +34,31 @@ public abstract class Enemy extends Entity {
         for (Enemy other : enemies) {
             if (other == this) continue;
 
-            double dx = this.x - other.getX();
-            double dy = this.y - other.getY();
-            double dist = Math.sqrt(dx * dx + dy * dy);
+            double otherToTarget_dx = targetX - other.getX();
+            double otherToTarget_dy = targetY - other.getY();
+            double otherToTargetDist = Math.sqrt(otherToTarget_dx * otherToTarget_dx + otherToTarget_dy * otherToTarget_dy);
+
+            double thisToOther_dx = this.x - other.getX();
+            double thisToOther_dy = this.y - other.getY();
+            double thisToOtherDist = Math.sqrt(thisToOther_dx * thisToOther_dx + thisToOther_dy * thisToOther_dy);
+
 
             // If they are overlapping (distance is less than physical size)
-            if (dist < this.size + other.getSize()) {
+            if (thisToOtherDist < this.size + other.getSize() && otherToTargetDist <= this.targetDist) {
                 // Handle edge case: perfect overlap (avoid division by zero)
-                if (dist == 0) {dist = 0.00001;}
+                if (thisToOtherDist == 0) {thisToOtherDist = 0.00001;}
 
+                // Cross product between thisToTarget and thisToOther (to determine which way is shorter for this enemy to go around the other enemy)
+                double cross = thisToTarget_dx * thisToOther_dy - thisToTarget_dy * thisToOther_dx;
 
-
-
-                this.velocity.set(velocity.getX(), velocity.getY());
-
-                System.out.println(velocity.getX() + " " + velocity.getY());
+                // Now when I know which way around it should take, how do I make it turn that way?
+                if (cross <= 0){
+                    System.out.println("Passing other on right");
+                    velocity.set(normDy * velocity.getMaxSpeed(), -normDx * velocity.getMaxSpeed());
+                } else {
+                    System.out.println("Passing other on left");
+                    velocity.set(-normDy * velocity.getMaxSpeed(), normDx * velocity.getMaxSpeed());
+                }
             }
         }
     }
