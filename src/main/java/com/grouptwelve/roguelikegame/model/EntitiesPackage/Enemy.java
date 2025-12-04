@@ -15,9 +15,18 @@ public abstract class Enemy extends Entity {
         this.attackCooldown = 0.2;
     }
 
-    public void setTargetPos(double targetX, double targetY, List<Enemy> enemies)
-    {
 
+    // Hur ska vi detta på ett bra objekt orienterat sätt? vvvvv
+    /**
+     * This method calculates the path the enemy should take to get to the target.
+     * I also change its velocity if it collides with another enemy by trying to walk around it instead.
+     *
+     * @param targetX The target y coordinate (Where this enemy should want to move to)
+     * @param targetY The target x coordinate (Where this enemy should want to move to)
+     * @param enemies All enemies that this enemy should avoid collision with
+     */
+    public void velocityAlgorithm(double targetX, double targetY, List<Enemy> enemies)
+    {
         double thisToTarget_dx = targetX - this.x;
         double thisToTarget_dy = targetY - this.y;
         this.targetDist = Math.sqrt(thisToTarget_dx * thisToTarget_dx + thisToTarget_dy * thisToTarget_dy);
@@ -25,10 +34,6 @@ public abstract class Enemy extends Entity {
         double normDy = thisToTarget_dy / this.targetDist;
         this.dirX = normDx;
         this.dirY = normDy;
-
-        // Scale by maxSpeed to get velocity
-        velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
-
 
         // This is to avoid collision with other enemies
         for (Enemy other : enemies) {
@@ -45,22 +50,21 @@ public abstract class Enemy extends Entity {
 
             // If they are overlapping (distance is less than physical size)
             if (thisToOtherDist < this.size + other.getSize() && otherToTargetDist <= this.targetDist) {
-                // Handle edge case: perfect overlap (avoid division by zero)
-                if (thisToOtherDist == 0) {thisToOtherDist = 0.00001;}
-
                 // Cross product between thisToTarget and thisToOther (to determine which way is shorter for this enemy to go around the other enemy)
                 double cross = thisToTarget_dx * thisToOther_dy - thisToTarget_dy * thisToOther_dx;
 
-                // Now when I know which way around it should take, how do I make it turn that way?
                 if (cross <= 0){
-                    System.out.println("Passing other on right");
+                    // Passing other on right
                     velocity.set(normDy * velocity.getMaxSpeed(), -normDx * velocity.getMaxSpeed());
                 } else {
-                    System.out.println("Passing other on left");
+                    // Passing other on left
                     velocity.set(-normDy * velocity.getMaxSpeed(), normDx * velocity.getMaxSpeed());
                 }
+                return;
             }
         }
+        // If no collision -> run to player
+        velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
     }
 
     @Override
@@ -86,7 +90,5 @@ public abstract class Enemy extends Entity {
 
         }
     }
-
-    // TODO: override update method and move enemy AI into there
 }
 
