@@ -191,8 +191,4 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     public double getGameTime() {
         return gameTime;
     }
-
-    public CombatManager getCombatManager() {
-        return combatManager;
-    }
 }
