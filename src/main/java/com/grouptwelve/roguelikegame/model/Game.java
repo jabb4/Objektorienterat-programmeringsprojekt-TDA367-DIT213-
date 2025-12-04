@@ -39,9 +39,7 @@ public class Game implements GameEventListener {
         LoadEntities.load();
         this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
         Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity(Entities.GOBLIN, 700, 100);
-        testGob.setHpBar(new Rectangle(200, 5, Color.RED));
         Troll testTroll = (Troll) EntityFactory.getInstance().createEntity(Entities.TROLL, 100, 100);
-        testTroll.setHpBar(new Rectangle(200, 5, Color.RED));
         this.enemiesAlive = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
         // CombatManager.getInstance().addEnemy(testGob);
         // CombatManager.getInstance().addEnemy(testTroll);

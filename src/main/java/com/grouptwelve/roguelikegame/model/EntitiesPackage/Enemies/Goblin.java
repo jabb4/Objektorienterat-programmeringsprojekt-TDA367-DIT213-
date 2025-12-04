@@ -9,7 +9,7 @@ public class Goblin extends Enemy {
     private static final double GOBLIN_WIND_UP_TIME = 0.3;
 
     public Goblin(double x, double y){
-        super("Goblin", Entities.GOBLIN, x, y, 50, 5, 30);
+        super("Goblin", Entities.GOBLIN, x, y, 50, 5, 50);
         this.velocity.setMaxSpeed(70);
         this.weapon = new Sword();
         this.attackRange = this.weapon.getRange();

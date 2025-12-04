@@ -107,31 +107,39 @@ public class GameView {
         // Draw player
         Player player = game.getPlayer();
         gc.setFill(Color.LIGHTBLUE);
-        gc.fillOval(player.getX() - player.getSize()/2, player.getY() - player.getSize()/2,
-                    player.getSize(), player.getSize());
+
+        double r = player.getSize();           // treat size as radius
+        gc.fillOval(player.getX() - r, player.getY() - r, r * 2, r * 2);
 
         // Draw enemies and HP bars
         List<Enemy> enemies = game.getEnemies();
         gc.setFill(Color.RED);
         for (Enemy enemy : enemies) {
+            double rE = enemy.getSize();
             if (!enemy.getAliveStatus()) continue;
             
             // Draw the enemy
             if (enemy.getAliveStatus()) {
-                gc.fillOval(enemy.getX() - enemy.getSize()/2, enemy.getY() - enemy.getSize()/2,
-                            enemy.getSize(), enemy.getSize());
+                gc.fillOval(enemy.getX() - rE, enemy.getY() - rE, rE * 2, rE * 2);
             }
 
-            // Draw HP bar background
-            double barWidth = 30; // width of full HP bar
-            double barHeight = 5; // height of HP bar
-            gc.setFill(Color.GRAY);
-            gc.fillRect(enemy.getX() - barWidth / 2, enemy.getY() - enemy.getSize() / 2 - 10, barWidth, barHeight);
+            double barWidth = 40;
+            double barHeight = 5;
+            double barOffset = 10;
 
-            // Draw HP bar foreground
+            // HP bar background
+            gc.setFill(Color.GRAY);
+            gc.fillRect(enemy.getX() - barWidth / 2,
+                        enemy.getY() - rE - barOffset,
+                        barWidth, barHeight);
+
+            // HP bar fill
             double hpPercentage = enemy.getHp() / enemy.getMaxHP();
-            gc.setFill(Color.RED); // or red
-            gc.fillRect(enemy.getX() - barWidth / 2, enemy.getY() - enemy.getSize() / 2 - 10, barWidth * hpPercentage, barHeight);
+            gc.setFill(Color.RED);
+            gc.fillRect(enemy.getX() - barWidth / 2,
+                        enemy.getY() - rE - barOffset,
+                        barWidth * hpPercentage, barHeight);
+                
         }
 
         // Draw attack if active

@@ -53,6 +53,7 @@ public class CombatManager
      * @param combatResult the damage calculation result (includes crit info)
      * @param effects list of effects to apply on hit
      */
+    
     public void attack(boolean isFriendly, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects)
     {
         double dmg = combatResult.getDamage();

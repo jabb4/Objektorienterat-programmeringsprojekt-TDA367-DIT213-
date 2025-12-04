@@ -311,6 +311,12 @@ public class GameController implements InputEventListener, ControllerListener {
     gameView.spawnHitParticles(x, y);
   }
 
+  @Override
+  public void onEnemyCritHit(double x, double y, double damage) {
+    gameView.showDamageNumber(x, y, damage, true);
+    gameView.spawnHitParticles(x, y);
+  }
+
     public void togglePause() {
         paused = !paused;
 
@@ -496,11 +502,4 @@ public class GameController implements InputEventListener, ControllerListener {
             gameView.showLevelMenu2(false);
         }
     }
-
-    @Override
-    public void onEnemyCritHit(double x, double y, double damage) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'onEnemyCritHit'");
-    }
-
 }
