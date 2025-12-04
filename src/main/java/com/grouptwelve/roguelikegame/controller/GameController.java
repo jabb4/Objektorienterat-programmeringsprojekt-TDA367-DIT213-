@@ -391,7 +391,7 @@ public class GameController implements InputEventListener, ControllerListener {
     public void back() throws IOException {
         stop();
         game.reset();
-        
+
         Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
         FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));

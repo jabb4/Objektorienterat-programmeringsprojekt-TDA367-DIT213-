@@ -88,6 +88,7 @@ public class GameView {
         Image sword = new Image(getClass().getResourceAsStream("/com/grouptwelve/roguelikegame/img/sword1.png"));
         firstItemImage.setImage(sword);
         highlightItem(1); // Weapon in first slot is selected automatically
+        root.requestFocus();
 
         this.rand = new Random();
         this.gc = gameCanvas.getGraphicsContext2D();
