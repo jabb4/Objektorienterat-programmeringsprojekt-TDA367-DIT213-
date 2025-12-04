@@ -63,25 +63,21 @@ public class GameController implements InputEventListener, ControllerListener {
         }
     }
 
-    /**
-     * Unregisters a system from receiving game events.
-     *
-     * @param listener The system to unregister
-     */
-    public void removeEventListener(GameEventListener listener) {
-        eventListeners.remove(listener);
-    }
+    // TODO: Handle other commands when implemented
 
-    // ==================== Input Event Handling ====================
+  
 
-    @Override
-    public void onCommandPressed(Command command) {
-        handleCommand(command, true);
-    }
+  // ==================== Event Creation ====================
 
     @Override
     public void onCommandReleased(Command command) {
         handleCommand(command, false);
+    }
+
+    
+    @Override
+    public void onCommandPressed(Command command) {
+        handleCommand(command, true);
     }
 
     /**
@@ -136,58 +132,60 @@ public class GameController implements InputEventListener, ControllerListener {
         if (activeCommands.contains(Command.MOVE_UP)) dy -= 1;
         if (activeCommands.contains(Command.MOVE_DOWN)) dy += 1;
 
-        return new MovementEvent(dx, dy);
+    return new MovementEvent(dx, dy);
+  }
+
+  /**
+   * Creates an attack event based on current player state.
+   * Gets attack position and range from the player's weapon.
+   *
+   * @return AttackEvent containing attack information
+   */
+  private AttackEvent createAttackEvent() {
+    // TODO: Improve to accommodate Law of Demeter pattern
+    return new AttackEvent(
+        game.getPlayer().getAttackPointX(),
+        game.getPlayer().getAttackPointY(),
+        game.getPlayer().getWeapon().getRange());
+  }
+
+  // TODO: Add more event creation methods as features are implemented
+
+  // ==================== Event Notification ====================
+
+  /**
+   * Notifies all listeners about a movement event.
+   *
+   * @param event The movement event to broadcast
+   */
+  private void notifyMovement(MovementEvent event) {
+    for (GameEventListener listener : eventListeners) {
+      listener.onMovement(event);
     }
 
-    /**
-     * Creates an attack event based on current player state.
-     * Gets attack position and range from the player's weapon.
-     *
-     * @return AttackEvent containing attack information
-     */
-    private AttackEvent createAttackEvent() {
-        // TODO: Improve to accommodate Law of Demeter pattern
-        return new AttackEvent(
-                game.getPlayer().getAttackPointX(),
-                game.getPlayer().getAttackPointY(),
-                game.getPlayer().getWeapon().getRange()
-        );
+    gameView.updateDirectionLabel(event.getDx(), event.getDy());
+
+    // TEMPORARY FOR DEBUGGING
+    updateStatusDisplay();
+  }
+
+  /**
+   * TEMPORARY FOR DEBUGGING
+   * Updates the status display based on currently active commands.
+   * Shows which keys are currently pressed.
+   */
+  private void updateStatusDisplay() {
+    List<String> activeKeys = getStrings();
+
+    // Update label
+    if (activeKeys.isEmpty()) {
+      gameView.updateStatusLabel("No keys pressed");
+    } else {
+      gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
     }
     // TODO: Add more event creation methods as features are implemented
+  }
 
-    // ==================== Event Notification ====================
-
-    /**
-     * Notifies all listeners about a movement event.
-     *
-     * @param event The movement event to broadcast
-     */
-    private void notifyMovement(MovementEvent event) {
-        for (GameEventListener listener : eventListeners) {
-            listener.onMovement(event);
-        }
-
-        gameView.updateDirectionLabel(event.getDx(), event.getDy());
-
-        // TEMPORARY FOR DEBUGGING
-        updateStatusDisplay();
-    }
-
-    /**
-     * TEMPORARY FOR DEBUGGING
-     * Updates the status display based on currently active commands.
-     * Shows which keys are currently pressed.
-     */
-    private void updateStatusDisplay() {
-        List<String> activeKeys = getStrings();
-
-        // Update label
-        if (activeKeys.isEmpty()) {
-            gameView.updateStatusLabel("No keys pressed");
-        } else {
-            gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
-        }
-    }
 
     private List<String> getStrings() {
         Set<Command> activeCommands = inputHandler.getActiveCommands();
@@ -204,24 +202,55 @@ public class GameController implements InputEventListener, ControllerListener {
         return activeKeys;
     }
 
-    /**
-     * Notifies all listeners about an attack event.
-     *
-     * @param event The attack event to broadcast
-     */
-    private void notifyAttack(AttackEvent event) {
-        for (GameEventListener listener : eventListeners) {
-            listener.onAttack(event);
-        }
-
-        // Update view to show attack
-        gameView.showAttack(event.getAttackX(), event.getAttackY(), event.getRange(), 0.1);
+  /**
+   * Notifies all listeners about an attack event.
+   *
+   * @param event The attack event to broadcast
+   */
+  private void notifyAttack(AttackEvent event) {
+    for (GameEventListener listener : eventListeners) {
+      listener.onAttack(event);
     }
+  }
 
-    // TODO: Add notification methods for other events
+  // TODO: Add notification methods for other events
 
-    // ==================== Game Loop ====================
+  // ==================== Game Loop ====================
 
+  // /**
+  //  * Starts the game loop.
+  //  * Should be used for resuming game states
+  //  */
+  // public void start() {
+  //   gameLoop = new AnimationTimer() {
+  //     @Override
+  //     public void handle(long now) {
+  //       if (lastUpdate == 0) {
+  //         lastUpdate = now;
+  //         return;
+  //       }
+
+  //       // Update view to show attack
+  //       gameView.showAttack(event.getAttackX(), event.getAttackY(), event.getRange(), 0.1);
+  //   }
+
+  //       update(deltaTime);
+  //       render();
+  //     }
+  //   };
+  //   gameLoop.start();
+  // }
+
+  /**
+   * Updates the game state based on input and elapsed time.
+   */
+  private void update(double deltaTime) {
+    // Update game logic
+    if (paused)
+      return;
+    game.update(deltaTime);
+
+  }
     /**
      * Starts the game loop.
      * Should be used for resuming game states
@@ -246,19 +275,6 @@ public class GameController implements InputEventListener, ControllerListener {
         };
         gameLoop.start();
     }
-    
-    /**
-     * Updates the game state based on input and elapsed time.
-     */
-    private void update(double deltaTime) {
-        // Update game logic
-        if(paused) return;
-        game.update(deltaTime);
-
-        // Update time display
-        gameView.updateGameTimeLabel(game.getGameTime());
-    }
-
     /**
      * Renders the current game state.
      */
@@ -275,6 +291,7 @@ public class GameController implements InputEventListener, ControllerListener {
             gameLoop.stop();
         }
     }
+  
 
     @Override
     public void showAttack(double x, double y, double size, double duration) {
@@ -288,11 +305,11 @@ public class GameController implements InputEventListener, ControllerListener {
         stop();
     }
 
-    @Override
-    public void onEnemyHit(double x, double y, double damage) {
-        gameView.showDamageNumber(x, y, damage);
-        gameView.spawnHitParticles(x, y);
-    }
+  @Override
+  public void onEnemyHit(double x, double y, double damage) {
+    gameView.showDamageNumber(x, y, damage, false);
+    gameView.spawnHitParticles(x, y);
+  }
 
     public void togglePause() {
         paused = !paused;
@@ -478,6 +495,12 @@ public class GameController implements InputEventListener, ControllerListener {
             gameView.showLevelMenu(false);
             gameView.showLevelMenu2(false);
         }
+    }
+
+    @Override
+    public void onEnemyCritHit(double x, double y, double damage) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'onEnemyCritHit'");
     }
 
 }
