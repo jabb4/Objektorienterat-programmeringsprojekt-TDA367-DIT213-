@@ -1,6 +1,7 @@
 package com.grouptwelve.roguelikegame.controller;
 
-import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
+import com.grouptwelve.roguelikegame.model.events.EventPublisher;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
@@ -23,6 +24,8 @@ public class GameController implements InputEventListener, GameEventPublisher {
   private AnimationTimer gameLoop;
   private long lastUpdate;
   private boolean paused;
+  private boolean chooseBuff;
+  private int selectedBuff = 1;
 
   // All systems that want to observe game events
   private final List<GameEventListener> eventListeners;
@@ -38,7 +41,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
     // Register listeners
     addEventListener(game);
     inputHandler.setListener(this);
-    ControlEventManager.getInstance().subscribe(this);
+    EventPublisher.getInstance().subscribe(this);
 
     // TODO: Other systems that needs to react to events such as audio and
     // animations.
@@ -85,6 +88,11 @@ public class GameController implements InputEventListener, GameEventPublisher {
    * @param isPressed True if pressed, false if released
    */
   private void handleCommand(Command command, boolean isPressed) {
+    if(chooseBuff)
+    {
+      handleCommandBuff(command, isPressed);
+      return;
+    }
     if (command == Command.PAUSE && isPressed) {
       togglePause();
     }
@@ -105,9 +113,40 @@ public class GameController implements InputEventListener, GameEventPublisher {
     }
 
     // TODO: Handle other commands when implemented
-
   }
 
+  /**
+   * seperate handler for commands in choose buff state
+   * @param command   The command that was triggered
+   * @param isPressed True if pressed, false if released
+   */
+  private void handleCommandBuff(Command command, boolean isPressed)
+  {
+    if (command == Command.MOVE_LEFT && isPressed)
+    {
+      if(this.selectedBuff == 2) this.selectedBuff = 1;
+      else this.selectedBuff = 0;
+
+      System.out.println("buff " + selectedBuff + "is currently selekted, press k to choose");
+    }
+    else if (command == Command.MOVE_RIGHT && isPressed)
+    {
+      if(this.selectedBuff == 0) this.selectedBuff = 1;
+      else this.selectedBuff = 2;
+
+      System.out.println("buff " + selectedBuff + "is currently selekted, press k to choose");
+
+    }
+    else if (command == Command.ATTACK && isPressed)
+    {
+      for (GameEventListener listener : eventListeners) {
+        listener.onChooseBuff(selectedBuff);
+      }
+      paused = false;
+      chooseBuff = false;
+    }
+
+  }
   // ==================== Event Creation ====================
 
   /**
@@ -285,6 +324,18 @@ public class GameController implements InputEventListener, GameEventPublisher {
   public void onEnemyDeath(double x, double y, int xpValue) {
     // Visual effects for enemy death can be added here
     // XP handling is done in the model layer
+  }
+  @Override
+  public void onPlayerLevelUp(int level, UpgradeInterface[] upgrades)
+  {
+    chooseBuff = true;
+    this.paused = true;
+    String[] stringValues = new String[upgrades.length];
+    for(int i = 0; i < upgrades.length; i++)
+    {
+      stringValues[i] = upgrades[i].getName();
+    }
+    gameView.drawBuffs(stringValues);
   }
 
   private void togglePause() {

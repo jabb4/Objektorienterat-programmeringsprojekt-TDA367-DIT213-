@@ -7,10 +7,13 @@ import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.EnemyDeathEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.UpgradeRegistry;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatManager;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatResult;
 import com.grouptwelve.roguelikegame.model.events.AttackListener;
 import com.grouptwelve.roguelikegame.model.events.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ import java.util.Random;
  * This follows the Observer pattern - entities notify Game when they attack,
  * and Game handles the combat logic.
  */
-public class Game implements GameEventListener, AttackListener {
+public class Game implements GameEventListener, AttackListener, LevelUpListener {
     
     private final Player player;
     private final List<Enemy> enemiesAlive;
@@ -35,6 +38,7 @@ public class Game implements GameEventListener, AttackListener {
     private final Random rand = new Random();
     private final int enemyBaseSpawnRate = 5;
     private final int enemyMaxSpawnAmount = 3;
+    private UpgradeInterface[] upgrades;
 
     /**
      * Creates a new Game instance with an event publisher.
@@ -43,6 +47,7 @@ public class Game implements GameEventListener, AttackListener {
      */
     public Game(GameEventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
+        this.upgrades = new UpgradeInterface[3];
         
         // Initialize game state
         LoadEntities.load();
@@ -55,6 +60,7 @@ public class Game implements GameEventListener, AttackListener {
         
         // Set up player to notify this Game when attacking
         player.setAttackListener(this);
+        player.setLevelUpListener(this);
         
         // Spawn initial enemy
         Enemy initialEnemy = EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10, 20);
@@ -84,7 +90,26 @@ public class Game implements GameEventListener, AttackListener {
         }
     }
 
+    /**
+     * called by only player when level up. publishes event
+     * @param level of player
+     */
+    @Override
+    public void onLevelUp(int level)
+    {
+        for(int i = 0; i < upgrades.length; i++)
+        {
+            upgrades[i] = UpgradeRegistry.randomUpgrade();
+        }
+        eventPublisher.onPlayerLevelUp(level, upgrades);
+    }
     // ==================== GameEventListener Implementation ====================
+
+    @Override
+    public void onChooseBuff(int level) {
+        upgrades[level].apply(player);
+        System.out.println(upgrades[level].toString() +" was choosen" );
+    }
 
     @Override
     public void onMovement(MovementEvent event) {

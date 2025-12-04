@@ -1,7 +1,7 @@
 package com.grouptwelve.roguelikegame.controller;
 
 public enum Command {
-    // Movement
+    // Movement // selecting buff
     MOVE_UP,
     MOVE_DOWN,
     MOVE_LEFT,
@@ -12,6 +12,7 @@ public enum Command {
     // ABILITY_1,
     // ABILITY_2,
     // ...
+
 
 
     // System

@@ -1,5 +1,7 @@
 package com.grouptwelve.roguelikegame.model.events;
 
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
+
 /**
  * Interface for publishing game events that external systems (view, audio, etc.) can listen to.
  * This interface is owned by the model layer, ensuring proper dependency direction.
@@ -16,7 +18,12 @@ public interface GameEventPublisher {
      * @param size Range/size of the attack
      */
     void onAttackVisual(double x, double y, double size);
-    
+
+    /**
+     * called when player levels up
+     * @param level of player
+     */
+    void onPlayerLevelUp(int level, UpgradeInterface[] upgrades);
     /**
      * Called when the player dies.
      * @param x X coordinate of death location

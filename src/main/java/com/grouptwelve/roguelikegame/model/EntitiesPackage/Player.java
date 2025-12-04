@@ -4,9 +4,12 @@ import com.grouptwelve.roguelikegame.model.LevelPackage.LevelSystem;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.UpgradeRegistry;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Sword;
+import com.grouptwelve.roguelikegame.model.events.AttackListener;
+import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 
 public class Player extends Entity {
     private boolean wantMove;
+    private LevelUpListener levelUpListener;
 
     private LevelSystem levelSystem = new LevelSystem();
 
@@ -29,17 +32,15 @@ public class Player extends Entity {
         return levelSystem;
     }
 
-
+    /**
+     * tells game when leveling up
+     */
     private void onLevelUp() {
-        System.out.println("LEVEL UP! New level: " + levelSystem.getLevel());
-
-        UpgradeInterface upgrade = UpgradeRegistry.randomUpgrade();
-        upgrade.apply(this);
-        System.out.println("UPGRADE: " + upgrade.getName());
-
-        System.out.println(this.toString());
+        levelUpListener.onLevelUp(levelSystem.getLevel());
     }
-
+    public void setLevelUpListener(LevelUpListener listener) {
+        this.levelUpListener = listener;
+    }
 
     @Override
     public void update(double deltaTime)

@@ -2,7 +2,7 @@ package com.grouptwelve.roguelikegame;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.controller.InputHandler;
-import com.grouptwelve.roguelikegame.model.ControlEventManager;
+import com.grouptwelve.roguelikegame.model.events.EventPublisher;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.application.Application;
@@ -16,7 +16,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         // Get the event manager (acts as event bus between model and controller)
-        ControlEventManager eventManager = ControlEventManager.getInstance();
+        EventPublisher eventManager = EventPublisher.getInstance();
         
         // Create game with event publisher
         Game game = new Game(eventManager);

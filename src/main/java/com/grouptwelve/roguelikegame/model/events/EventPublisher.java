@@ -1,6 +1,6 @@
-package com.grouptwelve.roguelikegame.model;
+package com.grouptwelve.roguelikegame.model.events;
 
-import com.grouptwelve.roguelikegame.model.events.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,18 +12,18 @@ import java.util.List;
  * Implements GameEventPublisher so it can be injected into model classes
  * that need to publish events without knowing about subscribers.
  */
-public class ControlEventManager implements GameEventPublisher {
+public class EventPublisher implements GameEventPublisher {
     
-    private static ControlEventManager instance;
+    private static EventPublisher instance;
     private final List<GameEventPublisher> listeners;
 
-    private ControlEventManager() {
+    private EventPublisher() {
         listeners = new ArrayList<>();
     }
 
-    public static ControlEventManager getInstance() {
+    public static EventPublisher getInstance() {
         if (instance == null) {
-            instance = new ControlEventManager();
+            instance = new EventPublisher();
         }
         return instance;
     }
@@ -52,6 +52,13 @@ public class ControlEventManager implements GameEventPublisher {
             listener.onAttackVisual(x, y, size);
         }
     }
+    @Override
+    public void onPlayerLevelUp(int level, UpgradeInterface[] upgrades)
+    {
+        for (GameEventPublisher listener : listeners) {
+            listener.onPlayerLevelUp(level, upgrades);
+        }
+    }
 
     @Override
     public void onPlayerDeath(double x, double y) {
@@ -76,43 +83,5 @@ public class ControlEventManager implements GameEventPublisher {
 
     // ==================== Legacy Methods (for backward compatibility) ====================
 
-    /**
-     * @deprecated Use onAttackVisual instead
-     */
-    @Deprecated
-    public void drawAttack(double x, double y, double size) {
-        onAttackVisual(x, y, size);
-    }
 
-    /**
-     * @deprecated Use onPlayerDeath instead
-     */
-    @Deprecated
-    public void playerDied(double x, double y) {
-        onPlayerDeath(x, y);
-    }
-
-    /**
-     * @deprecated Use onEnemyHit with isCritical=false instead
-     */
-    @Deprecated
-    public void onEnemyHit(double x, double y, double damage) {
-        onEnemyHit(x, y, damage, false);
-    }
-
-    /**
-     * @deprecated Use onEnemyHit with isCritical=true instead
-     */
-    @Deprecated
-    public void onEnemyCritHit(double x, double y, double damage) {
-        onEnemyHit(x, y, damage, true);
-    }
-
-    /**
-     * @deprecated Use onEnemyDeath instead
-     */
-    @Deprecated
-    public void enemyDied(double x, double y, int xp) {
-        onEnemyDeath(x, y, xp);
-    }
 }

@@ -8,6 +8,7 @@ public interface GameEventListener {
     void onMovement(MovementEvent event);
     void onAttack(AttackEvent event);
     void onEnemyDeath(EnemyDeathEvent event);
+    void onChooseBuff(int level);
 
 
     // TODO: Extend with more events

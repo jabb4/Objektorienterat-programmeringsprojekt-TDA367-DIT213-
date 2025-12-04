@@ -174,6 +174,13 @@ public class GameView{
         });
         freeze.play();
     }
+    public void drawBuffs(String[] list)
+    {
+        for(String buff: list)
+        {
+            System.out.println(buff);
+        }
+    }
 
     /**
      * Creates an expanding ripple/shockwave effect from the death location.
