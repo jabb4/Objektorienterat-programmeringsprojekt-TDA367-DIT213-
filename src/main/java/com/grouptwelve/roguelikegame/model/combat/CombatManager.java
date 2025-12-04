@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * Orchestrates combat between entities.
  * Delegates to focused systems for specific responsibilities:
  * - CollisionSystem: Hit detection
- * - DamageSystem: Damage and effect application
+ * - HitSystem: Damage and effect application
  * 
  * This class handles combat flow and game-level concerns like XP and death.
  */
@@ -45,19 +45,20 @@ public class CombatManager {
      * @param range range of the attack
      * @param combatResult the damage calculation result (includes crit info)
      * @param effects list of effects to apply on hit
+     * @param knockbackStrength the attacker's knockback strength
      */
-    public void attack(boolean isFriendly, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects) {
+    public void attack(boolean isFriendly, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
         if (isFriendly) {
-            attackEnemies(x, y, range, combatResult, effects);
+            attackEnemies(x, y, range, combatResult, effects, knockbackStrength);
         } else {
-            attackPlayer(x, y, range, combatResult.getDamage(), effects);
+            attackPlayer(x, y, range, combatResult.getDamage(), effects, knockbackStrength);
         }
     }
 
     /**
      * Handles player attacking enemies.
      */
-    private void attackEnemies(double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects) {
+    private void attackEnemies(double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
         double damage = combatResult.getDamage();
         boolean isCritical = combatResult.isCritical();
         List<Enemy> enemies = enemiesSupplier.get();
@@ -67,7 +68,7 @@ public class CombatManager {
         
         for (Enemy enemy : hitEnemies) {
             // Apply damage
-            boolean died = DamageSystem.applyDamage(enemy, damage);
+            boolean died = HitSystem.applyDamage(enemy, damage);
             
             // Publish hit event
             publishEnemyHit(enemy, damage, isCritical);
@@ -76,7 +77,7 @@ public class CombatManager {
                 handleEnemyDeath(enemy, enemies);
             } else {
                 // Apply effects to living enemies
-                DamageSystem.applyEffects(enemy, effects, x, y);
+                HitSystem.applyEffects(enemy, effects, x, y, knockbackStrength);
             }
         }
     }
@@ -98,16 +99,16 @@ public class CombatManager {
     /**
      * Handles enemies attacking player.
      */
-    private void attackPlayer(double x, double y, double range, double damage, List<EffectInterface> effects) {
+    private void attackPlayer(double x, double y, double range, double damage, List<EffectInterface> effects, double knockbackStrength) {
         if (CollisionSystem.isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
-            boolean died = DamageSystem.applyDamage(player, damage);
+            boolean died = HitSystem.applyDamage(player, damage);
             
             if (died && eventPublisher != null) {
                 eventPublisher.onPlayerDeath(player.getX(), player.getY());
             }
             
             // Apply effects
-            DamageSystem.applyEffects(player, effects);
+            HitSystem.applyEffects(player, effects, x, y, knockbackStrength);
         }
     }
 

@@ -88,6 +88,7 @@ public abstract class Weapon implements WeaponInterface {
     public void addDamage(double amount) {
         this.damage += amount;
     }
+
     @Override
     public double getRange() { return range; }
 
@@ -152,7 +153,6 @@ public abstract class Weapon implements WeaponInterface {
     public void multiplyKnockback(double percent) {
         this.knockbackStrength *= (1 + percent);
     }
-
 
     @Override
     public List<EffectInterface> getEffects() { return effects; }

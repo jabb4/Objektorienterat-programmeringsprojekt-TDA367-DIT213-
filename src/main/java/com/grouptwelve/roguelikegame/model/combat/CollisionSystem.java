@@ -24,8 +24,7 @@ public class CollisionSystem {
      * @param targetSize Size/radius of the target
      * @return true if the attack hits the target
      */
-    public static boolean isHit(double attackX, double attackY, double attackRange,
-                                double targetX, double targetY, double targetSize) {
+    public static boolean isHit(double attackX, double attackY, double attackRange, double targetX, double targetY, double targetSize) {
         double deltaX = attackX - targetX;
         double deltaY = attackY - targetY;
         double distanceSquared = deltaX * deltaX + deltaY * deltaY;
@@ -45,8 +44,7 @@ public class CollisionSystem {
      * @param <T> Type of entity
      * @return List of entities that are hit by the attack
      */
-    public static <T extends Entity> List<T> getEntitiesInRange(
-            double attackX, double attackY, double range, List<T> entities) {
+    public static <T extends Entity> List<T> getEntitiesInRange(double attackX, double attackY, double range, List<T> entities) {
         
         List<T> hitEntities = new ArrayList<>();
         

@@ -6,9 +6,13 @@ public class KnockbackEffect extends Effects {
 
     private double dirX;
     private double dirY;
+    private double strength;
 
     public KnockbackEffect() {
-        // No strength here anymore — weapon handles that!
+    }
+
+    public void setStrength(double strength) {
+        this.strength = strength;
     }
 
     public void setDirection(double x, double y) {
@@ -24,7 +28,6 @@ public class KnockbackEffect extends Effects {
 
     @Override
     public void apply(Entity target) {
-        double strength = target.getWeapon().getKnockbackStrength();
         target.applyKnockback(dirX, dirY, strength);
     }
 }

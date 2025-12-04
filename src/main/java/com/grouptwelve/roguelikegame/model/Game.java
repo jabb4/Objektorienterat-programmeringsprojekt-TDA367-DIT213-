@@ -74,14 +74,15 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
      * Resolves combat and publishes visual events.
      */
     @Override
-    public void onEntityAttacked(Entity attacker, double x, double y, 
-                                  double range, CombatResult result, 
-                                  List<EffectInterface> effects) {
+    public void onEntityAttacked(Entity attacker, double x, double y, double range, CombatResult result, List<EffectInterface> effects) {
         // Determine if attacker is friendly (player) or enemy
         boolean isFriendly = attacker instanceof Player;
         
+        // Get the attacker's knockback strength
+        double knockbackStrength = attacker.getWeapon().getKnockbackStrength();
+        
         // Resolve combat through the combat manager
-        combatManager.attack(isFriendly, x, y, range, result, effects);
+        combatManager.attack(isFriendly, x, y, range, result, effects, knockbackStrength);
         
         // Publish attack visual event for the view
         if (eventPublisher != null) {

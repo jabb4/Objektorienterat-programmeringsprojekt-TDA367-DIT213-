@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.model.combat;
 import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.effects.KnockbackEffect;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
+import com.grouptwelve.roguelikegame.model.entities.Player;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * System responsible for applying damage and effects to entities.
  * Separates damage logic from combat orchestration.
  */
-public class DamageSystem {
+public class HitSystem {
 
     /**
      * Applies damage to an entity.
@@ -33,30 +34,20 @@ public class DamageSystem {
      * @param effects List of effects to apply
      * @param attackX X coordinate of the attack (for knockback direction)
      * @param attackY Y coordinate of the attack (for knockback direction)
+     * @param knockbackStrength The attacker's knockback strength
      */
-    public static void applyEffects(Entity target, List<EffectInterface> effects,
-                                    double attackX, double attackY) {
+    public static void applyEffects(Entity target, List<EffectInterface> effects, double attackX, double attackY, double knockbackStrength) {
         // Calculate knockback direction if needed
-        double[] direction = CollisionSystem.calculateDirection(
-            attackX, attackY, target.getX(), target.getY()
-        );
+        double[] direction = CollisionSystem.calculateDirection(attackX, attackY, target.getX(), target.getY());
 
         for (EffectInterface effect : effects) {
-            if (effect instanceof KnockbackEffect) {
-                ((KnockbackEffect) effect).setDirection(direction[0], direction[1]);
+            if (effect instanceof KnockbackEffect knockback) {
+                if (target instanceof Player) {
+                    continue;  // Player is immune to knockback
+                }
+                knockback.setDirection(direction[0], direction[1]);
+                knockback.setStrength(knockbackStrength);
             }
-            effect.apply(target);
-        }
-    }
-
-    /**
-     * Applies effects without knockback direction calculation.
-     *
-     * @param target The entity to apply effects to
-     * @param effects List of effects to apply
-     */
-    public static void applyEffects(Entity target, List<EffectInterface> effects) {
-        for (EffectInterface effect : effects) {
             effect.apply(target);
         }
     }
