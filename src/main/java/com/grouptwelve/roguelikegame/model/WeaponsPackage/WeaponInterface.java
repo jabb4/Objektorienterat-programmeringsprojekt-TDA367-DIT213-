@@ -1,42 +1,49 @@
 package com.grouptwelve.roguelikegame.model.WeaponsPackage;
 
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 
 import java.util.List;
 
+/**
+ * Interface for weapon behavior.
+ * Weapons handle damage calculation, cooldowns, and effects.
+ * Combat resolution is handled by Entity via AttackHandler callback.
+ */
 public interface WeaponInterface {
-  /**
-   * Attempts to perform an attack at the specified position.
-   *
-   * @param isPlayer true if the attacker is the player, false for enemies
-   * @param x x-coordinate of the attack point
-   * @param y y-coordinate of the attack point
-   * @return true if attack was performed, false if on cooldown
-   */
-  boolean attack(boolean isPlayer, double x, double y);
 
-  /**
-   * Updates the weapon state (e.g., cooldown timer).
-   *
-   * @param deltaTime Time since last update in seconds
-   */
-  void update(double deltaTime);
+    /**
+     * Updates the weapon state (e.g., cooldown timer).
+     *
+     * @param deltaTime Time since last update in seconds
+     */
+    void update(double deltaTime);
 
-  /**
-   * Checks if the weapon is ready to attack.
-   *
-   * @return true if weapon can attack, false if on cooldown
-   */
-  boolean canAttack();
+    /**
+     * Checks if the weapon is ready to attack.
+     *
+     * @return true if weapon can attack, false if on cooldown
+     */
+    boolean canAttack();
 
-  double getDamage();
+    /**
+     * Resets the cooldown timer after an attack.
+     */
+    void resetCooldown();
 
-  double getRange();
+    /**
+     * Calculates damage for an attack, including critical hit chance.
+     *
+     * @return CombatResult containing the final damage and whether it was a critical hit
+     */
+    CombatResult calculateDamage();
 
-  void addRange(double amount);
+    double getDamage();
 
-  List<EffectInterface> getEffects();
+    double getRange();
 
-  void addEffect(EffectInterface effect);
+    void addRange(double amount);
+
+    List<EffectInterface> getEffects();
+
+    void addEffect(EffectInterface effect);
 }

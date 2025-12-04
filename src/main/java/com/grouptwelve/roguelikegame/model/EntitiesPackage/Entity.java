@@ -1,9 +1,10 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
-import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.ActiveEffectPackage.ActiveEffect;
 import com.grouptwelve.roguelikegame.model.Velocity;
+import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatResult;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Weapon;
+import com.grouptwelve.roguelikegame.model.events.AttackListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +25,9 @@ public abstract class Entity {
     protected double dirY;
 
     protected Weapon weapon;
+    
+    // Attack listener - notified when this entity attacks (Observer pattern)
+    protected AttackListener attackListener;
 
     // Hit effect state
     protected boolean isHit;
@@ -114,15 +118,41 @@ public abstract class Entity {
 
     /**
      * Attempts to attack using the equipped weapon.
+     * If an AttackListener is set, it will be notified to handle combat resolution.
+     * 
+     * @return true if the attack was performed, false if weapon on cooldown or no weapon
      */
-    public void attack() {
-        if (this.weapon == null) return;
+    public boolean attack() {
+        if (this.weapon == null) return false;
+        if (!this.weapon.canAttack()) return false;
 
-        boolean attackSucceeded = this.weapon.attack(this instanceof Player, this.getAttackPointX(), this.getAttackPointY());
-
-        if (attackSucceeded) {
-            ControlEventManager.getInstance().drawAttack(this.getAttackPointX(), this.getAttackPointY(), weapon.getRange());
+        // Reset weapon cooldown
+        this.weapon.resetCooldown();
+        
+        // Notify listener to handle combat resolution
+        if (attackListener != null) {
+            CombatResult result = weapon.calculateDamage();
+            attackListener.onEntityAttacked(
+                this,
+                getAttackPointX(),
+                getAttackPointY(),
+                weapon.getRange(),
+                result,
+                weapon.getEffects()
+            );
         }
+        
+        return true;
+    }
+    
+    /**
+     * Sets the attack listener that will be notified when this entity attacks.
+     * Used by Game to handle combat resolution.
+     * 
+     * @param listener The listener to notify on attack
+     */
+    public void setAttackListener(AttackListener listener) {
+        this.attackListener = listener;
     }
 
     /**

@@ -1,104 +1,118 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.model.EventsPackage.EnemyDeathEvent;
-import com.grouptwelve.roguelikegame.view.ControllerListener;
-
+import com.grouptwelve.roguelikegame.model.events.GameEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlEventManager
-{
-    //singleton instance
+/**
+ * Manages game event publishing from the model layer.
+ * Acts as an event bus that forwards events to all subscribers.
+ * 
+ * Implements GameEventPublisher so it can be injected into model classes
+ * that need to publish events without knowing about subscribers.
+ */
+public class ControlEventManager implements GameEventPublisher {
+    
     private static ControlEventManager instance;
-    //list of listeners to draw this events
-    private final List<ControllerListener> listeners;
+    private final List<GameEventPublisher> listeners;
 
-    private ControlEventManager()
-    {
+    private ControlEventManager() {
         listeners = new ArrayList<>();
     }
 
-    /**
-     * @return singleton instance
-     */
-    public static ControlEventManager getInstance()
-    {
-        if(instance == null)
-        {
+    public static ControlEventManager getInstance() {
+        if (instance == null) {
             instance = new ControlEventManager();
         }
         return instance;
     }
 
     /**
-     * used by listens to add self to the list
-     * @param listener caller
+     * Subscribe to receive game events.
+     * @param listener The listener to add
      */
-    public void subscribe(ControllerListener listener)
-    {
+    public void subscribe(GameEventPublisher listener) {
         listeners.add(listener);
     }
-    public void unsubscribe(ControllerListener listener)
-    {
+
+    /**
+     * Unsubscribe from game events.
+     * @param listener The listener to remove
+     */
+    public void unsubscribe(GameEventPublisher listener) {
         listeners.remove(listener);
     }
 
+    // ==================== GameEventPublisher Implementation ====================
+
+    @Override
+    public void onAttackVisual(double x, double y, double size) {
+        for (GameEventPublisher listener : listeners) {
+            listener.onAttackVisual(x, y, size);
+        }
+    }
+
+    @Override
+    public void onPlayerDeath(double x, double y) {
+        for (GameEventPublisher listener : listeners) {
+            listener.onPlayerDeath(x, y);
+        }
+    }
+
+    @Override
+    public void onEnemyHit(double x, double y, double damage, boolean isCritical) {
+        for (GameEventPublisher listener : listeners) {
+            listener.onEnemyHit(x, y, damage, isCritical);
+        }
+    }
+
+    @Override
+    public void onEnemyDeath(double x, double y, int xpValue) {
+        for (GameEventPublisher listener : listeners) {
+            listener.onEnemyDeath(x, y, xpValue);
+        }
+    }
+
+    // ==================== Legacy Methods (for backward compatibility) ====================
+
     /**
-     * called by either player or enemy to notify an attackEvent
-     * @param x coordinate
-     * @param y coordinate
-     * @param size range
+     * @deprecated Use onAttackVisual instead
      */
-    public void drawAttack(double x, double y, double size)
-    {
-        for(ControllerListener listener : listeners)
-        {
-            listener.drawAttack(x, y, size);
-        }
+    @Deprecated
+    public void drawAttack(double x, double y, double size) {
+        onAttackVisual(x, y, size);
     }
 
-    public void playerDied(double x, double y)
-    {
-        for (ControllerListener listener:  listeners)
-        {
-            listener.playerDied(x, y);
-        }
+    /**
+     * @deprecated Use onPlayerDeath instead
+     */
+    @Deprecated
+    public void playerDied(double x, double y) {
+        onPlayerDeath(x, y);
     }
 
+    /**
+     * @deprecated Use onEnemyHit with isCritical=false instead
+     */
+    @Deprecated
+    public void onEnemyHit(double x, double y, double damage) {
+        onEnemyHit(x, y, damage, false);
+    }
+
+    /**
+     * @deprecated Use onEnemyHit with isCritical=true instead
+     */
+    @Deprecated
+    public void onEnemyCritHit(double x, double y, double damage) {
+        onEnemyHit(x, y, damage, true);
+    }
+
+    /**
+     * @deprecated Use onEnemyDeath instead
+     */
+    @Deprecated
     public void enemyDied(double x, double y, int xp) {
-        EnemyDeathEvent event = new EnemyDeathEvent(x, y, xp);
-        //for (ControllerListener listener : listeners) {
-        //    listener.onEnemyDeath(event);
-        //}
-    }
-
-
-    /**
-     * Called when an enemy takes damage, to trigger visual feedback.
-     * @param x X coordinate of the hit
-     * @param y Y coordinate of the hit
-     * @param damage Amount of damage dealt
-     */
-    public void onEnemyHit(double x, double y, double damage)
-    {
-        for (ControllerListener listener : listeners)
-        {
-            listener.onEnemyHit(x, y, damage);
-        }
-    }
-
-    /**
-     * Called when an enemy takes critical hit damage, to trigger visual feedback.
-     * @param x X coordinate of the hit
-     * @param y Y coordinate of the hit
-     * @param damage Amount of damage dealt
-     */
-    public void onEnemyCritHit(double x, double y, double damage)
-    {
-        for (ControllerListener listener : listeners)
-        {
-            listener.onEnemyCritHit(x, y, damage);
-        }
+        onEnemyDeath(x, y, xp);
     }
 }

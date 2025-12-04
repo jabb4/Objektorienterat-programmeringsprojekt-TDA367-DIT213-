@@ -5,7 +5,7 @@ import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.view.ControllerListener;
+import com.grouptwelve.roguelikegame.model.events.GameEventPublisher;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
 
@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Coordinates the game loop and events.
  */
-public class GameController implements InputEventListener, ControllerListener {
+public class GameController implements InputEventListener, GameEventPublisher {
   private final Game game;
   private final GameView gameView;
   private final InputHandler inputHandler;
@@ -262,27 +262,29 @@ public class GameController implements InputEventListener, ControllerListener {
     }
   }
 
+  // ==================== GameEventPublisher Implementation ====================
+
   @Override
-  public void drawAttack(double x, double y, double size) {
+  public void onAttackVisual(double x, double y, double size) {
     gameView.drawAttack(x, y, size);
   }
 
   @Override
-  public void playerDied(double x, double y) {
+  public void onPlayerDeath(double x, double y) {
     gameView.playerDied(x, y);
     paused = true;
   }
 
   @Override
-  public void onEnemyHit(double x, double y, double damage) {
-    gameView.showDamageNumber(x, y, damage, false);
+  public void onEnemyHit(double x, double y, double damage, boolean isCritical) {
+    gameView.showDamageNumber(x, y, damage, isCritical);
     gameView.spawnHitParticles(x, y);
   }
 
   @Override
-  public void onEnemyCritHit(double x, double y, double damage) {
-    gameView.showDamageNumber(x, y, damage, true);
-    gameView.spawnHitParticles(x, y);
+  public void onEnemyDeath(double x, double y, int xpValue) {
+    // Visual effects for enemy death can be added here
+    // XP handling is done in the model layer
   }
 
   private void togglePause() {

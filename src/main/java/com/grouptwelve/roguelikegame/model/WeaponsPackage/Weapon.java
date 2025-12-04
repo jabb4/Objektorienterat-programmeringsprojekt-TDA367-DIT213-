@@ -1,7 +1,6 @@
 package com.grouptwelve.roguelikegame.model.WeaponsPackage;
 
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,31 +74,11 @@ public abstract class Weapon implements WeaponInterface {
      *
      * @return CombatResult containing the final damage and whether it was a critical hit
      */
+    @Override
     public CombatResult calculateDamage() {
         boolean isCritical = random.nextDouble() < critChance;
         double finalDamage = isCritical ? damage * critMultiplier : damage;
         return new CombatResult(finalDamage, isCritical);
-    }
-
-    /**
-     * Attempts to perform an attack. Only succeeds if the weapon is off cooldown.
-     *
-     * @param isPlayer true if the attacker is the player, false for enemies
-     * @param x x-coordinate of the attack point
-     * @param y y-coordinate of the attack point
-     * @return true if the attack was performed, false if on cooldown
-     */
-    @Override
-    public boolean attack(boolean isPlayer, double x, double y)
-    {
-        if (!canAttack()) {
-            return false;
-        }
-        
-        CombatResult result = calculateDamage();
-        CombatManager.getInstance().attack(isPlayer, x, y, range, result, effects);
-        resetCooldown();
-        return true;
     }
 
     @Override

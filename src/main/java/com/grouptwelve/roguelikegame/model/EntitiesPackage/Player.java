@@ -1,6 +1,5 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
-import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.LevelPackage.LevelSystem;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.UpgradeRegistry;
 import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
@@ -86,8 +85,8 @@ public class Player extends Entity {
 
         if(this.hp <= 0)
         {
-            ControlEventManager.getInstance().playerDied(this.x, this.y);
-
+            this.isAlive = false;
+            // Player death event is now published by Game/CombatManager
         }
     }
 
