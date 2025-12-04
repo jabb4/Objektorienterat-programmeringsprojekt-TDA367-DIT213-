@@ -17,6 +17,9 @@ public abstract class Weapon implements WeaponInterface {
     protected double cooldownRemaining;
     protected double critChance;
     protected double critMultiplier;
+    protected double knockbackStrength;
+
+
     protected List<EffectInterface> effects = new ArrayList<>();
 
     /**
@@ -34,6 +37,7 @@ public abstract class Weapon implements WeaponInterface {
         this.cooldownRemaining = 0;
         this.critChance = 0.05;    // 5% default crit chance
         this.critMultiplier = 2.0; // 2x damage on crit
+        this.knockbackStrength = 200;
     }
 
     /**
@@ -157,6 +161,19 @@ public abstract class Weapon implements WeaponInterface {
         this.critMultiplier += amount;
     }
 
+    public double getKnockbackStrength() {
+        return knockbackStrength;
+    }
+
+    public void addKnockback(double amount) {
+        this.knockbackStrength += amount;
+    }
+
+    public void multiplyKnockback(double percent) {
+        this.knockbackStrength *= (1 + percent);
+    }
+
+
     @Override
     public List<EffectInterface> getEffects() { return effects; }
 
@@ -164,11 +181,6 @@ public abstract class Weapon implements WeaponInterface {
     public void addEffect(EffectInterface effect) {
         effects.add(effect);
     }
-
-    /*@Override
-    public void upgrade(UpgradeInterface upgrade) {
-        upgrade.applyTo(this);
-    }*/
 
     @Override
     public String toString() {

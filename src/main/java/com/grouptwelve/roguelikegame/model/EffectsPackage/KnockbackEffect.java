@@ -4,35 +4,27 @@ import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
 
 public class KnockbackEffect extends Effects {
 
-    private double strength;
     private double dirX;
     private double dirY;
 
-    public KnockbackEffect(double strength) {
-        this.strength = strength;
+    public KnockbackEffect() {
+        // No strength here anymore — weapon handles that!
     }
 
     public void setDirection(double x, double y) {
         double len = Math.sqrt(x * x + y * y);
         if (len != 0) {
-            this.dirX = x / len;
-            this.dirY = y / len;
+            dirX = x / len;
+            dirY = y / len;
         } else {
-            this.dirX = 0;
-            this.dirY = 0;
+            dirX = 0;
+            dirY = 0;
         }
     }
 
     @Override
     public void apply(Entity target) {
+        double strength = target.getWeapon().getKnockbackStrength();
         target.applyKnockback(dirX, dirY, strength);
-    }
-
-    public void increaseStrength(double amount) {
-        this.strength += amount;
-    }
-
-    public double getStrength() {
-        return strength;
     }
 }

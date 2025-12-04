@@ -59,6 +59,17 @@ public class UpgradeRegistry {
         upgrades.add(() -> new RangePercentUpgrade(
                 Rand.range(0.05, 0.15)
         ));
+
+        upgrades.add(() -> new WeaponCritChanceFlatUpgrade(Rand.range(0.02, 0.08)));   // +2% to +8%
+        upgrades.add(() -> new WeaponCritChancePercentUpgrade(Rand.range(0.05, 0.20))); // +5%–20% relative
+
+        upgrades.add(() -> new WeaponCritMultiplierFlatUpgrade(Rand.range(0.1, 0.4))); // +0.1 to +0.4
+        upgrades.add(() -> new WeaponCritMultiplierPercentUpgrade(Rand.range(0.05, 0.15))); // +5%–15%
+
+        upgrades.add(() -> new KnockbackFlatUpgrade(Rand.range(20, 60)));
+        upgrades.add(() -> new KnockbackPercentUpgrade(Rand.range(0.10, 0.25)));
+
+
     }
 
     public static UpgradeInterface randomUpgrade() {
