@@ -1,12 +1,12 @@
 package com.grouptwelve.roguelikegame.controller;
 
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
-import com.grouptwelve.roguelikegame.model.events.EventPublisher;
-import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
-import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
-import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.events.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
+import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
+import com.grouptwelve.roguelikegame.model.events.output.EventPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
 

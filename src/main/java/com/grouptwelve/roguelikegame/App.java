@@ -2,8 +2,8 @@ package com.grouptwelve.roguelikegame;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.controller.InputHandler;
-import com.grouptwelve.roguelikegame.model.events.EventPublisher;
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.model.events.output.EventPublisher;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.application.Application;
 import javafx.scene.Scene;

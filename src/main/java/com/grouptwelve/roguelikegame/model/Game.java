@@ -1,19 +1,18 @@
 package com.grouptwelve.roguelikegame.model;
 
-import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
-import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
-import com.grouptwelve.roguelikegame.model.EventsPackage.EnemyDeathEvent;
-import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
-import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.UpgradeRegistry;
-import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatManager;
-import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatResult;
-import com.grouptwelve.roguelikegame.model.events.AttackListener;
-import com.grouptwelve.roguelikegame.model.events.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.combat.CombatManager;
+import com.grouptwelve.roguelikegame.model.combat.CombatResult;
+import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
+import com.grouptwelve.roguelikegame.model.entities.*;
+import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
+import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
+import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
+import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
+import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.model.upgrades.logic.UpgradeRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,7 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     public Game(GameEventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
         this.upgrades = new UpgradeInterface[3];
-        
+
         // Initialize game state
         LoadEntities.load();
         this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
@@ -61,7 +60,7 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         // Set up player to notify this Game when attacking
         player.setAttackListener(this);
         player.setLevelUpListener(this);
-        
+
         // Spawn initial enemy
         Enemy initialEnemy = EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10, 20);
         initialEnemy.setAttackListener(this);
@@ -120,11 +119,6 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     public void onAttack(AttackEvent event) {
         // Player attacks - entity handles combat via AttackListener callback
         player.attack();
-    }
-
-    @Override
-    public void onEnemyDeath(EnemyDeathEvent event) {
-        // XP is handled by CombatManager
     }
 
     // ==================== Game Logic ====================

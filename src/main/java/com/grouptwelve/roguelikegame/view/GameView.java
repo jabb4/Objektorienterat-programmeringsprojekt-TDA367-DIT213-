@@ -1,15 +1,14 @@
 package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
+import com.grouptwelve.roguelikegame.model.entities.Enemy;
+import com.grouptwelve.roguelikegame.model.entities.Player;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
