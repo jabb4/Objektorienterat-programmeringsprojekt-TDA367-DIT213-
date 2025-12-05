@@ -1,6 +1,5 @@
 package com.grouptwelve.roguelikegame.model.entities.enemies;
 
-import com.grouptwelve.roguelikegame.model.entities.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.Entities;
 import com.grouptwelve.roguelikegame.model.entities.EntityFactory;
 

@@ -1,8 +1,8 @@
 package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.entities.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;

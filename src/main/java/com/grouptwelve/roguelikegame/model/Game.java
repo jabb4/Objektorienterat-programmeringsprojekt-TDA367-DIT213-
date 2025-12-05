@@ -4,6 +4,7 @@ import com.grouptwelve.roguelikegame.model.combat.CombatManager;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.*;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
@@ -20,18 +21,18 @@ import java.util.Random;
 
 /**
  * Core game model containing all game state and logic.
- * 
+ *
  * Implements AttackListener to handle combat resolution when entities attack.
  * This follows the Observer pattern - entities notify Game when they attack,
  * and Game handles the combat logic.
  */
 public class Game implements GameEventListener, AttackListener, LevelUpListener {
-    
+
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private final CombatManager combatManager;
     private final GameEventPublisher eventPublisher;
-    
+
     private double gameTime;
     private int lastEnemySpawnTime = 0;
     private final Random rand = new Random();
@@ -52,23 +53,19 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         LoadEntities.load();
         this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
         this.enemiesAlive = new ArrayList<>();
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
         this.gameTime = 0;
-        
+
         // Initialize combat system
         this.combatManager = new CombatManager(player, () -> enemiesAlive, eventPublisher);
-        
+
         // Set up player to notify this Game when attacking
         player.setAttackListener(this);
         player.setLevelUpListener(this);
-
-        // Spawn initial enemy
-        Enemy initialEnemy = EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10, 20);
-        initialEnemy.setAttackListener(this);
-        enemiesAlive.add(initialEnemy);
     }
 
     // ==================== AttackListener Implementation ====================
-    
+
     /**
      * Called when any entity (player or enemy) performs an attack.
      * Resolves combat and publishes visual events.
@@ -77,13 +74,13 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     public void onEntityAttacked(Entity attacker, double x, double y, double range, CombatResult result, List<EffectInterface> effects) {
         // Determine if attacker is friendly (player) or enemy
         boolean isFriendly = attacker instanceof Player;
-        
+
         // Get the attacker's knockback strength
         double knockbackStrength = attacker.getWeapon().getKnockbackStrength();
-        
+
         // Resolve combat through the combat manager
         combatManager.attack(isFriendly, x, y, range, result, effects, knockbackStrength);
-        
+
         // Publish attack visual event for the view
         if (eventPublisher != null) {
             eventPublisher.onAttackVisual(x, y, range);
@@ -138,15 +135,15 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     }
 
     /**
-     * Updates all enemies. 
+     * Updates all enemies.
      * Attacks are handled via AttackListener callbacks when enemies attack.
      */
     private void updateEnemies(double deltaTime) {
         double playerX = player.getX();
         double playerY = player.getY();
-        
+
         for (Enemy enemy : enemiesAlive) {
-            enemy.setTargetPos(playerX, playerY);
+            enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
             enemy.update(deltaTime);
             // Enemy attack() is called by enemy's internal state machine
             // When it attacks, onEntityAttacked() is called automatically
