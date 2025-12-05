@@ -25,7 +25,7 @@ public abstract class Entity {
     protected double dirY;
 
     protected Weapon weapon;
-    
+
     // Attack listener - notified when this entity attacks (Observer pattern)
     protected AttackListener attackListener;
 
@@ -119,7 +119,7 @@ public abstract class Entity {
     /**
      * Attempts to attack using the equipped weapon.
      * If an AttackListener is set, it will be notified to handle combat resolution.
-     * 
+     *
      * @return true if the attack was performed, false if weapon on cooldown or no weapon
      */
     public boolean attack() {
@@ -128,27 +128,19 @@ public abstract class Entity {
 
         // Reset weapon cooldown
         this.weapon.resetCooldown();
-        
+
         // Notify listener to handle combat resolution
         if (attackListener != null) {
             CombatResult result = weapon.calculateDamage();
-            attackListener.onEntityAttacked(
-                this,
-                getAttackPointX(),
-                getAttackPointY(),
-                weapon.getRange(),
-                result,
-                weapon.getEffects()
-            );
+            attackListener.onEntityAttacked(this, getAttackPointX(), getAttackPointY(), weapon.getRange(), result, weapon.getEffects());
         }
-        
         return true;
     }
-    
+
     /**
      * Sets the attack listener that will be notified when this entity attacks.
      * Used by Game to handle combat resolution.
-     * 
+     *
      * @param listener The listener to notify on attack
      */
     public void setAttackListener(AttackListener listener) {
