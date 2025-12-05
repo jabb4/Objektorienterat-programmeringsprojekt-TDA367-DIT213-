@@ -18,6 +18,6 @@ public class KnockbackUpgrade implements UpgradeInterface {
 
     @Override
     public String getName() {
-        return "Knockback +" + extraStrength;
+        return "Knockback +" + (int)extraStrength;
     }
 }

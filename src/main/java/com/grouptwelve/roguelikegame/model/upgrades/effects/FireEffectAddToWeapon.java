@@ -20,7 +20,7 @@ public class FireEffectAddToWeapon implements UpgradeInterface {
 
     @Override
     public String getName() {
-        return "Add Fire Effect (" + dps + " DPS for " + duration + "s)";
+        return "Add Fire Effect (" + (int)dps + " DPS for " + (int)duration + "s)";
     }
 }
 

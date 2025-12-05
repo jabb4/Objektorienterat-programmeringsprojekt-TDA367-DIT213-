@@ -16,6 +16,6 @@ public class KnockbackFlatUpgrade extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + amount + " Knockback";
+        return "+ " + (int)amount + " Knockback";
     }
 }

@@ -9,6 +9,7 @@ public enum Command {
 
     // Actions
     ATTACK,
+    SELECT,
     // ABILITY_1,
     // ABILITY_2,
     // ...

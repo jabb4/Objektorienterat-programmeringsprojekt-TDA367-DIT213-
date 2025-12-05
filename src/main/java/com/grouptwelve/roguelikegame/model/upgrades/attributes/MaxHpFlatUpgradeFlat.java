@@ -17,6 +17,6 @@ public class MaxHpFlatUpgradeFlat extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + amount + " Max HP";
+        return "+ " + (int)amount + " Max HP";
     }
 }

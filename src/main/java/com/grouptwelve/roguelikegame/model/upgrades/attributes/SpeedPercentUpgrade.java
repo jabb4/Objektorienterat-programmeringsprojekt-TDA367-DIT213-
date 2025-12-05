@@ -17,6 +17,6 @@ public class SpeedPercentUpgrade extends PercentAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (percent * 100) + "% Move Speed";
+        return "+ " + (int)(percent * 100) + "% Move Speed";
     }
 }

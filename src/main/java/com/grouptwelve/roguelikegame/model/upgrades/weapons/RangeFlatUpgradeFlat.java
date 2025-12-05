@@ -16,6 +16,6 @@ public class RangeFlatUpgradeFlat extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "Range +" + amount;
+        return "Range +" + (int)amount;
     }
 }

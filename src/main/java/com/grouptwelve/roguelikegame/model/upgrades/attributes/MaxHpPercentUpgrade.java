@@ -19,6 +19,6 @@ public class MaxHpPercentUpgrade extends PercentAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (percent * 100) + "% Max HP";
+        return "+ " + (int) (percent * 100) + "% Max HP";
     }
 }

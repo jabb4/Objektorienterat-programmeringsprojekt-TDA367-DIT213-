@@ -16,6 +16,6 @@ public class SpeedFlatUpgradeFlat extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + amount + " Move Speed";
+        return "+ " + (int)amount + " Move Speed";
     }
 }

@@ -16,6 +16,6 @@ public class WeaponCritChanceFlatUpgrade extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (amount * 100) + "% Crit Chance";
+        return "+ " + (int)(amount * 100) + "% Crit Chance";
     }
 }

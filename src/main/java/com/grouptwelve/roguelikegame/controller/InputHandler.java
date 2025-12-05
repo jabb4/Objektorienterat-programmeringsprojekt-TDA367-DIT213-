@@ -34,6 +34,7 @@ public class InputHandler {
 
         // Action keys
         keyBindings.put(KeyCode.K, Command.ATTACK);
+        keyBindings.put(KeyCode.ENTER, Command.SELECT);
         // keyBindings.put(KeyCode.E, Command.ABILITY_1);
 
         // System keys

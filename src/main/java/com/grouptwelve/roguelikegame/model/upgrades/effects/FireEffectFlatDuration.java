@@ -22,6 +22,6 @@ public class FireEffectFlatDuration extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + amount + " Fire DPS";
+        return "+ " + (int)amount + " Fire DPS";
     }
 }

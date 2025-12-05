@@ -16,6 +16,6 @@ public class WeaponDamageFlatUpgradeFlat extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + amount + " Weapon Damage";
+        return "+ " + (int)amount + " Weapon Damage";
     }
 }

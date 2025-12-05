@@ -17,6 +17,6 @@ public class KnockbackPercentUpgrade extends PercentAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (percent * 100) + "% Knockback";
+        return "+ " + (int)(percent * 100) + "% Knockback";
     }
 }

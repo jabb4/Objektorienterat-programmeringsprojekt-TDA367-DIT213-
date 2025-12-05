@@ -25,7 +25,7 @@ public class FireEffectFlatDmg implements UpgradeInterface {
 
     @Override
     public String getName() {
-        return "Fire Effect Damage +" + extraBurn;
+        return "Fire Effect Damage +" + (int)extraBurn;
     }
 }
 

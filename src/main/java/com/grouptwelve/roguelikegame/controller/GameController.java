@@ -127,23 +127,25 @@ public class GameController implements InputEventListener, GameEventPublisher {
       if(this.selectedBuff == 2) this.selectedBuff = 1;
       else this.selectedBuff = 0;
 
-      System.out.println("buff " + selectedBuff + "is currently selekted, press k to choose");
+      gameView.updateSelectedLabel(selectedBuff);
     }
     else if (command == Command.MOVE_RIGHT && isPressed)
     {
       if(this.selectedBuff == 0) this.selectedBuff = 1;
       else this.selectedBuff = 2;
+        gameView.updateSelectedLabel(selectedBuff);
 
-      System.out.println("buff " + selectedBuff + "is currently selekted, press k to choose");
 
     }
-    else if (command == Command.ATTACK && isPressed)
+    else if (command == Command.SELECT && isPressed)
     {
       for (GameEventListener listener : eventListeners) {
         listener.onChooseBuff(selectedBuff);
+
       }
       paused = false;
       chooseBuff = false;
+      gameView.clearBuffVisuals();
     }
 
   }
@@ -333,9 +335,10 @@ public class GameController implements InputEventListener, GameEventPublisher {
     String[] stringValues = new String[upgrades.length];
     for(int i = 0; i < upgrades.length; i++)
     {
-      stringValues[i] = upgrades[i].getName();
+      stringValues[i] ="Buff"+ (i + 1) + ":   " + upgrades[i].getName() + ",  ";
     }
-    gameView.drawBuffs(stringValues);
+    gameView.updateBuffLabels(stringValues);
+
   }
 
   private void togglePause() {

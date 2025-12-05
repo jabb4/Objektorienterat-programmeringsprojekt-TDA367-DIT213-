@@ -17,6 +17,6 @@ public class WeaponDamagePercentUpgrade extends PercentAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (percent * 100) + "% Weapon Damage";
+        return "+ " + (int)(percent * 100) + "% Weapon Damage";
     }
 }
