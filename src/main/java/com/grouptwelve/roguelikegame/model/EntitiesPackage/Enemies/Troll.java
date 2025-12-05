@@ -1,7 +1,6 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies;
 
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entities;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Club;
 

@@ -2,7 +2,7 @@ package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.ActiveEffectPackage.ActiveEffect;
-import com.grouptwelve.roguelikegame.model.Velocity;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Velocity;
 import com.grouptwelve.roguelikegame.model.WeaponsPackage.Weapon;
 
 import java.util.ArrayList;

@@ -4,7 +4,7 @@ import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.EffectInterface;
 import com.grouptwelve.roguelikegame.model.EffectsPackage.KnockbackEffect;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
 import com.grouptwelve.roguelikegame.model.Game;
 

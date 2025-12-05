@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model;
 
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
@@ -72,7 +73,7 @@ public class Game implements GameEventListener {
         double playerY = player.getY() ;
         for (Enemy enemy : enemiesAlive)
         {
-            enemy.setTargetPos(playerX, playerY);
+            enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
             enemy.update(deltaTime);
         }
 
