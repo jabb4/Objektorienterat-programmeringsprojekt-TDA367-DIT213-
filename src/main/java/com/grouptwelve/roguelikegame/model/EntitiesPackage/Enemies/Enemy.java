@@ -22,10 +22,10 @@ public abstract class Enemy extends Entity {
     // Hur ska vi detta på ett bra objekt orienterat sätt? vvvvv
     /**
      * This method calculates the path the enemy should take to get to the target.
-     * I also change its velocity if it collides with another enemy by trying to walk around it instead.
+     * Also changes its velocity if it collides with another enemy by trying to walk around it instead.
      *
-     * @param targetX The target y coordinate (Where this enemy should want to move to)
-     * @param targetY The target x coordinate (Where this enemy should want to move to)
+     * @param targetX The target x coordinate (Where this enemy should want to move to)
+     * @param targetY The target y coordinate (Where this enemy should want to move to)
      * @param enemies All enemies that this enemy should avoid collision with
      */
     public void velocityAlgorithm(double targetX, double targetY, List<Enemy> enemies)
@@ -33,6 +33,7 @@ public abstract class Enemy extends Entity {
         double thisToTarget_dx = targetX - this.x;
         double thisToTarget_dy = targetY - this.y;
         this.targetDist = Math.sqrt(thisToTarget_dx * thisToTarget_dx + thisToTarget_dy * thisToTarget_dy);
+        if (this.targetDist == 0) {this.targetDist = 0.000000000001;}
         double normDx = thisToTarget_dx / this.targetDist;
         double normDy = thisToTarget_dy / this.targetDist;
         this.dirX = normDx;
