@@ -1,15 +1,14 @@
 package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Enemy;
+import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -17,6 +16,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -33,7 +33,10 @@ public class GameView{
     private final Label directionLabel;
     private final Label statusLabel;
     private final Label gameTimeLabel;
+    private final Label bufflabals;
+    private final Label selectedLabel;
     private final Random rand = new Random();
+
 
     
     public GameView() {
@@ -53,9 +56,16 @@ public class GameView{
         statusLabel.setTextFill(Color.WHITE);
         gameTimeLabel = new Label("Time elapsed: 0:00");
         gameTimeLabel.setTextFill(Color.WHITE);
+
+        bufflabals = new Label("Buffs: ");
+        selectedLabel = new Label("selected: ");
+
+        bufflabals.setTextFill(Color.WHITE);
+        selectedLabel.setTextFill(Color.WHITE);
+
         
         // Layout
-        VBox uiBox = new VBox(5, positionLabel, directionLabel, statusLabel, gameTimeLabel);
+        VBox uiBox = new VBox(5, positionLabel, directionLabel, statusLabel, gameTimeLabel, bufflabals, selectedLabel);
         uiBox.setStyle("-fx-padding: 10; -fx-background-color: #1a1a1a;");
         
         root = new VBox(gameContainer, uiBox);
@@ -120,7 +130,18 @@ public class GameView{
         pause.play();
 
     }
-    
+    public  void clearBuffVisuals()
+    {
+        bufflabals.setText("Buffs: ");
+    }
+    public void updateBuffLabels(String[] buffs)
+    {
+        bufflabals.setText("Buffs: "+ buffs[0]+ buffs[1]+ buffs[2]);
+    }
+    public void updateSelectedLabel(int selectedIndex)
+    {
+        selectedLabel.setText(String.format("Selected buff %d", selectedIndex + 1));
+    }
     /**
      * Updates the direction label. (TEMPORARY FOR DEBUGGING)
      * 
@@ -173,6 +194,13 @@ public class GameView{
             showRedFlash();
         });
         freeze.play();
+    }
+    public void drawBuffs(String[] list)
+    {
+        for(String buff: list)
+        {
+            System.out.println(buff);
+        }
     }
 
     /**
