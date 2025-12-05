@@ -56,7 +56,7 @@ A top-down roguelike survival game built with Java and JavaFX. Fight waves of en
 | Move            | <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or Arrow Keys |
 | Attack          | <kbd>K</kbd>                                                   |
 | Pause           | <kbd>Escape</kbd>                                              |
-| Select upgrade  | <kbd>A</kbd> / <kbd>D</kbd> + <kbd>K</kbd>                     |
+| Select upgrade  | <kbd>A</kbd> / <kbd>D</kbd> + <kbd>Enter</kbd>                 |
 
 ### Objective
 Survive as long as possible against waves of enemies. Kill enemies to gain XP, level up, and choose upgrades to grow stronger.
