@@ -16,7 +16,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         // Get the event manager (acts as event bus between model and controller)
-        EventPublisher eventManager = EventPublisher.getInstance();
+        EventPublisher eventManager = new EventPublisher();
         
         // Create game with event publisher
         Game game = new Game(eventManager);
@@ -29,7 +29,7 @@ public class App extends Application {
         inputHandler.setupInputHandling(scene);
         
         // Create controller (subscribes to event manager)
-        GameController gameController = new GameController(game, gameView, inputHandler);
+        GameController gameController = new GameController(game, gameView, inputHandler, eventManager);
 
         gameController.start();
         

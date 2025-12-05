@@ -30,7 +30,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
   // All systems that want to observe game events
   private final List<GameEventListener> eventListeners;
 
-  public GameController(Game game, GameView gameView, InputHandler inputHandler) {
+  public GameController(Game game, GameView gameView, InputHandler inputHandler, EventPublisher eventPublisher) {
     this.game = game;
     this.gameView = gameView;
     this.inputHandler = inputHandler;
@@ -41,7 +41,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
     // Register listeners
     addEventListener(game);
     inputHandler.setListener(this);
-    EventPublisher.getInstance().subscribe(this);
+    eventPublisher.subscribe(this);
 
     // TODO: Other systems that needs to react to events such as audio and
     // animations.

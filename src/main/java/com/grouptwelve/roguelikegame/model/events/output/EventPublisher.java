@@ -14,19 +14,14 @@ import java.util.List;
  */
 public class EventPublisher implements GameEventPublisher {
     
-    private static EventPublisher instance;
+
     private final List<GameEventPublisher> listeners;
 
-    private EventPublisher() {
+    public EventPublisher() {
         listeners = new ArrayList<>();
     }
 
-    public static EventPublisher getInstance() {
-        if (instance == null) {
-            instance = new EventPublisher();
-        }
-        return instance;
-    }
+
 
     /**
      * Subscribe to receive game events.
