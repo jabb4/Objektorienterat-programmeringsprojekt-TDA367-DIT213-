@@ -1,4 +1,7 @@
-package com.grouptwelve.roguelikegame.model.EntitiesPackage;
+package com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies;
+
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entities;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
 
 import java.util.List;
 

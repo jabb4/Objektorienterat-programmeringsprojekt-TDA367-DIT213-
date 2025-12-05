@@ -3,7 +3,7 @@ package com.grouptwelve.roguelikegame.view;
 import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Enemy;
 import javafx.animation.PauseTransition;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;

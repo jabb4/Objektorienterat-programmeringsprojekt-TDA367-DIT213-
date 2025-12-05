@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model;
 
+import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;

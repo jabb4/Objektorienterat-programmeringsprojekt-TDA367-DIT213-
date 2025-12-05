@@ -1,4 +1,4 @@
-package com.grouptwelve.roguelikegame.model;
+package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
 /**
  * Represents the velocity of an entity.

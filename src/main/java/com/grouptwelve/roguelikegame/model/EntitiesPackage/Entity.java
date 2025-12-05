@@ -1,6 +1,5 @@
 package com.grouptwelve.roguelikegame.model.EntitiesPackage;
 
-import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.DrawEventManager;
 import com.grouptwelve.roguelikegame.model.Weapons.Weapon;
 
