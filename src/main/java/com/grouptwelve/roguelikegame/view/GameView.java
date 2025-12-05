@@ -29,9 +29,9 @@ public class GameView{
     private final Pane gamePaneSlow;
 
 
-    private final Label positionLabel;
-    private final Label directionLabel;
-    private final Label statusLabel;
+    //private final Label positionLabel;
+    //private final Label directionLabel;
+    //private final Label statusLabel;
     private final Label gameTimeLabel;
     private final Label bufflabals;
     private final Label selectedLabel;
@@ -48,24 +48,25 @@ public class GameView{
         gameContainer.getChildren().addAll(gamePane, gamePaneSlow);
 
         // Labels
-        positionLabel = new Label("Player Position: [0.0, 0.0]");
-        positionLabel.setTextFill(Color.WHITE);
-        directionLabel = new Label("Direction: [0, 0]");
-        directionLabel.setTextFill(Color.WHITE);
-        statusLabel = new Label("No keys pressed");
-        statusLabel.setTextFill(Color.WHITE);
+        //positionLabel = new Label("Player Position: [0.0, 0.0]");
+        //positionLabel.setTextFill(Color.WHITE);
+        //directionLabel = new Label("Direction: [0, 0]");
+        //directionLabel.setTextFill(Color.WHITE);
+        //statusLabel = new Label("No keys pressed");
+        //statusLabel.setTextFill(Color.WHITE);
         gameTimeLabel = new Label("Time elapsed: 0:00");
         gameTimeLabel.setTextFill(Color.WHITE);
 
-        bufflabals = new Label("Buffs: ");
-        selectedLabel = new Label("selected: ");
+        bufflabals = new Label("WASD for Move       K for Attack");
+        selectedLabel = new Label(" ");
 
         bufflabals.setTextFill(Color.WHITE);
         selectedLabel.setTextFill(Color.WHITE);
 
         
         // Layout
-        VBox uiBox = new VBox(5, positionLabel, directionLabel, statusLabel, gameTimeLabel, bufflabals, selectedLabel);
+        //VBox uiBox = new VBox(5, positionLabel, directionLabel, statusLabel, gameTimeLabel, bufflabals, selectedLabel);
+        VBox uiBox = new VBox(5, gameTimeLabel, bufflabals, selectedLabel);
         uiBox.setStyle("-fx-padding: 10; -fx-background-color: #1a1a1a;");
         
         root = new VBox(gameContainer, uiBox);
@@ -108,7 +109,7 @@ public class GameView{
 
         }
         // Update position label (TEMPORARY FOR DEBUGGING)
-        positionLabel.setText(String.format("Player Position: [%.1f, %.1f]", player.getX(), player.getY()));
+        //positionLabel.setText(String.format("Player Position: [%.1f, %.1f]", player.getX(), player.getY()));
     }
 
     /**
@@ -132,15 +133,15 @@ public class GameView{
     }
     public  void clearBuffVisuals()
     {
-        bufflabals.setText("Buffs: ");
+        bufflabals.setText("WASD for Move       K for Attack");
     }
     public void updateBuffLabels(String[] buffs)
     {
-        bufflabals.setText("Buffs: "+ buffs[0]+ buffs[1]+ buffs[2]);
+        bufflabals.setText(buffs[0]+ buffs[1]+ buffs[2]);
     }
     public void updateSelectedLabel(int selectedIndex)
     {
-        selectedLabel.setText(String.format("Selected buff %d", selectedIndex + 1));
+        selectedLabel.setText(String.format("Select buff with Enter key: %d", selectedIndex + 1));
     }
     /**
      * Updates the direction label. (TEMPORARY FOR DEBUGGING)
@@ -148,18 +149,18 @@ public class GameView{
      * @param dx Horizontal direction
      * @param dy Vertical direction
      */
-    public void updateDirectionLabel(int dx, int dy) {
-        directionLabel.setText(String.format("Direction: [%d, %d]", dx, dy));
-    }
+    //public void updateDirectionLabel(int dx, int dy) {
+     //   directionLabel.setText(String.format("Direction: [%d, %d]", dx, dy));
+    //}
     
     /**
      * Updates the status label. (TEMPORARY FOR DEBUGGING)
      * 
      * @param status Status text to display
      */
-    public void updateStatusLabel(String status) {
-        statusLabel.setText(status);
-    }
+    //public void updateStatusLabel(String status) {
+    //    statusLabel.setText(status);
+    //}
     
     /**
      * Updates the game time label.

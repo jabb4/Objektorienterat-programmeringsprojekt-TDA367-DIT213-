@@ -197,7 +197,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
       listener.onMovement(event);
     }
 
-    gameView.updateDirectionLabel(event.getDx(), event.getDy());
+    //gameView.updateDirectionLabel(event.getDx(), event.getDy());
 
     // TEMPORARY FOR DEBUGGING
     updateStatusDisplay();
@@ -212,11 +212,11 @@ public class GameController implements InputEventListener, GameEventPublisher {
     List<String> activeKeys = getStrings();
 
     // Update label
-    if (activeKeys.isEmpty()) {
+    /*if (activeKeys.isEmpty()) {
       gameView.updateStatusLabel("No keys pressed");
     } else {
       gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
-    }
+    }*/
   }
 
   private List<String> getStrings() {
@@ -335,7 +335,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
     String[] stringValues = new String[upgrades.length];
     for(int i = 0; i < upgrades.length; i++)
     {
-      stringValues[i] ="Buff"+ (i + 1) + ":   " + upgrades[i].getName() + ",  ";
+      stringValues[i] ="Buff "+ (i + 1) + ":   " + upgrades[i].getName() + "          ";
     }
     gameView.updateBuffLabels(stringValues);
 

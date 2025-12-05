@@ -16,6 +16,6 @@ public class WeaponCritMultiplierFlatUpgrade extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (int)amount + " Crit Multiplier";
+        return "+ " + (int)(amount*100) + " Crit Multiplier";
     }
 }
