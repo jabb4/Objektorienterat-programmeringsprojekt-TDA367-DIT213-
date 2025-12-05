@@ -10,9 +10,7 @@ import javafx.animation.PauseTransition;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -23,7 +21,6 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -41,6 +38,8 @@ public class GameView {
     @FXML private StackPane root;
     @FXML private Canvas gameCanvas;
     @FXML private AnchorPane gameLayer;
+    @FXML private AnchorPane gameObjectsLayer;
+    @FXML private AnchorPane effectsLayer;
     @FXML private AnchorPane uiButtonsLayer;
     @FXML private Rectangle hpBackground;
     @FXML private Rectangle hpFill;
@@ -48,8 +47,10 @@ public class GameView {
     @FXML private Rectangle levelBackground;
     @FXML private Rectangle levelFill;
     @FXML private Label levelLabel;
+    @FXML private Label xpLabel;
     @FXML private ImageView firstItemImage;
     @FXML private Label actionLabel;
+    @FXML private Label timerLabel;
     @FXML private VBox pauseMenu;
     @FXML private VBox deathMenu;
     @FXML private VBox levelUpMenu;
@@ -68,11 +69,6 @@ public class GameView {
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
     Random rand;
-
-    private double attackX;
-    private double attackY;
-    private double attackSize;
-    private double attackTime;
 
     public void setGame(Game game) {
         this.game = game;
@@ -100,27 +96,34 @@ public class GameView {
     }
 
     public void render(Game game, double deltaTime) {
-        // Clear canvas
-        gc.setFill(Color.web("#2a2a2a"));
-        gc.fillRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
+        // Clear the canvas
+        gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
 
-        // Draw player
+        // Clear previous frame
+        gameObjectsLayer.getChildren().clear();
+        
+        // Render player
         Player player = game.getPlayer();
-        gc.setFill(Color.LIGHTBLUE);
+        Circle playerCircle = new Circle(player.getX(), player.getY(), player.getSize());
+        playerCircle.setFill(Color.LIGHTBLUE);
+        gameObjectsLayer.getChildren().add(playerCircle);
 
-        double r = player.getSize();           // treat size as radius
-        gc.fillOval(player.getX() - r, player.getY() - r, r * 2, r * 2);
-
-        // Draw enemies and HP bars
+        // Render enemies
         List<Enemy> enemies = game.getEnemies();
-        gc.setFill(Color.RED);
-        for (Enemy enemy : enemies) {
-            double rE = enemy.getSize();
-            if (!enemy.getAliveStatus()) continue;
-            
-            // Draw the enemy
-            if (enemy.getAliveStatus()) {
-                gc.fillOval(enemy.getX() - rE, enemy.getY() - rE, rE * 2, rE * 2);
+        for(Enemy enemy : enemies)
+        {
+            if(enemy.getAliveStatus())
+            {
+                Circle enemyCircle = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
+                
+                // Hit effect
+                if (enemy.isHit()) {
+                    enemyCircle.setFill(Color.WHITE);
+                } else {
+                    enemyCircle.setFill(Color.RED);
+                }
+                
+                gameObjectsLayer.getChildren().add(enemyCircle);
             }
 
             double barWidth = 40;
@@ -130,25 +133,17 @@ public class GameView {
             // HP bar background
             gc.setFill(Color.GRAY);
             gc.fillRect(enemy.getX() - barWidth / 2,
-                        enemy.getY() - rE - barOffset,
+                        enemy.getY() - enemy.getSize() - barOffset,
                         barWidth, barHeight);
 
             // HP bar fill
             double hpPercentage = enemy.getHp() / enemy.getMaxHP();
             gc.setFill(Color.RED);
             gc.fillRect(enemy.getX() - barWidth / 2,
-                        enemy.getY() - rE - barOffset,
+                        enemy.getY() - enemy.getSize() - barOffset,
                         barWidth * hpPercentage, barHeight);
+        }
                 
-        }
-
-        // Draw attack if active
-        if (attackTime > 0) {
-            gc.setFill(Color.VIOLET);
-            gc.fillOval(attackX - attackSize/2, attackY - attackSize/2, attackSize, attackSize);
-            attackTime -= deltaTime; // decrease remaining time
-        }
-
         // Update labels
         // actionLabel.setText(String.format("Player Position: [%.1f, %.1f]", player.getX(), player.getY()));
     }
@@ -158,11 +153,16 @@ public class GameView {
     //     gc.fillOval(x - size/2, y - size/2, size, size);
     // }
 
-    public void showAttack(double x, double y, double size, double durationSeconds) {
-        this.attackX = x;
-        this.attackY = y;
-        this.attackSize = size;
-        this.attackTime = durationSeconds;
+    public void drawAttack(double x, double y, double size) {
+        //System.out.println(x + " " + y + " " + size);
+        Circle attackCircle = new Circle(x, y, size);
+        attackCircle.setFill(Color.VIOLET);
+        effectsLayer.getChildren().add(attackCircle);
+
+        //remove attackcircle after a short timer
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
+        pause.setOnFinished(_ -> effectsLayer.getChildren().remove(attackCircle));
+        pause.play();
     }
 
     public void updateDirectionLabel(int dx, int dy) {
@@ -174,9 +174,9 @@ public class GameView {
     }
 
     public void updateGameTimeLabel(double gameTime) {
-        // int minutes = (int) (gameTime / 60);
-        // int seconds = (int) (gameTime % 60);
-        // actionLabel.setText(String.format("Time: %d:%02d", minutes, seconds));
+        int minutes = (int) (gameTime / 60);
+        int seconds = (int) (gameTime % 60);
+        timerLabel.setText(String.format("%d:%02d", minutes, seconds));
     }
 
     public void showPauseMenu(boolean show) {
@@ -213,12 +213,22 @@ public class GameView {
             hpFill.setWidth(200 * percentage);
 
             // Update HP label
-            hpLabel.setText(currentHp + " / " + maxHp);
+            int roundedHp = (int)Math.round(currentHp);
+            int roundedMaxHp = (int)Math.round(maxHp);
+            hpLabel.setText(roundedHp + " / " + roundedMaxHp);
 
         } else if (entity instanceof Enemy) {
             ((Enemy) entity).getHpBar().setWidth(200 * percentage);
         }
     }
+
+    public void updateLevelBar(int xp, int xpToNext, int level) {
+        double percentage = (double) xp / xpToNext;
+        levelFill.setWidth(200 * percentage);  // adjust width according to percentage
+        levelLabel.setText("LVL: " + level);
+        xpLabel.setText(xp + "/" + xpToNext);
+    }
+
 
     @FXML
     private void onResume() {
@@ -235,41 +245,14 @@ public class GameView {
         gameController.playAgain();
     }
 
-
-    @FXML
-    protected void onSpawnEnemy() {
-        gameController.spawnEnemy();
-    }
-
-    @FXML
-    protected void onRemoveEnemy() {
-        gameController.removeEnemy();        
-    }
-
-    @FXML
-    protected void onTakeDamage() {
-        gameController.takeDamage(game.getPlayer(), 25);
-    }
-
     @FXML
     protected void onLevelUp() {
         gameController.triggerLevelUp();
     }
 
     @FXML
-    protected void onLevelUp2() {
-        gameController.triggerLevelUp2();
-    }
-
-    @FXML
     protected void onDie() {
         gameController.triggerDeath();
-    }
-
-
-    @FXML
-    protected void onBack() throws IOException {
-        gameController.back();
     }
 
     @FXML
@@ -353,7 +336,7 @@ public class GameView {
             ripple.setFill(Color.TRANSPARENT);
             ripple.setStroke(Color.WHITE);
             ripple.setStrokeWidth(3);
-            gameLayer.getChildren().add(ripple);
+            effectsLayer.getChildren().add(ripple);
             
             // Delay each ripple slightly
             PauseTransition delay = new PauseTransition(Duration.millis(i * 150));
@@ -369,7 +352,7 @@ public class GameView {
                 FadeTransition fade = new FadeTransition(Duration.millis(500), ripple);
                 fade.setFromValue(1.0);
                 fade.setToValue(0.0);
-                fade.setOnFinished(ev -> gameLayer.getChildren().remove(ripple));
+                fade.setOnFinished(ev -> effectsLayer.getChildren().remove(ripple));
                 
                 expand.play();
                 fade.play();
@@ -385,12 +368,12 @@ public class GameView {
         Rectangle flash = new Rectangle(0, 0, 800, 500);
         flash.setFill(Color.RED);
         flash.setOpacity(0.4);
-        gameLayer.getChildren().add(flash);
+        effectsLayer.getChildren().add(flash);
         
         FadeTransition fadeFlash = new FadeTransition(Duration.millis(300), flash);
         fadeFlash.setFromValue(0.4);
         fadeFlash.setToValue(0.0);
-        fadeFlash.setOnFinished(e -> gameLayer.getChildren().remove(flash));
+        fadeFlash.setOnFinished(e -> effectsLayer.getChildren().remove(flash));
         fadeFlash.play();
     }
 
@@ -416,7 +399,7 @@ public class GameView {
         
         dmgLabel.setLayoutX(x - 10);
         dmgLabel.setLayoutY(y - 30);
-        gameLayer.getChildren().add(dmgLabel);
+        effectsLayer.getChildren().add(dmgLabel);
 
         // Float up animation
         TranslateTransition floatUp = new TranslateTransition(Duration.millis(400), dmgLabel);
@@ -426,7 +409,7 @@ public class GameView {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(400), dmgLabel);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
-        fadeOut.setOnFinished(e -> gameLayer.getChildren().remove(dmgLabel));
+        fadeOut.setOnFinished(e -> effectsLayer.getChildren().remove(dmgLabel));
 
         floatUp.play();
         fadeOut.play();
@@ -444,7 +427,7 @@ public class GameView {
         
         for (int i = 0; i < particleCount; i++) {
             Circle particle = new Circle(x, y, 3, Color.WHITE);
-            gameLayer.getChildren().add(particle);
+            effectsLayer.getChildren().add(particle);
             
             // Random direction and distance
             double angle = rand.nextDouble() * 2 * Math.PI;
@@ -459,10 +442,22 @@ public class GameView {
             FadeTransition fade = new FadeTransition(Duration.millis(300), particle);
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
-            fade.setOnFinished(e -> gameLayer.getChildren().remove(particle));
+            fade.setOnFinished(e -> effectsLayer.getChildren().remove(particle));
             
             move.play();
             fade.play();
         }
+    }
+
+    public Button setUpgrade1() {
+        return fireBuffBox;
+    }
+
+    public Button setUpgrade2() {
+        return speedBuffBox;
+    }
+
+    public Button setUpgrade3() {
+        return healthBuffBox;
     }
 }

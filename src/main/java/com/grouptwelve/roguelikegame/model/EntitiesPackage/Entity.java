@@ -124,7 +124,7 @@ public abstract class Entity {
         boolean attackSucceeded = this.weapon.attack(this instanceof Player, this.getAttackPointX(), this.getAttackPointY());
 
         if (attackSucceeded) {
-            ControlEventManager.getInstance().showAttack(this.getAttackPointX(), this.getAttackPointY(), weapon.getRange(), 0.1);
+            ControlEventManager.getInstance().drawAttack(this.getAttackPointX(), this.getAttackPointY(), weapon.getRange());
         }
     }
 

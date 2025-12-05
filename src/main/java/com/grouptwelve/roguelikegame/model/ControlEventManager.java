@@ -50,11 +50,11 @@ public class ControlEventManager
      * @param y coordinate
      * @param size range
      */
-    public void showAttack(double x, double y, double size, double duration)
+    public void drawAttack(double x, double y, double size)
     {
         for(ControllerListener listener : listeners)
         {
-            listener.showAttack(x, y, size, duration);
+            listener.drawAttack(x, y, size);
         }
     }
 

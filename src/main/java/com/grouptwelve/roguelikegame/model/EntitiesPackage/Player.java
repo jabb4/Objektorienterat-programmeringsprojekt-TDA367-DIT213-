@@ -35,11 +35,11 @@ public class Player extends Entity {
     private void onLevelUp() {
         System.out.println("LEVEL UP! New level: " + levelSystem.getLevel());
 
-        UpgradeInterface upgrade = UpgradeRegistry.randomUpgrade();
-        upgrade.apply(this);
-        System.out.println("UPGRADE: " + upgrade.getName());
+        // UpgradeInterface upgrade = UpgradeRegistry.randomUpgrade();
+        // upgrade.apply(this);
+        // System.out.println("UPGRADE: " + upgrade.getName());
 
-        System.out.println(this.toString());
+        // System.out.println(this.toString());
     }
 
 

@@ -4,6 +4,8 @@ import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
+import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.UpgradeRegistry;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.view.ControllerListener;
 import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
@@ -40,7 +42,9 @@ public class GameController implements InputEventListener, ControllerListener {
     private boolean paused = false;
     private boolean death = false;
     private boolean levelUp = false;
-    private boolean levelUp2 = false;
+    private double elapsedTime = 0; // For the timer in game-view (seconds)
+
+    private UpgradeInterface[] currentUpgrades = new UpgradeInterface[3];
 
     public GameController(Game game, GameView gameView, InputHandler inputHandler) {
         this.game = game;
@@ -90,7 +94,7 @@ public class GameController implements InputEventListener, ControllerListener {
         if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus()) {
             togglePause();
         }
-        if(paused) return;
+        if(paused || levelUp)  return;
         // Handle movement commands (trigger on both press and release)
         if (command.isMovement()) {
             // Movement changed - recalculate and notify
@@ -217,30 +221,6 @@ public class GameController implements InputEventListener, ControllerListener {
 
   // ==================== Game Loop ====================
 
-  // /**
-  //  * Starts the game loop.
-  //  * Should be used for resuming game states
-  //  */
-  // public void start() {
-  //   gameLoop = new AnimationTimer() {
-  //     @Override
-  //     public void handle(long now) {
-  //       if (lastUpdate == 0) {
-  //         lastUpdate = now;
-  //         return;
-  //       }
-
-  //       // Update view to show attack
-  //       gameView.showAttack(event.getAttackX(), event.getAttackY(), event.getRange(), 0.1);
-  //   }
-
-  //       update(deltaTime);
-  //       render();
-  //     }
-  //   };
-  //   gameLoop.start();
-  // }
-
   /**
    * Updates the game state based on input and elapsed time.
    */
@@ -271,6 +251,11 @@ public class GameController implements InputEventListener, ControllerListener {
                 
                 update(deltaTime);
                 render();
+
+                // Update timer
+                elapsedTime += deltaTime;
+                gameView.updateGameTimeLabel(elapsedTime);
+
             }
         };
         gameLoop.start();
@@ -294,8 +279,8 @@ public class GameController implements InputEventListener, ControllerListener {
   
 
     @Override
-    public void showAttack(double x, double y, double size, double duration) {
-         gameView.showAttack(x,y,size, duration);
+    public void drawAttack(double x, double y, double size) {
+         gameView.drawAttack(x,y,size);
     }
 
     @Override
@@ -324,72 +309,42 @@ public class GameController implements InputEventListener, ControllerListener {
             stop();                // stop the game loop
             gameView.showPauseMenu(true);
         } else {
+            gameView.showPauseMenu(false);
+            if (levelUp) return;
             lastUpdate = 0;        // prevents deltaTime spike
             start();               // resume game loop
-            gameView.showPauseMenu(false);
         }
     }
 
     public void triggerLevelUp() {
-        levelUp = !levelUp;
+        levelUp = true;
+        stop();     
 
-        if (levelUp) {
-            stop();                
-            gameView.showLevelMenu(true);
-        } else {
-            lastUpdate = 0;        
-            start();               
-            gameView.showLevelMenu(false);
-        }
+        // Generate 3 random upgrades
+        currentUpgrades[0] = UpgradeRegistry.randomUpgrade();
+        currentUpgrades[1] = UpgradeRegistry.randomUpgrade();
+        currentUpgrades[2] = UpgradeRegistry.randomUpgrade();
+
+        // Update button text with upgrade names
+        gameView.setUpgrade1().setText(currentUpgrades[0].getName());
+        gameView.setUpgrade2().setText(currentUpgrades[1].getName());
+        gameView.setUpgrade3().setText(currentUpgrades[2].getName());
+
+        gameView.showLevelMenu(true);
+
     }
-
-    // Design 2
-    public void triggerLevelUp2() {
-        levelUp2 = !levelUp2;
-
-        if (levelUp2) {
-            stop();                
-            gameView.showLevelMenu2(true);
-        } else {
-            lastUpdate = 0;        
-            start();               
-            gameView.showLevelMenu2(false);
-        }
-    }
-
     public void triggerDeath() {
         death = !death;
 
         if (death) {
-            stop();                
+            stop();               
+            game.getPlayer().setAliveStatus(false); 
             gameView.showDeathMenu(true);
         } else {
             lastUpdate = 0;        
             start();               
             gameView.showDeathMenu(false);
         }
-    }
-
-    public void spawnEnemy() {
-        Set<Entities> entityNames = EntityFactory.getInstance().getRegisteredEntityNames();
-
-        // Filter only enemies (optional: if you also registered Player in factory)
-        List<Entities> enemyTypes = entityNames.stream()
-                                         .filter(name -> !name.equals("Player"))
-                                         .toList();
-
-        if (enemyTypes.isEmpty()) return;
-
-        Entities type = enemyTypes.get((int) (Math.random() * enemyTypes.size()));
-
-        double x = Math.random() * 800; // random spawn position
-        double y = Math.random() * 600;
-
-        Entity entity = EntityFactory.getInstance().createEntity(type, x, y);
-    }
-
-    public void removeEnemy() {
-        game.getEnemies().clear();
     }
 
     public void takeDamage(Entity entity, double damage) {
@@ -402,6 +357,10 @@ public class GameController implements InputEventListener, ControllerListener {
         gameView.updateHealthBar(entity.getHp(), entity.getMaxHP(), entity);
     }
 
+    public void levelUp(int xp, int xptonext, int level) {
+        gameView.updateLevelBar(xp, xptonext, level);
+    }
+
     public void resume() {
         if (paused) {
             paused = false;
@@ -409,22 +368,6 @@ public class GameController implements InputEventListener, ControllerListener {
             start();               
             gameView.showPauseMenu(false);
         }
-    }
-
-    public void back() throws IOException {
-        stop();
-        game.reset();
-
-        Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
-
-        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));
-        Scene menuScene = new Scene(menuLoader.load(), 800, 600);
-
-        // Attach global CSS
-        menuScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
-
-        stage.setScene(menuScene);
-        stage.show();
     }
 
     public void playAgain() throws IOException {
@@ -471,35 +414,37 @@ public class GameController implements InputEventListener, ControllerListener {
     }
 
     public void upgrade1() {
-        if (levelUp || levelUp2) {
-            levelUp = false;
-            levelUp2 = false;
-            lastUpdate = 0;        
-            start();               
-            gameView.showLevelMenu(false);
-            gameView.showLevelMenu2(false);
-        }
+        applyUpgrade(0);
     }
 
     public void upgrade2() {
-        if (levelUp || levelUp2) {
-            levelUp = false;
-            levelUp2 = false;
-            lastUpdate = 0;        
-            start();               
-            gameView.showLevelMenu(false);
-            gameView.showLevelMenu2(false);
-        }
+        applyUpgrade(1);
     }
 
     public void upgrade3() {
-        if (levelUp || levelUp2) {
+        applyUpgrade(2);
+    }
+
+    public void applyUpgrade(int index) {
+        if (levelUp) {
             levelUp = false;
-            levelUp2 = false;
-            lastUpdate = 0;        
-            start();               
+
+            // Apply to player
+            UpgradeInterface selected = currentUpgrades[index];
+            selected.apply(game.getPlayer());
+
+            // Update health bar if max HP changed
+            gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP(), game.getPlayer());
+
+            // Resume game
+            lastUpdate = 0;
+            start();
+
+            // Hide menu
             gameView.showLevelMenu(false);
-            gameView.showLevelMenu2(false);
+
+            System.out.println("Applied upgrade: " + selected.getName());
+            System.out.println("Player's health: " + game.getPlayer().getHp());
         }
     }
 }

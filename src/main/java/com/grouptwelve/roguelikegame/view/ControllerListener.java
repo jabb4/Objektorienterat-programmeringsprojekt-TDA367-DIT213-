@@ -5,7 +5,7 @@ package com.grouptwelve.roguelikegame.view;
  * Implemented by the controller to bridge model events to the view.
  */
 public interface ControllerListener {
-    void showAttack(double x, double y, double size, double duration);
+    void drawAttack(double x, double y, double size);
     void playerDied(double x, double y);
     void onEnemyHit(double x, double y, double damage);
     void onEnemyCritHit(double x, double y, double damage);

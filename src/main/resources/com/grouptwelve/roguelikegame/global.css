@@ -38,35 +38,21 @@
 }
 
 
-.levelup-button {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-    -fx-alignment: CENTER;
-    -fx-wrap-text: true;
-    -fx-padding: 10;
-    -fx-border-color: white;
+.button-upgrade {
+    -fx-background-color: rgba(255,255,255,0.15);
     -fx-border-width: 2px;
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-    -fx-cursor: hand;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 15;
 }
 
-.levelup-button:hover {
-    -fx-background-color: rgba(255,255,255,0.2);
+.button-upgrade:hover {
+    -fx-background-color: rgba(255,255,255,0.5); /* remove transparency */
 }
 
-.levelup-button:focused {
-    -fx-border-color: yellow;
-    -fx-background-color: rgba(255,255,0,0.2);
-}
-
-.fire-buff {
-    -fx-background-color: rgba(170,34,34,0.3);
-}
-.speed-buff {
-    -fx-background-color: rgba(34,170,34,0.3);
-}
-.health-buff {
-    -fx-background-color: rgba(34,34,170,0.3);
+.button-upgrade:focused {
+    -fx-background-color: rgba(255,255,255,0.7); /* show highlight when focused via keyboard */
+    -fx-border-color: yellow; /* optional extra visual cue */
 }

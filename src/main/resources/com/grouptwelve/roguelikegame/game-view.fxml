@@ -23,6 +23,17 @@
         <!-- Game Canvas -->
         <Canvas fx:id="gameCanvas" width="800" height="600"
                 AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"/>
+        
+        <AnchorPane fx:id="gameObjectsLayer"/>
+        <AnchorPane fx:id="effectsLayer"/>
+
+        <!-- Timer -->
+        <Label fx:id="timerLabel" text="00:00"
+            style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"
+            AnchorPane.topAnchor="10"
+            AnchorPane.leftAnchor="0"
+            AnchorPane.rightAnchor="0"
+            alignment="CENTER"/>
 
         <!-- HP bar -->
         <HBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10">
@@ -42,8 +53,11 @@
             <StackPane>
                 <Rectangle fx:id="levelBackground" width="200" height="20" style="-fx-fill: #CCFFCC;"/>
                 <HBox alignment="CENTER_RIGHT" nodeOrientation="RIGHT_TO_LEFT"> 
-                    <Rectangle fx:id="levelFill" width="150" height="20" style="-fx-fill: green;"/>
+                    <Rectangle fx:id="levelFill" width="0" height="20" style="-fx-fill: green;"/>
                 </HBox>
+                    <Label fx:id="xpLabel" text="" 
+                    style="-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 6px;"
+                    StackPane.alignment="CENTER"/>
             </StackPane>
             <Label fx:id="levelLabel" text="LVL: 1" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
         </VBox>
@@ -84,18 +98,27 @@
         <!-- Status/feedback label -->
         <Label fx:id="actionLabel" AnchorPane.topAnchor="10" AnchorPane.rightAnchor="10"/>
 
+        <!-- Controls display (bottom-left corner) -->
+        <VBox spacing="5" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" alignment="BOTTOM_LEFT">
+            <Label text="Controls" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Label text="W A S D - Move" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="K - Attack" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="Esc - Pause" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="1, 2, 3 - Switch Weapons" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+        </VBox>
+
     </AnchorPane>
 
     <!-- Bottom-right buttons -->
     <AnchorPane fx:id="uiButtonsLayer">
         <VBox spacing="10" AnchorPane.bottomAnchor="20" AnchorPane.rightAnchor="20">
             <!-- <Button text="Spawn enemy" onAction="#onSpawnEnemy" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
-            <Button text="Remove enemy" onAction="#onRemoveEnemy" styleClass="test-button" style="-fx-font-size: 8px;"/>
-            <Button text="Take damage" onAction="#onTakeDamage" styleClass="test-button" style="-fx-font-size: 8px;"/>
+            <!-- <Button text="Remove enemy" onAction="#onRemoveEnemy" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
+            <!-- <Button text="Take damage" onAction="#onTakeDamage" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
             <Button text="Level up" onAction="#onLevelUp" styleClass="test-button" style="-fx-font-size: 8px;"/>
-            <Button text="Level up (2)" onAction="#onLevelUp2" styleClass="test-button" style="-fx-font-size: 8px;"/>
+            <!-- <Button text="Level up (2)" onAction="#onLevelUp2" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
             <Button text="Die" onAction="#onDie" styleClass="test-button" style="-fx-font-size: 8px;"/>
-            <Button text="Back" onAction="#onBack" styleClass="test-button" style="-fx-font-size: 8px;"/>
+            <!-- <Button text="Back" onAction="#onBack" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
         </VBox>
     </AnchorPane>
 
@@ -107,7 +130,7 @@
         <Button text="Quit" onAction="#onQuit"/>
     </VBox>
 
-    <!-- Level up menu overlay (horizontal) -->
+    <!-- Level up menu overlay (horizontal)
     <VBox fx:id="levelUpMenu"
         spacing="20" alignment="CENTER" visible="false"
         style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
@@ -175,10 +198,10 @@
                 </text>
             </Button>
         </HBox>
-    </VBox>
+    </VBox> -->
 
     <!-- Vertical version -->
-    <VBox fx:id="levelUpMenuVertical"
+    <VBox fx:id="levelUpMenu"
         spacing="20" alignment="CENTER" visible="false"
         style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
 
@@ -190,18 +213,12 @@
 
         <VBox spacing="20" alignment="CENTER">
 
-        <Button fx:id="fireBuffBoxV"
+        <Button fx:id="fireBuffBox"
                 prefWidth="300" prefHeight="100"
                 wrapText="true"
                 onAction="#onSelectUpgrade1"
-                style="-fx-background-color: rgba(255,255,255,0.15);
-                    -fx-border-width: 2px;
-                    -fx-border-color: orange;
-                    -fx-background-radius: 15;
-                    -fx-border-radius: 15;
-                    -fx-text-fill: white;
-                    -fx-font-size: 12px;
-                    -fx-padding: 15;">
+                styleClass="button-upgrade"
+                style="-fx-border-color: orange;">
             <text>
                 Fire Buff
                 Adds fire damage to your sword.
@@ -209,43 +226,29 @@
             </text>
         </Button>
 
-        <Button fx:id="speedBuffBoxV"
+        <Button fx:id="speedBuffBox"
                 prefWidth="300" prefHeight="100"
                 wrapText="true"
                 onAction="#onSelectUpgrade2"
-                style="-fx-background-color: rgba(255,255,255,0.15);
-                    -fx-border-width: 2px;
-                    -fx-border-color: cyan;
-                    -fx-background-radius: 15;
-                    -fx-border-radius: 15;
-                    -fx-text-fill: white;
-                    -fx-font-size: 12px;
-                    -fx-padding: 15;">
+                styleClass="button-upgrade"
+                style="-fx-border-color: cyan;">
             <text>
                 Speed Buff
                 Increases speed by 25%
             </text>
         </Button>
 
-        <Button fx:id="healthBuffBoxV"
+        <Button fx:id="healthBuffBox"
                 prefWidth="300" prefHeight="100"
                 wrapText="true"
                 onAction="#onSelectUpgrade3"
-                style="-fx-background-color: rgba(255,255,255,0.15);
-                    -fx-border-width: 2px;
-                    -fx-border-color: lime;
-                    -fx-background-radius: 15;
-                    -fx-border-radius: 15;
-                    -fx-text-fill: white;
-                    -fx-font-size: 12px;
-                    -fx-padding: 15;">
+                styleClass="button-upgrade"
+                style="-fx-border-color: lime;">
             <text>
                 Health Increase
                 Restores 25% health
             </text>
         </Button>
-
-
         </VBox>
     </VBox>
 
@@ -257,4 +260,5 @@
         <Button text="Options" onAction="#onOptions"/>
         <Button text="Quit" onAction="#onQuit"/>
     </VBox>
+
 </StackPane>

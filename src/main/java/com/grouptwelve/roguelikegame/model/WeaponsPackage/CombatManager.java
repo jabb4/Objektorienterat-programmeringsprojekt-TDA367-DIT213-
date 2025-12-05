@@ -80,7 +80,17 @@ public class CombatManager
                     }
                     
                     if(!enemy.getAliveStatus()){
+                        int oldLevel = player.getLevelSystem().getLevel();  // store current level
                         player.gainXP(enemy.getXpValue());
+                        int newLevel = player.getLevelSystem().getLevel(); // get new level
+
+                        // Update players level up bar
+                        gameController.levelUp(player.getLevelSystem().getXP(), player.getLevelSystem().getXPToNext(), player.getLevelSystem().getLevel());
+
+                        // Trigger level up menu
+                        if (newLevel > oldLevel) {
+                            gameController.triggerLevelUp();              // only trigger if level increased
+                        }
 
                         System.out.println("Enemy died! XP: "
                                 + player.getLevelSystem().getXP() + "/"
