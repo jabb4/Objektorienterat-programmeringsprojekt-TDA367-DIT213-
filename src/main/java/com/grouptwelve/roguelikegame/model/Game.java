@@ -2,6 +2,8 @@ package com.grouptwelve.roguelikegame.model;
 
 import com.grouptwelve.roguelikegame.model.combat.CombatManager;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
+import com.grouptwelve.roguelikegame.model.constraints.BoundsConstraint;
+import com.grouptwelve.roguelikegame.model.constraints.ConstraintSystem;
 import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
@@ -28,6 +30,8 @@ import java.util.Random;
  */
 public class Game implements GameEventListener, AttackListener, LevelUpListener {
 
+    private final GameWorld world;
+    private final ConstraintSystem constraintSystem;
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private final CombatManager combatManager;
@@ -49,9 +53,14 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         this.eventPublisher = eventPublisher;
         this.upgrades = new UpgradeInterface[3];
 
+        // Initialize world and constraint system
+        this.world = new GameWorld(1280, 720);
+        this.constraintSystem = new ConstraintSystem();
+        this.constraintSystem.addConstraint(new BoundsConstraint(world));
+
         // Initialize game state
         LoadEntities.load();
-        this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
+        this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, world.getWidth() / 2, world.getHeight() / 2);
         this.enemiesAlive = new ArrayList<>();
         this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
         this.gameTime = 0;
@@ -131,6 +140,11 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
 
         player.update(deltaTime);
         updateEnemies(deltaTime);
+
+        // Apply world constraints (bounds, etc.)
+        constraintSystem.apply(player);
+        constraintSystem.applyAll(enemiesAlive);
+
         spawnEnemies();
     }
 
@@ -156,8 +170,9 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     private void spawnEnemies() {
         if ((int) gameTime != lastEnemySpawnTime && (int) gameTime % enemyBaseSpawnRate == 0) {
             for (int i = 0; i <= rand.nextInt(enemyMaxSpawnAmount); i++) {
-                int spawnX = rand.nextInt(400);
-                int spawnY = rand.nextInt(400);
+                int margin = 20;
+                int spawnX = margin + rand.nextInt((int) world.getWidth() - 2 * margin);
+                int spawnY = margin + rand.nextInt((int) world.getHeight() - 2 * margin);
                 Enemy enemy = EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY);
                 enemy.setAttackListener(this);  // Register this Game as the attack listener
                 enemiesAlive.add(enemy);
