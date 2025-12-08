@@ -43,7 +43,7 @@ public class GameView{
         StackPane gameContainer = new StackPane();
         gamePaneSlow = new Pane();
         gamePane = new Pane();
-        gamePane.setPrefSize(800, 500);
+        gamePane.setPrefSize(1280, 720);
         gamePane.setStyle("-fx-background-color: #2a2a2a;");
         gameContainer.getChildren().addAll(gamePane, gamePaneSlow);
 
@@ -247,7 +247,7 @@ public class GameView{
      * Shows a brief red flash overlay on the screen.
      */
     private void showRedFlash() {
-        Rectangle flash = new Rectangle(0, 0, 800, 500);
+        Rectangle flash = new Rectangle(0, 0, 1280, 720);
         flash.setFill(Color.RED);
         flash.setOpacity(0.4);
         gamePaneSlow.getChildren().add(flash);

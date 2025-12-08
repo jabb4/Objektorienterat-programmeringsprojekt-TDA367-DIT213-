@@ -25,7 +25,7 @@ public class App extends Application {
         GameView gameView = new GameView();
         InputHandler inputHandler = new InputHandler();
 
-        Scene scene = new Scene(gameView.getRoot(), 800, 600);
+        Scene scene = new Scene(gameView.getRoot(), 1280, 720);
         inputHandler.setupInputHandling(scene);
         
         // Create controller (subscribes to event manager)
