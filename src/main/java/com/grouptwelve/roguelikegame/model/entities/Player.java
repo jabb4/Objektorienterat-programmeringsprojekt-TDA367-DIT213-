@@ -1,22 +1,111 @@
 package com.grouptwelve.roguelikegame.model.entities;
 
-import javafx.scene.paint.Color;
+import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
+import com.grouptwelve.roguelikegame.model.level.LevelSystem;
+import com.grouptwelve.roguelikegame.model.weapons.Sword;
 
 public class Player extends Entity {
+    private boolean wantMove;
+    private LevelUpListener levelUpListener;
+
+    private LevelSystem levelSystem = new LevelSystem();
+
 
     public Player(double x, double y) {
-        super("Player", x, y, 100, 30, 100, 20, Color.BLUE);
-        this.speed = 5; // What is a good speed value?
+        super("Player",Entities.PLAYER, x, y, 100, 10, 100);
+        this.velocity.setMaxSpeed(150);
+        this.weapon = new Sword();
+        this.wantMove = false;
+    }
+
+    public void gainXP(int amount) {
+        boolean leveledUp = levelSystem.addXP(amount);
+        if (leveledUp) {
+            onLevelUp();
+        }
+    }
+
+    public LevelSystem getLevelSystem() {
+        return levelSystem;
+    }
+
+    /**
+     * tells game when leveling up
+     */
+    private void onLevelUp() {
+        levelUpListener.onLevelUp(levelSystem.getLevel());
+    }
+    public void setLevelUpListener(LevelUpListener listener) {
+        this.levelUpListener = listener;
     }
 
     @Override
-    public void attack(Entity target) {
-        System.out.println(name + " attacks " + target.getName() + " for " + attackMultiplier + " damage!");
-        target.takeDamage(attackMultiplier);
+    public void update(double deltaTime)
+    {
+        super.update(deltaTime); // Handle knockback
+
+        if (wantMove)
+        {
+            move((deltaTime));
+        }
     }
 
-    public int getSize() {
-        return size;
+    /**
+     * Sets the movement direction and updates velocity.
+     *
+     * @param dx x-component of movement vector
+     * @param dy y-component of movement vector
+     */
+    public void setMovementDirection(double dx, double dy) {
+        if (dx != 0 || dy != 0) {
+            this.dirX = dx;
+            this.dirY = dy;
+
+            // Normalize the vector (for diagonal movement)
+            double length = Math.sqrt(dx * dx + dy * dy);
+            double normDx = dx / length;
+            double normDy = dy / length;
+
+            // Scale by maxSpeed to get velocity
+            wantMove = true;
+            velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
+        } else {
+            // Stop moving
+            wantMove = false;
+            velocity.stop();
+        }
+    }
+
+    @Override
+    public void takeDamage(double dmg)
+    {
+        this.hp -= dmg;
+
+        if(this.hp <= 0)
+        {
+            this.isAlive = false;
+            // Player death event is now published by Game/CombatManager
+        }
+    }
+
+    static {
+        EntityFactory.getInstance().registerEntity(Entities.PLAYER, new Player(0,0));
+    }
+
+    @Override
+    public Player createEntity(double x, double y) {
+        return new Player(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "pos=(" + x + ", " + y + ")" +
+                ", hp=" + hp + "/" + maxHP +
+                ", level=" + levelSystem.getLevel() +
+                ", xp=" + levelSystem.getXP() + "/" + levelSystem.getXPToNext() +
+                ", speed=" + getMoveSpeed() +
+                ", weapon=" + weapon +
+                '}';
     }
 }
-

@@ -1,52 +1,237 @@
 package com.grouptwelve.roguelikegame.model.entities;
 
-import javafx.scene.paint.Color;
+import com.grouptwelve.roguelikegame.model.Velocity;
+import com.grouptwelve.roguelikegame.model.combat.CombatResult;
+import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
+import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
+import com.grouptwelve.roguelikegame.model.weapons.Weapon;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class Entity {
     protected String name;
+    protected Entities type;
     protected double x, y;
     protected double hp;
-    protected double speed;
-    protected int size;
     protected double maxHP;
-    protected double attackMultiplier;
-    public Color color;
-    // speed???
-    // boolean isAlive???
+    protected boolean isAlive;
+    protected int size;
+    protected Velocity velocity;
 
-    public Entity(String name, double x, double y, double hp, int size, double maxHP, double attackMultiplier, Color color){
+    // Facing direction (used for attack direction)
+    protected double dirX;
+    protected double dirY;
+
+    protected Weapon weapon;
+
+    // Attack listener - notified when this entity attacks (Observer pattern)
+    protected AttackListener attackListener;
+
+    // Hit effect state
+    protected boolean isHit;
+    protected double hitTimer;
+
+    private List<ActiveEffect> activeEffects = new ArrayList<>();
+
+
+    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP){
         this.name = name;
+        this.type = type;
         this.x = x;
         this.y = y;
         this.hp = hp;
-        this.size = size;
         this.maxHP = maxHP;
-        this.attackMultiplier = attackMultiplier;
-        this.color = color;
+        this.size = size;
+        this.velocity = new Velocity(100);
+        this.isAlive = true;
+        this.isHit = false;
+        this.hitTimer = 0.0;
     }
 
-    public double getHp() {
-        return hp;
+    /**
+     * Updates the entity's state each frame.
+     * Currently, handles velocity, knockback, weapon cooldown, and hit effects.
+     *
+     * @param deltaTime Time since last update
+     */
+    protected void update(double deltaTime) {
+        // Update velocity
+        velocity.update(deltaTime);
+        
+        // Update weapon cooldown
+        if (weapon != null) {
+            weapon.update(deltaTime);
+        }
+
+        // Update hit effect timer
+        if (isHit && (hitTimer -= deltaTime) <= 0) {
+            isHit = false;
+        }
+
+        // === Update all active effects ===
+        Iterator<ActiveEffect> it = activeEffects.iterator();
+        while (it.hasNext()) {
+            ActiveEffect effect = it.next();
+            effect.update(this, deltaTime);
+
+            if (effect.isFinished()) {
+                it.remove();
+            }
+        }
     }
 
-    public double getMaxHp() {
-        return maxHP;
+
+    public void addEffect(ActiveEffect effect) {
+        activeEffects.add(effect);
     }
 
-    public double getSpeed() {
-        return speed;
+    protected void move(double deltaTime) {
+        x += velocity.getX() * deltaTime;
+        y += velocity.getY() * deltaTime;
+    }
+
+    // ==================== Combat ====================
+
+    public double getAttackPointX() {
+        return this.x + this.dirX * 20;
+    }
+
+    public double getAttackPointY() {
+        return this.y + this.dirY* 20;
+    }
+
+    /**
+     * Applies damage to itself. Sets isAlive to false if HP drops to 0 or below.
+     *
+     * @param dmg Amount of damage to apply
+     */
+    public void takeDamage(double dmg)
+    {
+        this.hp -= dmg;
+
+        if (this.hp <= 0) {
+            this.isAlive = false;
+        }
+    }
+
+    /**
+     * Attempts to attack using the equipped weapon.
+     * If an AttackListener is set, it will be notified to handle combat resolution.
+     *
+     * @return true if the attack was performed, false if weapon on cooldown or no weapon
+     */
+    public boolean attack() {
+        if (this.weapon == null) return false;
+        if (!this.weapon.canAttack()) return false;
+
+        // Reset weapon cooldown
+        this.weapon.resetCooldown();
+
+        // Notify listener to handle combat resolution
+        if (attackListener != null) {
+            CombatResult result = weapon.calculateDamage();
+            attackListener.onEntityAttacked(this, getAttackPointX(), getAttackPointY(), weapon.getRange(), result, weapon.getEffects());
+        }
+        return true;
+    }
+
+    /**
+     * Sets the attack listener that will be notified when this entity attacks.
+     * Used by Game to handle combat resolution.
+     *
+     * @param listener The listener to notify on attack
+     */
+    public void setAttackListener(AttackListener listener) {
+        this.attackListener = listener;
+    }
+
+    /**
+     * Applies a knockback force to this entity.
+     *
+     * @param dirX Normalized x direction of knockback
+     * @param dirY Normalized y direction of knockback
+     * @param strength The strength/speed of the knockback
+     */
+    public void applyKnockback(double dirX, double dirY, double strength) {
+        velocity.applyKnockback(dirX, dirY, strength);
+    }
+
+    // ==================== Speed Control ====================
+
+    public double getMoveSpeed() {
+        return velocity.getMaxSpeed();
+    }
+
+    public void setMoveSpeed(double speed) {
+        velocity.setMaxSpeed(speed);
+    }
+
+    public void increaseMoveSpeed(double amount) {
+        velocity.setMaxSpeed(velocity.getMaxSpeed() + amount);
+    }
+
+    public void multiplyMoveSpeed(double multiplier) {
+        velocity.setMaxSpeed(velocity.getMaxSpeed() * multiplier);
+    }
+
+    // ==================== Getters ====================
+
+    public String getName() {
+        return this.name;
     }
 
     public double getX() {
-        return x;
+        return this.x;
     }
 
     public double getY() {
-        return y;
+        return this.y;
+    }
+
+    public double getHp() {
+        return this.hp;
+    }
+
+    public double getMaxHP() {
+        return this.maxHP;
     }
 
     public int getSize() {
-        return size;
+        return this.size;
+    }
+
+    public boolean getAliveStatus()
+    {
+        return this.isAlive;
+    }
+
+    public void revive()
+    {
+        this.hp = maxHP;
+        this.isAlive = true;
+    }
+
+    //fix later
+    public Weapon getWeapon() {
+        return this.weapon;
+    }
+
+    public Entities getType() {return this.type;}
+
+    public boolean isHit() {
+        return this.isHit;
+    }
+
+    // ==================== Setters ====================
+
+    public void setMaxHP(double maxHP) {
+        this.maxHP = maxHP;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setX(double x) {
@@ -57,60 +242,39 @@ public abstract class Entity {
         this.y = y;
     }
 
+    public void setHp(double hp) {
+        this.hp = hp;
+    }
+
     public void setSize(int size) {
         this.size = size;
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
     }
 
-    protected void setHp(double hp){
-        this.hp = hp;
-    }
-
-    protected void increaseHp(double hp) {
-        if((this.hp + hp) >= maxHP){
-            this.hp = maxHP;
-        }
-        else{
-            this.hp += hp;
-        }
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void move(int dx, int dy){
-        this.x = x + (dx*speed);
-        this.y = y + (dy*speed);
-    }
-
-    public void takeDamage(double dmg){
-        hp -= dmg;
-    }
-    public void attack(Entity target){
-        target.takeDamage(attackMultiplier);
+    /**
+     * Sets the hit state for visual feedback.
+     * @param hit Whether the entity is currently hit
+     * @param duration How long the hit effect should last
+     */
+    public void setHit(boolean hit, double duration) {
+        this.isHit = hit;
+        this.hitTimer = duration;
     }
 
     @Override
     public String toString() {
-        return "Entities{" +
+        return "Entity{" +
                 "name=" + name +
                 ", x=" + x +
                 ", y=" + y +
                 ", hp=" + hp +
-                ", speed=" + speed +
                 ", size=" + size +
+                ", weapon=" + weapon +
                 '}';
     }
 
-    public Color getColor() {
-        return color;
-    }
+    public abstract Entity createEntity(double x, double y);
 }

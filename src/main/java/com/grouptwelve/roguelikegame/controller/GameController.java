@@ -4,16 +4,8 @@ import com.grouptwelve.roguelikegame.model.ControlEventManager;
 import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
 import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
 import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeInterface;
-import com.grouptwelve.roguelikegame.model.UpgradesPackage.UpgradeLogic.UpgradeRegistry;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.view.ControllerListener;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.EntityFactory;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entities;
-import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatManager;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXMLLoader;
@@ -31,31 +23,28 @@ import java.util.Objects;
  * Coordinates the game loop and events.
  */
 public class GameController implements InputEventListener, ControllerListener {
-    private final Game game;
-    private final GameView gameView;
-    private final InputHandler inputHandler;
-    private AnimationTimer gameLoop;
-    private long lastUpdate;
-    // All systems that want to observe game events
-    private final List<GameEventListener> eventListeners;
-    double deltaTime;
-    private boolean paused = false;
-    private boolean death = false;
-    private boolean levelUp = false;
-    private double elapsedTime = 0; // For the timer in game-view (seconds)
+  private final Game game;
+  private final GameView gameView;
+  private final InputHandler inputHandler;
+  private AnimationTimer gameLoop;
+  private long lastUpdate;
+  private boolean paused;
 
-    private UpgradeInterface[] currentUpgrades = new UpgradeInterface[3];
+  // All systems that want to observe game events
+  private final List<GameEventListener> eventListeners;
 
-    public GameController(Game game, GameView gameView, InputHandler inputHandler) {
-        this.game = game;
-        this.gameView = gameView;
-        this.inputHandler = inputHandler;
-        this.eventListeners = new ArrayList<>();
-        this.lastUpdate = 0;
+  public GameController(Game game, GameView gameView, InputHandler inputHandler) {
+    this.game = game;
+    this.gameView = gameView;
+    this.inputHandler = inputHandler;
+    this.eventListeners = new ArrayList<>();
+    this.lastUpdate = 0;
+    this.paused = false;
 
-        addEventListener(game);
-        inputHandler.setListener(this);
-        ControlEventManager.getInstance().subscribe(this);
+    // Register listeners
+    addEventListener(game);
+    inputHandler.setListener(this);
+    ControlEventManager.getInstance().subscribe(this);
 
         // Set this controller in CombatManager
         CombatManager.getInstance().setGameController(this);
@@ -84,23 +73,25 @@ public class GameController implements InputEventListener, ControllerListener {
         handleCommand(command, true);
     }
 
-    /**
-     * Translates input commands into game events.
-     *
-     * @param command The command that was triggered
-     * @param isPressed True if pressed, false if released
-     */
-    private void handleCommand(Command command, boolean isPressed) {
-        if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus()) {
-            togglePause();
-        }
-        if(paused || levelUp)  return;
-        // Handle movement commands (trigger on both press and release)
-        if (command.isMovement()) {
-            // Movement changed - recalculate and notify
-            MovementEvent event = createMovementEvent();
-            notifyMovement(event);
-        }
+  /**
+   * Translates input commands into game events.
+   *
+   * @param command   The command that was triggered
+   * @param isPressed True if pressed, false if released
+   */
+  private void handleCommand(Command command, boolean isPressed) {
+    if (command == Command.PAUSE && isPressed) {
+      togglePause();
+    }
+    if (paused) {
+      return;
+    }
+    // Handle movement commands (trigger on both press and release)
+    if (command.isMovement()) {
+      // Movement changed - recalculate and notify
+      MovementEvent event = createMovementEvent();
+      notifyMovement(event);
+    }
 
         // Handle action commands (only on press)
         else if (command == Command.ATTACK && isPressed) {
@@ -116,11 +107,11 @@ public class GameController implements InputEventListener, ControllerListener {
         }
         }
 
-        // TODO: Handle other commands when implemented
+    // TODO: Handle other commands when implemented
 
-    }
+  }
 
-    // ==================== Event Creation ====================
+  // ==================== Event Creation ====================
 
     /**
      * Creates a movement event from currently active movement commands into a vector.
@@ -167,7 +158,7 @@ public class GameController implements InputEventListener, ControllerListener {
       listener.onMovement(event);
     }
 
-    gameView.updateDirectionLabel(event.getDx(), event.getDy());
+    //gameView.updateDirectionLabel(event.getDx(), event.getDy());
 
     // TEMPORARY FOR DEBUGGING
     updateStatusDisplay();
@@ -182,12 +173,11 @@ public class GameController implements InputEventListener, ControllerListener {
     List<String> activeKeys = getStrings();
 
     // Update label
-    if (activeKeys.isEmpty()) {
+    /*if (activeKeys.isEmpty()) {
       gameView.updateStatusLabel("No keys pressed");
     } else {
       gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
     }
-    // TODO: Add more event creation methods as features are implemented
   }
 
 
@@ -222,6 +212,30 @@ public class GameController implements InputEventListener, ControllerListener {
   // ==================== Game Loop ====================
 
   /**
+   * Starts the game loop.
+   * Should be used for resuming game states
+   */
+  public void start() {
+    gameLoop = new AnimationTimer() {
+      @Override
+      public void handle(long now) {
+        if (lastUpdate == 0) {
+          lastUpdate = now;
+          return;
+        }
+
+        // Calculate delta time in seconds
+        double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
+        lastUpdate = now;
+
+        update(deltaTime);
+        render();
+      }
+    };
+    gameLoop.start();
+  }
+
+  /**
    * Updates the game state based on input and elapsed time.
    */
   private void update(double deltaTime) {
@@ -230,76 +244,61 @@ public class GameController implements InputEventListener, ControllerListener {
       return;
     game.update(deltaTime);
 
+    // Update time display
+    gameView.updateGameTimeLabel(game.getGameTime());
   }
-    /**
-     * Starts the game loop.
-     * Should be used for resuming game states
-     */
-    public void start() {
-        lastUpdate = System.nanoTime(); // Reset timer
-        gameLoop = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (lastUpdate == 0) {
-                    lastUpdate = now;
-                    return;
-                }
-                
-                // Calculate delta time in seconds
-                deltaTime = (now - lastUpdate) / 1_000_000_000.0;
-                lastUpdate = now;
-                
-                update(deltaTime);
-                render();
 
-                // Update timer
-                elapsedTime += deltaTime;
-                gameView.updateGameTimeLabel(elapsedTime);
+  /**
+   * Renders the current game state.
+   */
+  private void render() {
+    gameView.render(game);
+  }
 
-            }
-        };
-        gameLoop.start();
+  /**
+   * Stops the game loop.
+   * Should be used for pausing game states
+   */
+  public void stop() {
+    if (gameLoop != null) {
+      gameLoop.stop();
     }
-    /**
-     * Renders the current game state.
-     */
-    private void render() {
-        gameView.render(game, deltaTime);
-    }
-    
-    /**
-     * Stops the game loop.
-     * Should be used for pausing game states
-     */
-    public void stop() {
-        if (gameLoop != null) {
-            gameLoop.stop();
-        }
-    }
-  
-
-    @Override
-    public void drawAttack(double x, double y, double size) {
-         gameView.drawAttack(x,y,size);
-    }
-
-    @Override
-    public void playerDied(double x, double y) {
-        game.getPlayer().setAliveStatus(false);
-        gameView.playerDied(x, y);
-        stop();
-    }
+  }
 
   @Override
-  public void onEnemyHit(double x, double y, double damage) {
-    gameView.showDamageNumber(x, y, damage, false);
+  public void drawAttack(double x, double y, double size) {
+    gameView.drawAttack(x, y, size);
+  }
+
+  @Override
+  public void playerDied(double x, double y) {
+    gameView.playerDied(x, y);
+    paused = true;
+  }
+
+  @Override
+  public void onEnemyHit(double x, double y, double damage, boolean isCritical) {
+    gameView.showDamageNumber(x, y, damage, isCritical);
     gameView.spawnHitParticles(x, y);
   }
 
   @Override
-  public void onEnemyCritHit(double x, double y, double damage) {
-    gameView.showDamageNumber(x, y, damage, true);
-    gameView.spawnHitParticles(x, y);
+  public void onEnemyDeath(double x, double y, int xpValue) {
+    // Visual effects for enemy death can be added here
+    // XP handling is done in the model layer
+  }
+  @Override
+  public void onPlayerLevelUp(int level, UpgradeInterface[] upgrades)
+  {
+    chooseBuff = true;
+    this.paused = true;
+    String[] stringValues = new String[upgrades.length];
+    for(int i = 0; i < upgrades.length; i++)
+    {
+      stringValues[i] ="Buff "+ (i + 1) + ":   " + upgrades[i].getName() + "          ";
+    }
+    gameView.updateBuffLabels(stringValues);
+
   }
 
     public void togglePause() {

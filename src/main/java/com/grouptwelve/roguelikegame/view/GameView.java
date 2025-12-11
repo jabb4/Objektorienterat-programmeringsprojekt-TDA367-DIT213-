@@ -2,13 +2,10 @@ package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Player;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemy;
+import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
-
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Entity;
-
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
@@ -319,6 +316,13 @@ public class GameView {
 
         gameController.triggerDeath();
     }
+    public void drawBuffs(String[] list)
+    {
+        for(String buff: list)
+        {
+            System.out.println(buff);
+        }
+    }
 
     /**
      * Creates an expanding ripple/shockwave effect from the death location.
@@ -363,7 +367,7 @@ public class GameView {
      * Shows a brief red flash overlay on the screen.
      */
     private void showRedFlash() {
-        Rectangle flash = new Rectangle(0, 0, 800, 500);
+        Rectangle flash = new Rectangle(0, 0, 1280, 720);
         flash.setFill(Color.RED);
         flash.setOpacity(0.4);
         effectsLayer.getChildren().add(flash);
