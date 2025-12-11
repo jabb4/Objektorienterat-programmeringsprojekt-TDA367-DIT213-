@@ -3,6 +3,8 @@ package com.grouptwelve.roguelikegame.model.entities.enemies;
 import com.grouptwelve.roguelikegame.model.entities.Entities;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 
+import javafx.scene.shape.Rectangle;
+
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public abstract class Enemy extends Entity {
     protected double lockedDirY;
 
     protected int xpValue = 20; // default, Goblin/Troll override
+    private Rectangle hpBar; // Each enemy is assign a hpbar to keep track off
 
     public int getXpValue() {
         return xpValue;
@@ -238,5 +241,14 @@ public abstract class Enemy extends Entity {
         if (weapon != null) {
             weapon.resetCooldown();
         }
+    }
+
+    /**
+     * Gets the current hp state.
+     *
+     * @return The current hpBar
+     */
+    public Rectangle getHpBar() {
+        return hpBar;
     }
 }

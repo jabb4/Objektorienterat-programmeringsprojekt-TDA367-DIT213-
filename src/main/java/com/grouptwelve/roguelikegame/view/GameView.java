@@ -2,6 +2,7 @@ package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import javafx.animation.FadeTransition;
@@ -62,15 +63,11 @@ public class GameView {
     private Rectangle highlightedItem = null;
 
     private GraphicsContext gc;
-    private Game game;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
     Random rand;
 
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
+    // This is for setting "FXML" controller
     public void setGameController(GameController controller) {
         this.gameController = controller;
     }
@@ -142,15 +139,7 @@ public class GameView {
                         enemy.getY() - enemy.getSize() - barOffset,
                         barWidth * hpPercentage, barHeight);
         }
-                
-        // Update labels
-        // actionLabel.setText(String.format("Player Position: [%.1f, %.1f]", player.getX(), player.getY()));
     }
-
-    // public void drawAttack(double x, double y, double size) {
-    //     gc.setFill(Color.VIOLET);
-    //     gc.fillOval(x - size/2, y - size/2, size, size);
-    // }
 
     public void drawAttack(double x, double y, double size) {
         //System.out.println(x + " " + y + " " + size);
@@ -165,6 +154,7 @@ public class GameView {
         pause.play();
     }
 
+    // ==================== FOR DEBUGGING PURPOSES ====================
     public void updateDirectionLabel(int dx, int dy) {
         // actionLabel.setText(String.format("Direction: [%d, %d]", dx, dy));
     }
@@ -173,39 +163,20 @@ public class GameView {
         // actionLabel.setText(status);
     }
 
+    // ==================== Updating FXML UI Components ====================
     public void updateGameTimeLabel(double gameTime) {
         int minutes = (int) (gameTime / 60);
         int seconds = (int) (gameTime % 60);
         timerLabel.setText(String.format("%d:%02d", minutes, seconds));
     }
 
-    public void showPauseMenu(boolean show) {
-        pauseMenu.setVisible(show);
-        pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
-        gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
-        uiButtonsLayer.setDisable(show);
-        blur.setRadius(show ? 10 : 0);
-
-        if (show) {
-        Platform.runLater(() -> pauseMenu.getChildren().get(1).requestFocus());
-    }
-    }
-
-    public void showLevelMenu(boolean show) {
-        levelUpMenu.setVisible(show);
-        blur.setRadius(show ? 10 : 0);
-    }
-
-    public void showLevelMenu2(boolean show) {
-        levelUpMenuVertical.setVisible(show);
-        blur.setRadius(show ? 10 : 0);
-    }
-
-    public void showDeathMenu(boolean show) {
-        deathMenu.setVisible(show);
-        blur.setRadius(show ? 10 : 0);
-    }
-
+    /**
+     * Updates an given entity (player and enemies) hp bar
+     * 
+     * @param currentHp Entitiy's current hp 
+     * @param maxHp Entity's max hp
+     * @param entity from Entity class
+     */
     public void updateHealthBar(double currentHp, double maxHp, Entity entity) {
         double percentage = currentHp / maxHp;
 
@@ -222,6 +193,13 @@ public class GameView {
         }
     }
 
+    /**
+     * Updates the FXML levelUpBar that displays player's xp state
+     * 
+     * @param xp Player's current xp amount
+     * @param xpToNext The amount of xp to next level
+     * @param level Player's level amount
+     */
     public void updateLevelBar(int xp, int xpToNext, int level) {
         double percentage = (double) xp / xpToNext;
         levelFill.setWidth(200 * percentage);  // adjust width according to percentage
@@ -229,73 +207,60 @@ public class GameView {
         xpLabel.setText(xp + "/" + xpToNext);
     }
 
-
-    @FXML
-    private void onResume() {
-        gameController.resume();
+    public void updateSelectedLabel(int selectedBuff) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateSelectedLabel'");
     }
 
-    @FXML
-    private void onQuit() throws IOException {
-        gameController.quit();
+    public void clearBuffVisuals() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'clearBuffVisuals'");
     }
 
-     @FXML
-    private void onPlayAgain() throws IOException {
-        gameController.playAgain();
+    public void updateBuffLabels(String[] stringValues) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateBuffLabels'");
     }
 
-    @FXML
-    protected void onLevelUp() {
-        gameController.triggerLevelUp();
+    // ==================== FXML Layers state (pause, death, levelUp) ====================
+    /**
+     * Changes visibility of pause menu layer in FXML
+     * 
+     * @param show If show is true, then pause menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
+     */
+    public void showPauseMenu(boolean show) {
+        pauseMenu.setVisible(show);
+        pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
+        gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
+        uiButtonsLayer.setDisable(show);
+        blur.setRadius(show ? 10 : 0);
+
+        if (show) {
+        Platform.runLater(() -> pauseMenu.getChildren().get(1).requestFocus()); // When paused, it should automatically focus on the first button on pause layer
+    }
     }
 
-    @FXML
-    protected void onOptions() throws IOException {
-        
+    /**
+     * Changes visibility of "upgrade" menu layer in FXML
+     * 
+     * @param show If show is true, then upgrade menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
+     */
+    public void showLevelMenu(boolean show) {
+        levelUpMenu.setVisible(show);
+        blur.setRadius(show ? 10 : 0);
     }
 
-    @FXML
-    protected void onSelectUpgrade1() {
-        gameController.upgrade1();
+    /**
+     * Changes visibility of death menu layer in FXML
+     * 
+     * @param show If show is true, then death menu it set to be visible and blur is set to 10. If show is false, then nothing happens.
+     */
+    public void showDeathMenu(boolean show) {
+        deathMenu.setVisible(show);
+        blur.setRadius(show ? 10 : 0);
     }
 
-    @FXML
-    protected void onSelectUpgrade2() {
-        gameController.upgrade2();
-    }
-
-    @FXML
-    protected void onSelectUpgrade3() {
-        gameController.upgrade3();
-    }
-
-    public void highlightItem(int index) {
-        // Reset previous highlight
-        if (highlightedItem != null) {
-            highlightedItem.setStroke(null); // remove border
-            highlightedItem.setStrokeWidth(0);
-        }
-
-        // Highlight new item
-        switch (index) {
-            case 1:
-                highlightedItem = firstItem;
-                break;
-            case 2:
-                highlightedItem = secondItem;
-                break;
-            case 3:
-                highlightedItem = thirdItem;
-                break;
-        }
-
-        // Apply highlight style
-        highlightedItem.setStroke(javafx.scene.paint.Color.YELLOW);
-        highlightedItem.setStrokeWidth(3);
-    }
-
-
+    // ==================== Effects ====================
     /**
      * Plays the player death effect with ripple/shockwave, screen shake, and red flash.
      * 
@@ -452,15 +417,43 @@ public class GameView {
         }
     }
 
-    public Button setUpgrade1() {
-        return fireBuffBox;
-    }
+    // ==================== FXML Controls ====================
+    @FXML private void onResume() { gameController.resume(); }
+    @FXML private void onQuit() throws IOException { gameController.quit(); }
+    @FXML private void onPlayAgain() throws IOException { gameController.playAgain(); }
+    @FXML protected void onLevelUp() { gameController.triggerLevelUp();}
+    @FXML protected void onOptions() throws IOException { }
+    @FXML protected void onSelectUpgrade1() { gameController.upgrade1(); }
+    @FXML protected void onSelectUpgrade2() { gameController.upgrade2(); }
+    @FXML protected void onSelectUpgrade3() { gameController.upgrade3(); }
+    public Button setUpgrade1() { return fireBuffBox; }
+    public Button setUpgrade2() { return speedBuffBox; }
+    public Button setUpgrade3() { return healthBuffBox; }
 
-    public Button setUpgrade2() {
-        return speedBuffBox;
-    }
 
-    public Button setUpgrade3() {
-        return healthBuffBox;
+    // ==================== Item Hotbar (MAYBE REMOVE FOR NOW SINCE WE ONlY HAVE ONE ITEM AT THE MOMENT?) ====================
+    public void highlightItem(int index) {
+        // Reset previous highlight
+        if (highlightedItem != null) {
+            highlightedItem.setStroke(null); // remove border
+            highlightedItem.setStrokeWidth(0);
+        }
+
+        // Highlight new item
+        switch (index) {
+            case 1:
+                highlightedItem = firstItem;
+                break;
+            case 2:
+                highlightedItem = secondItem;
+                break;
+            case 3:
+                highlightedItem = thirdItem;
+                break;
+        }
+
+        // Apply highlight style
+        highlightedItem.setStroke(javafx.scene.paint.Color.YELLOW);
+        highlightedItem.setStrokeWidth(3);
     }
 }

@@ -1,19 +1,5 @@
 package com.grouptwelve.roguelikegame.model;
 
-<<<<<<< HEAD
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.*;
-import com.grouptwelve.roguelikegame.model.EventsPackage.AttackEvent;
-import com.grouptwelve.roguelikegame.model.EventsPackage.EnemyDeathEvent;
-import com.grouptwelve.roguelikegame.model.EventsPackage.GameEventListener;
-import com.grouptwelve.roguelikegame.model.EventsPackage.MovementEvent;
-import com.grouptwelve.roguelikegame.model.WeaponsPackage.CombatManager;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Goblin;
-import com.grouptwelve.roguelikegame.model.EntitiesPackage.Enemies.Troll;
-
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-=======
 import com.grouptwelve.roguelikegame.model.combat.CombatManager;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.constraints.BoundsConstraint;
@@ -22,6 +8,8 @@ import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Goblin;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Troll;
 import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
@@ -30,7 +18,9 @@ import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
 import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.UpgradeRegistry;
->>>>>>> 3e28f0b68b466e2b8b11b7c8469cc8e5680e4fef
+
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,18 +65,15 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
 
         // Initialize game state
         LoadEntities.load();
-<<<<<<< HEAD
-        this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, 400, 300);
-        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity(Entities.GOBLIN, 700, 100);
-        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity(Entities.TROLL, 100, 100);
-        this.enemiesAlive = new ArrayList<>(List.of((Enemy) testGob, (Enemy) testTroll));
-        // CombatManager.getInstance().addEnemy(testGob);
-        // CombatManager.getInstance().addEnemy(testTroll);
-=======
         this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, world.getWidth() / 2, world.getHeight() / 2);
         this.enemiesAlive = new ArrayList<>();
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
->>>>>>> 3e28f0b68b466e2b8b11b7c8469cc8e5680e4fef
+
+        // For some reason first enemy doesnt attack - here is a temporary solution
+        Enemy firstEnemy = EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20);
+        firstEnemy.setAttackListener(this);
+        firstEnemy.velocityAlgorithm(player.getX(), player.getY(), enemiesAlive);
+        this.enemiesAlive.add(firstEnemy);
+
         this.gameTime = 0;
 
         // Initialize combat system
@@ -233,7 +220,7 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         player.revive();
         player.setX(400);
         player.setY(300);
-        player.getVelocity().reset();
+        // player.getVelocity().reset();
     }
 
     public void reset() {
@@ -246,12 +233,8 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         // Clear enemies
         enemiesAlive.clear();
 
-        // Spawn initial test enemies again
-        Goblin testGob = (Goblin) EntityFactory.getInstance().createEntity(Entities.GOBLIN, 700, 100);
-        testGob.setHpBar(new Rectangle(200, 5, Color.RED));
-        Troll testTroll = (Troll) EntityFactory.getInstance().createEntity(Entities.TROLL, 100, 100);
-        testTroll.setHpBar(new Rectangle(200, 5, Color.RED));
-        enemiesAlive.add(testGob);
-        enemiesAlive.add(testTroll);
+        LoadEntities.load();
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
+        this.gameTime = 0;
     }
 }

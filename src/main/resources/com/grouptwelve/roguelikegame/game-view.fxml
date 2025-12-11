@@ -114,13 +114,7 @@
     <!-- Bottom-right buttons -->
     <AnchorPane fx:id="uiButtonsLayer">
         <VBox spacing="10" AnchorPane.bottomAnchor="20" AnchorPane.rightAnchor="20">
-            <!-- <Button text="Spawn enemy" onAction="#onSpawnEnemy" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
-            <!-- <Button text="Remove enemy" onAction="#onRemoveEnemy" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
-            <!-- <Button text="Take damage" onAction="#onTakeDamage" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
             <Button text="Level up" onAction="#onLevelUp" styleClass="test-button" style="-fx-font-size: 8px;"/>
-            <!-- <Button text="Level up (2)" onAction="#onLevelUp2" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
-            <!-- <Button text="Die" onAction="#onDie" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
-            <!-- <Button text="Back" onAction="#onBack" styleClass="test-button" style="-fx-font-size: 8px;"/> -->
         </VBox>
     </AnchorPane>
 
