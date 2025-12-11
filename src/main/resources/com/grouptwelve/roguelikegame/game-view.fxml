@@ -22,7 +22,7 @@
     <AnchorPane fx:id="gameLayer">
 
         <!-- Game Canvas -->
-        <Canvas fx:id="gameCanvas" width="800" height="600"
+        <Canvas fx:id="gameCanvas" width="1280" height="720"
                 AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"/>
         
 
@@ -99,7 +99,6 @@
 
         <!-- Controls display (bottom-left corner) -->
         <VBox spacing="5" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" alignment="BOTTOM_LEFT">
-            <Label text="Controls" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <Label text="W A S D - Move" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
             <Label text="K - Attack" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
             <Label text="Esc - Pause" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
@@ -110,13 +109,6 @@
 
     <AnchorPane fx:id="gameObjectsLayer"/>
     <AnchorPane fx:id="effectsLayer"/>
-
-    <!-- Bottom-right buttons -->
-    <AnchorPane fx:id="uiButtonsLayer">
-        <VBox spacing="10" AnchorPane.bottomAnchor="20" AnchorPane.rightAnchor="20">
-            <Button text="Level up" onAction="#onLevelUp" styleClass="test-button" style="-fx-font-size: 8px;"/>
-        </VBox>
-    </AnchorPane>
 
     <!-- Death menu overlay (centered, initially hidden) -->
     <VBox fx:id="deathMenu" spacing="20" alignment="CENTER" visible="false"
@@ -142,8 +134,8 @@
         <Button fx:id="fireBuffBox"
                 prefWidth="300" prefHeight="100"
                 wrapText="true"
-                onAction="#onSelectUpgrade1"
                 styleClass="button-upgrade"
+                focusTraversable="false"
                 style="-fx-border-color: orange;">
             <text>
                 Fire Buff
@@ -155,8 +147,8 @@
         <Button fx:id="speedBuffBox"
                 prefWidth="300" prefHeight="100"
                 wrapText="true"
-                onAction="#onSelectUpgrade2"
                 styleClass="button-upgrade"
+                focusTraversable="false"
                 style="-fx-border-color: cyan;">
             <text>
                 Speed Buff
@@ -167,8 +159,8 @@
         <Button fx:id="healthBuffBox"
                 prefWidth="300" prefHeight="100"
                 wrapText="true"
-                onAction="#onSelectUpgrade3"
                 styleClass="button-upgrade"
+                focusTraversable="false"
                 style="-fx-border-color: lime;">
             <text>
                 Health Increase

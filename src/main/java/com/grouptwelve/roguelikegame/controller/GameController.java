@@ -30,7 +30,6 @@ public class GameController implements InputEventListener, GameEventPublisher {
   private AnimationTimer gameLoop;
   private long lastUpdate;
   private boolean paused;
-  private boolean levelUp;
   private boolean death;
   private boolean chooseBuff;
   private int selectedBuff = 1;
@@ -145,15 +144,18 @@ public class GameController implements InputEventListener, GameEventPublisher {
 
 
     }
-    else if (command == Command.SELECT && isPressed)
+    else if ((command == Command.SELECT || command == Command.ATTACK) && isPressed)
     {
       for (GameEventListener listener : eventListeners) {
         listener.onChooseBuff(selectedBuff);
 
       }
-      paused = false;
+      gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP(), game.getPlayer());
+      game.getPlayer().setMovementDirection(0,0); // Player doesnt automatically move on its own after upgrade
+      this.paused = false;
       chooseBuff = false;
       gameView.clearBuffVisuals();
+      gameView.showLevelMenu(false);
     }
 
   }
@@ -319,6 +321,11 @@ public class GameController implements InputEventListener, GameEventPublisher {
   }
 
   @Override
+  public void onPlayerHit(double currentHp, double maxHp) {
+    gameView.updateHealthBar(currentHp, maxHp, game.getPlayer());
+  }
+
+  @Override
   public void onPlayerDeath(double x, double y) {
     gameView.playerDied(x, y);
     paused = true;
@@ -332,54 +339,36 @@ public class GameController implements InputEventListener, GameEventPublisher {
 
   @Override
   public void onEnemyDeath(double x, double y, int xpValue) {
-    // Visual effects for enemy death can be added here
-    // XP handling is done in the model layer
+    gameView.updateLevelBar(game.getPlayer().getLevelSystem().getXP(), game.getPlayer().getLevelSystem().getXPToNext(), game.getPlayer().getLevelSystem().getLevel());
   }
+
+
   @Override
   public void onPlayerLevelUp(int level, UpgradeInterface[] upgrades)
   {
     chooseBuff = true;
     this.paused = true;
-    String[] stringValues = new String[upgrades.length];
-    for(int i = 0; i < upgrades.length; i++)
-    {
-      stringValues[i] ="Buff "+ (i + 1) + ":   " + upgrades[i].getName() + "          ";
-    }
-    gameView.updateBuffLabels(stringValues);
 
+    // Update buttons with the new upgrades
+    gameView.updateBuffLabels(upgrades);
+
+    // Show level up menu
+    gameView.showLevelMenu(true);
+
+    // Reset selected index
+    selectedBuff = 0;
+    gameView.updateSelectedLabel(selectedBuff);
   }
 
 // ==================== FXML ====================
   public void togglePause() {
-      paused = !paused;
+      this.paused = !paused;
 
-      if (paused) {
-          stop();                // stop the game loop
+      if (paused) {   // stop the game loop
           gameView.showPauseMenu(true);
-      } else {
+      } else {  // resume game loop
           gameView.showPauseMenu(false);
-          if (levelUp) return;
-          lastUpdate = 0;        // prevents deltaTime spike
-          start();               // resume game loop
       }
-  }
-
-  public void triggerLevelUp() {
-      levelUp = true;
-      stop();     
-
-      // Generate 3 random upgrades
-      // currentUpgrades[0] = UpgradeRegistry.randomUpgrade();
-      // currentUpgrades[1] = UpgradeRegistry.randomUpgrade();
-      // currentUpgrades[2] = UpgradeRegistry.randomUpgrade();
-
-      // Update button text with upgrade names
-      // gameView.setUpgrade1().setText(currentUpgrades[0].getName());
-      // gameView.setUpgrade2().setText(currentUpgrades[1].getName());
-      // gameView.setUpgrade3().setText(currentUpgrades[2].getName());
-
-      gameView.showLevelMenu(true);
-
   }
 
   public void triggerDeath() {
@@ -457,47 +446,12 @@ public class GameController implements InputEventListener, GameEventPublisher {
       Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
       FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));
-      Scene menuScene = new Scene(menuLoader.load(), 800, 600);
+      Scene menuScene = new Scene(menuLoader.load(), 1280, 720);
 
       // Attach global CSS
       menuScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
 
       stage.setScene(menuScene);
       stage.show();
-  }
-
-  public void upgrade1() {
-      applyUpgrade(0);
-  }
-
-  public void upgrade2() {
-      applyUpgrade(1);
-  }
-
-  public void upgrade3() {
-      applyUpgrade(2);
-  }
-
-  public void applyUpgrade(int index) {
-      if (levelUp) {
-          levelUp = false;
-
-          // Apply to player
-          // UpgradeInterface selected = currentUpgrades[index];
-          // selected.apply(game.getPlayer());
-
-          // Update health bar if max HP changed
-          gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP(), game.getPlayer());
-
-          // Resume game
-          lastUpdate = 0;
-          start();
-
-          // Hide menu
-          gameView.showLevelMenu(false);
-
-          // System.out.println("Applied upgrade: " + selected.getName());
-          System.out.println("Player's health: " + game.getPlayer().getHp());
-      }
   }
 }

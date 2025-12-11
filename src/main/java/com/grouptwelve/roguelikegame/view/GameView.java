@@ -5,6 +5,8 @@ import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
+import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -207,19 +209,41 @@ public class GameView {
         xpLabel.setText(xp + "/" + xpToNext);
     }
 
+    /**
+     * Highlights the selected buff button based on the index.
+     * @param selectedBuff index of selected buff (0, 1, or 2)
+     */
     public void updateSelectedLabel(int selectedBuff) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateSelectedLabel'");
+        // Reset all buttons' border
+        fireBuffBox.setStyle("-fx-border-color: transparent;");
+        speedBuffBox.setStyle("-fx-border-color: transparent;");
+        healthBuffBox.setStyle("-fx-border-color: transparent;");
+
+        // Highlight selected button
+        switch (selectedBuff) {
+            case 0 -> fireBuffBox.setStyle("-fx-border-color: orange; -fx-border-width: 3;");
+            case 1 -> speedBuffBox.setStyle("-fx-border-color: cyan; -fx-border-width: 3;");
+            case 2 -> healthBuffBox.setStyle("-fx-border-color: lime; -fx-border-width: 3;");
+        }
     }
 
+    /**
+     * Clears buff selection highlights.
+     */
     public void clearBuffVisuals() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clearBuffVisuals'");
+        fireBuffBox.setStyle("-fx-border-color: transparent;");
+        speedBuffBox.setStyle("-fx-border-color: transparent;");
+        healthBuffBox.setStyle("-fx-border-color: transparent;");
     }
 
-    public void updateBuffLabels(String[] stringValues) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateBuffLabels'");
+    /**
+     * Updates the text on the buff buttons.
+     * @param buffs Array of UpgradeInterface (buffs) to display
+     */
+    public void updateBuffLabels(UpgradeInterface[] buffs) {
+        fireBuffBox.setText(buffs[0].getName());
+        speedBuffBox.setText(buffs[1].getName());
+        healthBuffBox.setText(buffs[2].getName());
     }
 
     // ==================== FXML Layers state (pause, death, levelUp) ====================
@@ -421,11 +445,7 @@ public class GameView {
     @FXML private void onResume() { gameController.resume(); }
     @FXML private void onQuit() throws IOException { gameController.quit(); }
     @FXML private void onPlayAgain() throws IOException { gameController.playAgain(); }
-    @FXML protected void onLevelUp() { gameController.triggerLevelUp();}
     @FXML protected void onOptions() throws IOException { }
-    @FXML protected void onSelectUpgrade1() { gameController.upgrade1(); }
-    @FXML protected void onSelectUpgrade2() { gameController.upgrade2(); }
-    @FXML protected void onSelectUpgrade3() { gameController.upgrade3(); }
     public Button setUpgrade1() { return fireBuffBox; }
     public Button setUpgrade2() { return speedBuffBox; }
     public Button setUpgrade3() { return healthBuffBox; }

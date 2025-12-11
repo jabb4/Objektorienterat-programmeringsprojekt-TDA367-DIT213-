@@ -56,6 +56,13 @@ public class EventPublisher implements GameEventPublisher {
     }
 
     @Override
+    public void onPlayerHit(double currentHp, double maxHp) {
+        for (GameEventPublisher listener : listeners) {
+            listener.onPlayerHit(currentHp, maxHp);
+        }
+    }
+
+    @Override
     public void onPlayerDeath(double x, double y) {
         for (GameEventPublisher listener : listeners) {
             listener.onPlayerDeath(x, y);

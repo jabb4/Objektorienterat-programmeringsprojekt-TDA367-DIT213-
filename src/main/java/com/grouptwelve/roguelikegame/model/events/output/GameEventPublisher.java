@@ -24,13 +24,21 @@ public interface GameEventPublisher {
      * @param level of player
      */
     void onPlayerLevelUp(int level, UpgradeInterface[] upgrades);
+
+    /**
+     * Called when the player gets hit.
+     * @param currentHp of player
+     * @param maxHp of player
+     */
+    void onPlayerHit(double currentHp, double maxHp);
+
     /**
      * Called when the player dies.
      * @param x X coordinate of death location
      * @param y Y coordinate of death location
      */
     void onPlayerDeath(double x, double y);
-    
+        
     /**
      * Called when an enemy is hit.
      * @param x X coordinate of the hit

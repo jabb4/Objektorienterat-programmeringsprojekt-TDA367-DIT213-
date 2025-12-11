@@ -102,6 +102,10 @@ public class CombatManager {
     private void attackPlayer(double x, double y, double range, double damage, List<EffectInterface> effects, double knockbackStrength) {
         if (CollisionSystem.isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
             boolean died = HitSystem.applyDamage(player, damage);
+
+            if (eventPublisher != null) {
+                eventPublisher.onPlayerHit(player.getHp(), player.getMaxHP());
+            }
             
             if (died && eventPublisher != null) {
                 eventPublisher.onPlayerDeath(player.getX(), player.getY());

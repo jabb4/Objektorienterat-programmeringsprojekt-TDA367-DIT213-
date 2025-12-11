@@ -26,29 +26,32 @@ public class MenuController {
     protected void onStartGamePressed() throws IOException {
         Stage stage = (Stage) root.getScene().getWindow();
 
-        // Create view and input handler
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));
-        Parent root = loader.load();  // FXML creates the GameView instance
-        GameView gameView = loader.getController();
-        InputHandler inputHandler = new InputHandler();
-    
         // Get the event manager (acts as event bus between model and controller)
         EventPublisher eventManager = new EventPublisher();
-        
+
         // Create game with event publisher
         Game game = new Game(eventManager);
         game.reset(); // To make sure that previous session doesnt effect new one
 
-        Scene gameScene = new Scene(root, 1280, 720);
-        gameScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
+        // Load FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));
+        Parent root = loader.load();  // FXML creates the GameView instance
 
+        // Create view and input handler
+        GameView gameView = loader.getController();
+        InputHandler inputHandler = new InputHandler();
+
+        Scene gameScene = new Scene(root, 1280, 720);
         inputHandler.setupInputHandling(gameScene);
         
+        // Apply font on scene
+        gameScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
+        
         GameController gameController = new GameController(game, gameView, inputHandler, eventManager);
-        gameView.setGameController(gameController);
+        gameView.setGameController(gameController); // Connect FXML components with GameController
         gameController.start();
         
-        stage.setTitle("Roguelike Game");
+        stage.setTitle("Inheritance of Violance");
         stage.setScene(gameScene);
         stage.show();
     }
@@ -60,7 +63,7 @@ public class MenuController {
         Stage stage = (Stage) root.getScene().getWindow();
 
         FXMLLoader optionLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/option-view.fxml"));
-        Scene optionScene = new Scene(optionLoader.load(), 800, 600);
+        Scene optionScene = new Scene(optionLoader.load(), 1280, 720);
 
         optionScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
 
