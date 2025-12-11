@@ -106,6 +106,7 @@ public class GameView {
         Player player = game.getPlayer();
         Circle playerCircle = new Circle(player.getX(), player.getY(), player.getSize());
         playerCircle.setFill(Color.LIGHTBLUE);
+        playerCircle.setManaged(false);
         gameObjectsLayer.getChildren().add(playerCircle);
 
         // Render enemies
@@ -123,6 +124,7 @@ public class GameView {
                     enemyCircle.setFill(Color.RED);
                 }
                 
+                enemyCircle.setManaged(false);
                 gameObjectsLayer.getChildren().add(enemyCircle);
             }
 
@@ -157,6 +159,7 @@ public class GameView {
         //System.out.println(x + " " + y + " " + size);
         Circle attackCircle = new Circle(x, y, size);
         attackCircle.setFill(Color.VIOLET);
+        attackCircle.setManaged(false);
         effectsLayer.getChildren().add(attackCircle);
 
         //remove attackcircle after a short timer
@@ -248,11 +251,6 @@ public class GameView {
     @FXML
     protected void onLevelUp() {
         gameController.triggerLevelUp();
-    }
-
-    @FXML
-    protected void onDie() {
-        gameController.triggerDeath();
     }
 
     @FXML
@@ -427,6 +425,7 @@ public class GameView {
         
         for (int i = 0; i < particleCount; i++) {
             Circle particle = new Circle(x, y, 3, Color.WHITE);
+            particle.setManaged(false);
             effectsLayer.getChildren().add(particle);
             
             // Random direction and distance
