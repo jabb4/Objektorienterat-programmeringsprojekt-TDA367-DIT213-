@@ -53,8 +53,7 @@ public class GameView {
     @FXML private Label timerLabel;
     @FXML private VBox pauseMenu;
     @FXML private VBox deathMenu;
-    @FXML private VBox levelUpMenu;
-    @FXML private VBox levelUpMenuVertical;
+    @FXML private VBox upgradeMenu;
     @FXML private Button fireBuffBox;
     @FXML private Button speedBuffBox;
     @FXML private Button healthBuffBox;
@@ -265,28 +264,18 @@ public class GameView {
     }
 
     /**
-     * Changes visibility of "upgrade" menu layer in FXML
+     * Changes visibility of upgrade menu layer in FXML
      * 
      * @param show If show is true, then upgrade menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
      */
     public void showLevelMenu(boolean show) {
-        levelUpMenu.setVisible(show);
-        blur.setRadius(show ? 10 : 0);
-    }
-
-    /**
-     * Changes visibility of death menu layer in FXML
-     * 
-     * @param show If show is true, then death menu it set to be visible and blur is set to 10. If show is false, then nothing happens.
-     */
-    public void showDeathMenu(boolean show) {
-        deathMenu.setVisible(show);
+        upgradeMenu.setVisible(show);
         blur.setRadius(show ? 10 : 0);
     }
 
     // ==================== Effects ====================
     /**
-     * Plays the player death effect with ripple/shockwave, screen shake, and red flash.
+     * Plays the player death effect with ripple/shockwave, screen shake, red flash and toggles death menu.
      * 
      * @param x X position of the player
      * @param y Y position of the player
@@ -303,8 +292,10 @@ public class GameView {
         });
         freeze.play();
 
-        gameController.triggerDeath();
+        deathMenu.setVisible(true);
+        blur.setRadius(10);
     }
+
     public void drawBuffs(String[] list)
     {
         for(String buff: list)

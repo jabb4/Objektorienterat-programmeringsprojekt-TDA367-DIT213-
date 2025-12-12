@@ -119,7 +119,7 @@
     </VBox>
 
     <!-- Vertical version -->
-    <VBox fx:id="levelUpMenu"
+    <VBox fx:id="upgradeMenu"
         spacing="20" alignment="CENTER" visible="false"
         style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
 

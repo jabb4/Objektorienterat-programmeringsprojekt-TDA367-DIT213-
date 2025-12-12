@@ -10,9 +10,13 @@ import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -33,6 +37,13 @@ public class GameController implements InputEventListener, GameEventPublisher {
   private boolean death;
   private boolean chooseBuff;
   private int selectedBuff = 1;
+  private MenuNavigator menuNavigator;
+
+  @FXML private VBox pauseMenu;    // Pause menu buttons
+  @FXML private VBox deathMenu;    // Death menu buttons
+
+  private MenuNavigator pauseMenuNavigator;
+  private MenuNavigator deathMenuNavigator;
 
   // All systems that want to observe game events
   private final List<GameEventListener> eventListeners;
@@ -150,7 +161,9 @@ public class GameController implements InputEventListener, GameEventPublisher {
         listener.onChooseBuff(selectedBuff);
 
       }
+      // Update health bar when applying health upgrade
       gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP(), game.getPlayer());
+      
       game.getPlayer().setMovementDirection(0,0); // Player doesnt automatically move on its own after upgrade
       this.paused = false;
       chooseBuff = false;
@@ -371,20 +384,6 @@ public class GameController implements InputEventListener, GameEventPublisher {
       }
   }
 
-  public void triggerDeath() {
-      death = !death;
-
-      if (death) {
-          stop();               
-          // game.getPlayer().setAliveStatus(false); 
-          gameView.showDeathMenu(true);
-      } else {
-          lastUpdate = 0;        
-          start();               
-          gameView.showDeathMenu(false);
-      }
-  }
-
   public void takeDamage(Entity entity, double damage) {
       if (!entity.getAliveStatus()) return; // already dead
 
@@ -401,9 +400,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
 
   public void resume() {
       if (paused) {
-          paused = false;
-          lastUpdate = 0;        
-          start();               
+          paused = false;      
           gameView.showPauseMenu(false);
       }
   }

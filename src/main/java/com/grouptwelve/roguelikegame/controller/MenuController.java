@@ -6,6 +6,10 @@ import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.events.output.EventPublisher;
 import com.grouptwelve.roguelikegame.view.GameView;
 
+import javafx.scene.control.Button;
+import java.util.List;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,13 +18,49 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class MenuController {
+public class MenuController implements InputEventListener {
     @FXML private Label actionLabel;
     @FXML private VBox root;
     
-    public void initialize(){
+    private MenuNavigator menuNavigator;
 
+    public void initialize(){
+        // Extract available buttons from menu-view
+        List<Button> menuButtons = root.getChildren().stream()
+            .filter(node -> node instanceof Button)
+            .map(node -> (Button) node)
+            .toList();
+
+        menuNavigator = new MenuNavigator(menuButtons);
+
+        // Make sure scene exists and attach InputHandler
+        Platform.runLater(() -> {
+            Scene scene = root.getScene();
+            if (scene != null) {
+                InputHandler inputHandler = new InputHandler();
+                inputHandler.setListener(this);  // MenuController will receive commands
+                inputHandler.setupInputHandling(scene);
+
+                root.requestFocus(); // Ensure scene receives key events
+            }
+        });
     }
+
+    // ================= InputEventListener =================
+    @Override
+    public void onCommandPressed(Command command) {
+        switch (command) {
+            case MOVE_UP -> menuNavigator.moveUp();
+            case MOVE_DOWN -> menuNavigator.moveDown();
+            case SELECT -> menuNavigator.select();
+        }
+    }
+
+    @Override
+    public void onCommandReleased(Command command) {
+        // Nothing needed for menu navigation
+    }
+    
 
     @FXML
     protected void onStartGamePressed() throws IOException {
