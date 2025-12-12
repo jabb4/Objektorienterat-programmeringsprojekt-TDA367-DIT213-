@@ -21,6 +21,9 @@
     <!-- Game layer: canvas + HUD -->
     <AnchorPane fx:id="gameLayer">
 
+        <AnchorPane fx:id="gameObjectsLayer"/>
+        <AnchorPane fx:id="effectsLayer"/>
+
         <!-- Game Canvas -->
         <Canvas fx:id="gameCanvas" width="1280" height="720"
                 AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"/>
@@ -107,8 +110,6 @@
 
     </AnchorPane>
 
-    <AnchorPane fx:id="gameObjectsLayer"/>
-    <AnchorPane fx:id="effectsLayer"/>
 
     <!-- Death menu overlay (centered, initially hidden) -->
     <VBox fx:id="deathMenu" spacing="20" alignment="CENTER" visible="false"
