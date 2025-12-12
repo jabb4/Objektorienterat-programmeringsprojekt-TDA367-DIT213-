@@ -2,13 +2,14 @@ package com.grouptwelve.roguelikegame.model.entities.enemies;
 
 import com.grouptwelve.roguelikegame.model.entities.Entities;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
+import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 
 import java.util.List;
 
 /**
  * Abstract base class for all enemy entities.
  */
-public abstract class Enemy extends Entity {
+public abstract class Enemy extends Entity implements Obstacle {
 
     /**
      * Represents the current attack state of the enemy.
@@ -49,16 +50,15 @@ public abstract class Enemy extends Entity {
         this.lockedDirY = 0;
     }
 
-    // Hur ska vi detta på ett bra objekt orienterat sätt? vvvvv
     /**
      * This method calculates the path the enemy should take to get to the target.
      * Also changes its velocity if it collides with another enemy by trying to walk around it instead.
      *
      * @param targetX The target x coordinate (Where this enemy should want to move to)
      * @param targetY The target y coordinate (Where this enemy should want to move to)
-     * @param enemies All enemies that this enemy should avoid collision with
+     * @param obstacles All obstacles that this enemy should avoid collision with
      */
-    public void velocityAlgorithm(double targetX, double targetY, List<Enemy> enemies)
+    public void velocityAlgorithm(double targetX, double targetY, List<? extends Obstacle> obstacles)
     {
         double thisToTarget_dx = targetX - this.x;
         double thisToTarget_dy = targetY - this.y;
@@ -70,20 +70,20 @@ public abstract class Enemy extends Entity {
         this.dirY = normDy;
 
         // This is to avoid collision with other enemies
-        for (Enemy other : enemies) {
-            if (other == this) continue;
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle == this) continue;
 
-            double otherToTarget_dx = targetX - other.getX();
-            double otherToTarget_dy = targetY - other.getY();
+            double otherToTarget_dx = targetX - obstacle.getX();
+            double otherToTarget_dy = targetY - obstacle.getY();
             double otherToTargetDist = Math.sqrt(otherToTarget_dx * otherToTarget_dx + otherToTarget_dy * otherToTarget_dy);
 
-            double thisToOther_dx = this.x - other.getX();
-            double thisToOther_dy = this.y - other.getY();
+            double thisToOther_dx = this.x - obstacle.getX();
+            double thisToOther_dy = this.y - obstacle.getY();
             double thisToOtherDist = Math.sqrt(thisToOther_dx * thisToOther_dx + thisToOther_dy * thisToOther_dy);
 
 
             // If they are overlapping (distance is less than physical size)
-            if (thisToOtherDist < this.size + other.getSize() && otherToTargetDist <= this.targetDist) {
+            if (thisToOtherDist < this.size + obstacle.getSize() && otherToTargetDist <= this.targetDist) {
                 // Cross product between thisToTarget and thisToOther (to determine which way is shorter for this enemy to go around the other enemy)
                 double cross = thisToTarget_dx * thisToOther_dy - thisToTarget_dy * thisToOther_dx;
 
