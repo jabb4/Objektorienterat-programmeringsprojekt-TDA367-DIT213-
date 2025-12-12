@@ -47,7 +47,7 @@ public class EnemyPool {
      * */
     public Enemy borrowRandomEnemy(double x, double y) {
         int i = rand.nextInt(Enemies.values().length);
-        Enemies enemyType =  Enemies.values()[i];
+        Enemies enemyType = Enemies.values()[i];
 
         return borrowEnemy(enemyType, x, y);
     }
