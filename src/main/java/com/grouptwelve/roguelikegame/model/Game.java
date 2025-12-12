@@ -8,6 +8,7 @@ import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
 import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
@@ -59,13 +60,12 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         this.constraintSystem.addConstraint(new BoundsConstraint(world));
 
         // Initialize game state
-        LoadEntities.load();
-        this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, world.getWidth() / 2, world.getHeight() / 2);
-        this.enemiesAlive = new ArrayList<>();
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
         this.gameTime = 0;
+        this.player = new Player(world.getWidth() / 2, world.getHeight() / 2);
+
 
         // Initialize combat system
+        this.enemiesAlive = new ArrayList<>();
         this.combatManager = new CombatManager(player, () -> enemiesAlive, eventPublisher);
 
         // Set up player to notify this Game when attacking

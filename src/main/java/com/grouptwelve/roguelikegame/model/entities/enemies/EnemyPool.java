@@ -1,8 +1,5 @@
 package com.grouptwelve.roguelikegame.model.entities.enemies;
 
-import com.grouptwelve.roguelikegame.model.entities.Entities;
-import com.grouptwelve.roguelikegame.model.entities.EntityFactory;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -18,23 +15,23 @@ public class EnemyPool {
     }
 
     private final Random rand = new Random();
-    private final HashMap<Entities, LinkedList<Enemy>> pool = new HashMap<>();
+    private final HashMap<Enemies, LinkedList<Enemy>> pool = new HashMap<>();
 
     /**
      * Borrows an enemy from the pool or creates a new one if none are available.
-     * @param name The enemy type name (e.g., "Goblin", "Troll")
+     * @param type The enemy type type (e.g., "Goblin", "Troll")
      * @param x The x-coordinate for the enemy
      * @param y The y-coordinate for the enemy
      * @return An enemy instance positioned at the specified coordinates
      */
-    public Enemy borrowEnemy(Entities name, double x, double y) {
-        LinkedList<Enemy> availableEnemies =  pool.get(name);
+    public Enemy borrowEnemy(Enemies type, double x, double y) {
+        LinkedList<Enemy> availableEnemies =  pool.get(type);
         if(availableEnemies == null){
-            pool.put(name,new LinkedList<>());
-            return (Enemy) EntityFactory.getInstance().createEntity(name,x,y);
+            pool.put(type,new LinkedList<>());
+            return (Enemy) EnemyFactory.getInstance().createEnemy(type,x,y);
         }
         if (availableEnemies.isEmpty()){
-            return (Enemy) EntityFactory.getInstance().createEntity(name,x,y);
+            return (Enemy) EnemyFactory.getInstance().createEnemy(type,x,y);
         }
         Enemy enemy = availableEnemies.remove();
         enemy.revive();
@@ -44,20 +41,19 @@ public class EnemyPool {
     }
     /**
      * Borrows a random enemy from the pool or creates a new one if none are available.
-     * The method assumes that the PLAYER entity is at index 0 in the Entities enum and will not be selected.
      * @param x The x-coordinate for the enemy.
      * @param y The y-coordinate for the enemy.
      * @return An enemy instance of a random type, positioned at the specified coordinates.
      * */
     public Enemy borrowRandomEnemy(double x, double y) {
-        int i = rand.nextInt(Entities.values().length-1)+1;
-        Entities enemyType =  Entities.values()[i];
+        int i = rand.nextInt(Enemies.values().length);
+        Enemies enemyType =  Enemies.values()[i];
 
         return borrowEnemy(enemyType, x, y);
     }
 
     public void returnEnemy(Enemy enemy){
-        Entities type = enemy.getType();
+        Enemies type = enemy.getType();
         LinkedList<Enemy> availableEnemies =  pool.get(type);
         availableEnemies.add(enemy);
     }

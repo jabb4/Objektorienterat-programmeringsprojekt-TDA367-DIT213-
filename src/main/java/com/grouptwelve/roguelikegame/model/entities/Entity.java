@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.model.entities;
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
 import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
 
@@ -12,7 +13,6 @@ import java.util.List;
 
 public abstract class Entity {
     protected String name;
-    protected Entities type;
     protected double x, y;
     protected double hp;
     protected double maxHP;
@@ -36,9 +36,8 @@ public abstract class Entity {
     private List<ActiveEffect> activeEffects = new ArrayList<>();
 
 
-    public Entity(String name, Entities type, double x, double y, double hp, int size, double maxHP){
+    public Entity(String name, double x, double y, double hp, int size, double maxHP){
         this.name = name;
-        this.type = type;
         this.x = x;
         this.y = y;
         this.hp = hp;
@@ -218,8 +217,6 @@ public abstract class Entity {
         return this.weapon;
     }
 
-    public Entities getType() {return this.type;}
-
     public boolean isHit() {
         return this.isHit;
     }
@@ -275,6 +272,4 @@ public abstract class Entity {
                 ", weapon=" + weapon +
                 '}';
     }
-
-    public abstract Entity createEntity(double x, double y);
 }

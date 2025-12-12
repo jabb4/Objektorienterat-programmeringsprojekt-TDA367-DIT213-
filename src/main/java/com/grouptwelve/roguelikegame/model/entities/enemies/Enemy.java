@@ -1,15 +1,15 @@
 package com.grouptwelve.roguelikegame.model.entities.enemies;
 
-import com.grouptwelve.roguelikegame.model.entities.Entities;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
+import com.grouptwelve.roguelikegame.model.weapons.Weapon;
 
 import java.util.List;
 
 /**
- * Abstract base class for all enemy entities.
+ * Base class for all enemy entities.
  */
-public abstract class Enemy extends Entity implements Obstacle {
+public class Enemy extends Entity implements Obstacle {
 
     /**
      * Represents the current attack state of the enemy.
@@ -19,35 +19,35 @@ public abstract class Enemy extends Entity implements Obstacle {
         WINDING_UP, // Enemy is preparing to attack
         COOLDOWN // Enemy is on cooldown after attacking
     }
+    protected Enemies type;
 
     protected double targetDist;
     protected double attackRange;
 
     // Wind-up attack state machine
-    protected AttackState attackState;
+    protected AttackState attackState = AttackState.IDLE;
     protected double windUpTime;
-    protected double windUpRemaining;
+    protected double windUpRemaining = 0;
 
     // Locked attack direction (set when wind-up starts)
-    protected double lockedDirX;
-    protected double lockedDirY;
+    protected double lockedDirX = 0;
+    protected double lockedDirY = 0;
 
-    protected int xpValue = 20; // default, Goblin/Troll override
+    protected int xpValue;
 
     public int getXpValue() {
         return xpValue;
     }
 
 
-    public Enemy(String name, Entities type, double x, double y, double hp, int size, double maxHP) {
-        super(name, type, x, y, hp, size, maxHP);
-        this.velocity.setMaxSpeed(50); // Default enemy velocity
-        this.attackRange = 50;
-        this.attackState = AttackState.IDLE;
-        this.windUpTime = 0.3; // Default wind-up time
-        this.windUpRemaining = 0;
-        this.lockedDirX = 0;
-        this.lockedDirY = 0;
+    public Enemy(String name, Enemies type, double x, double y, double hp, int size, double maxHP, double maxSpeed,int xpValue, Weapon weapon, double windUpTime, double attackRange) {
+        super(name, x, y, hp, size, maxHP);
+        this.type = type;
+        this.velocity.setMaxSpeed(maxSpeed);
+        this.attackRange = attackRange;
+        this.windUpTime = windUpTime;
+        this.xpValue = xpValue;
+        this.weapon = weapon;
     }
 
     /**
@@ -220,6 +220,8 @@ public abstract class Enemy extends Entity implements Obstacle {
         return lockedDirY;
     }
 
+    public Enemies getType() {return this.type;}
+
     /**
      * Revives the enemy and resets all state for reuse from pool.
      * Ensures no lingering attack state from previous life.
@@ -238,5 +240,9 @@ public abstract class Enemy extends Entity implements Obstacle {
         if (weapon != null) {
             weapon.resetCooldown();
         }
+    }
+
+    protected Enemy clone(double x, double y) {
+        return new Enemy(this.name, this.type, x, y, this.hp, this.size, this.maxHP, this.velocity.getMaxSpeed(), this.xpValue, this.weapon, this.windUpTime, this.attackRange);
     }
 }
