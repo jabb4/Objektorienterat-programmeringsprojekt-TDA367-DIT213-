@@ -8,8 +8,7 @@ import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.entities.enemies.Goblin;
-import com.grouptwelve.roguelikegame.model.entities.enemies.Troll;
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
 import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
@@ -18,9 +17,6 @@ import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
 import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.UpgradeRegistry;
-
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +31,24 @@ import java.util.Random;
  */
 public class Game implements GameEventListener, AttackListener, LevelUpListener {
 
+    private final Random rand = new Random();
+
+    private double gameTime;
     private final GameWorld world;
     private final ConstraintSystem constraintSystem;
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private final CombatManager combatManager;
     private final GameEventPublisher eventPublisher;
-
-    private double gameTime;
-    private int lastEnemySpawnTime = 0;
-    private final Random rand = new Random();
-    private final int enemyBaseSpawnRate = 5;
-    private final int enemyMaxSpawnAmount = 3;
     private UpgradeInterface[] upgrades;
+
+    // Enemy spawning
+    private int lastEnemySpawnTime = 0;
+    private final int enemyBaseSpawnRate = 5;
+    private final int enemyBaseMaxSpawnAmount = 3;
+    private int enemySpawnRate = enemyBaseSpawnRate;
+    private int enemyMaxSpawnAmount = enemyBaseMaxSpawnAmount;
+    private final int enemySpawnRateMaxTime = 300; // The time (in seconds) the game has run until enemies spawns every second
 
     /**
      * Creates a new Game instance with an event publisher.
@@ -64,19 +65,12 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         this.constraintSystem.addConstraint(new BoundsConstraint(world));
 
         // Initialize game state
-        LoadEntities.load();
-        this.player = (Player) EntityFactory.getInstance().createEntity(Entities.PLAYER, world.getWidth() / 2, world.getHeight() / 2);
-        this.enemiesAlive = new ArrayList<>();
-
-        // For some reason first enemy doesnt attack - here is a temporary solution
-        Enemy firstEnemy = EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20);
-        firstEnemy.setAttackListener(this);
-        firstEnemy.velocityAlgorithm(player.getX(), player.getY(), enemiesAlive);
-        this.enemiesAlive.add(firstEnemy);
-
         this.gameTime = 0;
+        this.player = new Player(world.getWidth() / 2, world.getHeight() / 2);
+
 
         // Initialize combat system
+        this.enemiesAlive = new ArrayList<>();
         this.combatManager = new CombatManager(player, () -> enemiesAlive, eventPublisher);
 
         // Set up player to notify this Game when attacking
@@ -177,18 +171,43 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
 
     /**
      * Spawns enemies periodically based on game time.
+     * Increases enemy spawn rate and spawn max amount when the game is run for longer in order to make the game more difficult the longer you play.
+     * When this.gametime has reached this.enemySpawnRateMaxTime enemies will spawn every second
+     * Every 60 seconds up until this.gametime has reached this.enemySpawnRateMaxTime, one more (this.enemyBaseMaxSpawnAmount + 1) enemy will be able to spawn at the same time.
+     * After this.gametime has reached this.enemySpawnRateMaxTime the amount of enemies that can spawn at the same time will increase with plus two for every second.
      */
     private void spawnEnemies() {
-        if ((int) gameTime != lastEnemySpawnTime && (int) gameTime % enemyBaseSpawnRate == 0) {
-            for (int i = 0; i <= rand.nextInt(enemyMaxSpawnAmount); i++) {
+        if ((int) this.gameTime != this.lastEnemySpawnTime && ((int) this.gameTime - this.lastEnemySpawnTime >= this.enemySpawnRate || this.lastEnemySpawnTime == 0)) {
+            for (int i = 0; i <= rand.nextInt(this.enemyMaxSpawnAmount); i++) {
                 int margin = 20;
-                int spawnX = margin + rand.nextInt((int) world.getWidth() - 2 * margin);
-                int spawnY = margin + rand.nextInt((int) world.getHeight() - 2 * margin);
+                int spawnX;
+                int spawnY;
+                if (rand.nextBoolean()){
+                    if (rand.nextBoolean()){
+                        spawnY = (int) (world.getHeight() - margin);
+                    } else spawnY = margin;
+                    spawnX = margin + rand.nextInt((int) world.getWidth() - 2 * margin);
+                }
+                else {
+                    if (rand.nextBoolean()){
+                        spawnX = (int) (world.getWidth() - margin);
+                    } else spawnX = margin;
+                    spawnY = margin + rand.nextInt((int) world.getHeight() - 2 * margin);
+                }
+
+
                 Enemy enemy = EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY);
                 enemy.setAttackListener(this);  // Register this Game as the attack listener
                 enemiesAlive.add(enemy);
             }
-            lastEnemySpawnTime = (int) gameTime;
+            this.lastEnemySpawnTime = (int) this.gameTime;
+            this.enemySpawnRate = Math.max(1, Math.min(this.enemyBaseSpawnRate, this.enemyBaseSpawnRate - (int) (4.0 * (int) this.gameTime / this.enemySpawnRateMaxTime)));
+            if ((int) this.gameTime <= this.enemySpawnRateMaxTime){
+                this.enemyMaxSpawnAmount = (int) (this.enemyBaseMaxSpawnAmount + this.gameTime / 60);
+            }
+            else {
+                this.enemyMaxSpawnAmount = (int) (this.enemyBaseMaxSpawnAmount + (double) this.enemySpawnRateMaxTime / 60  + ((this.gameTime - this.enemySpawnRateMaxTime) / 60)*2);
+            }
         }
     }
 

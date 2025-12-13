@@ -18,4 +18,9 @@ public class Club extends Weapon {
         effects.add(new KnockbackEffect());
         effects.add(new HitEffect(HIT_FLASH_DURATION));
     }
+
+    @Override
+    public Weapon copy() {
+        return new Club();
+    }
 }
