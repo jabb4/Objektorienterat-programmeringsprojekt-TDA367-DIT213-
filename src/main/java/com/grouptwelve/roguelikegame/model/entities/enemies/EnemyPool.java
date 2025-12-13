@@ -19,7 +19,7 @@ public class EnemyPool {
 
     /**
      * Borrows an enemy from the pool or creates a new one if none are available.
-     * @param type The enemy type type (e.g., "Goblin", "Troll")
+     * @param type The enemy type (e.g., "Goblin", "Troll")
      * @param x The x-coordinate for the enemy
      * @param y The y-coordinate for the enemy
      * @return An enemy instance positioned at the specified coordinates

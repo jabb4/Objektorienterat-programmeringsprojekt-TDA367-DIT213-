@@ -40,7 +40,7 @@ public class Enemy extends Entity implements Obstacle {
     }
 
 
-    public Enemy(String name, Enemies type, double x, double y, double hp, int size, double maxHP, double maxSpeed,int xpValue, Weapon weapon, double windUpTime, double attackRange) {
+    public Enemy(String name, Enemies type, double x, double y, double hp, int size, double maxHP, double maxSpeed, int xpValue, Weapon weapon, double windUpTime, double attackRange) {
         super(name, x, y, hp, size, maxHP);
         this.type = type;
         this.velocity.setMaxSpeed(maxSpeed);
