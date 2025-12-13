@@ -251,8 +251,4 @@ public class Enemy extends Entity implements Obstacle {
             weapon.resetCooldown();
         }
     }
-
-    protected Enemy clone(double x, double y) {
-        return new Enemy(this.name, this.type, x, y, this.hp, this.size, this.maxHP, this.velocity.getMaxSpeed(), this.xpValue, this.weapon, this.windUpTime, this.attackRange);
-    }
 }
