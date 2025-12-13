@@ -20,7 +20,7 @@ public class EnemyFactory {
                 Enemies.GOBLIN,
                 0,
                 0,
-                50,
+                30,
                 5,
                 30,
                 70,
