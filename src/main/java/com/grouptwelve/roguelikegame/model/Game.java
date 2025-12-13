@@ -252,8 +252,7 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         // Clear enemies
         enemiesAlive.clear();
 
-        LoadEntities.load();
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Entities.GOBLIN, 10,20));
+        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Enemies.GOBLIN, 10,20));
         this.gameTime = 0;
     }
 }

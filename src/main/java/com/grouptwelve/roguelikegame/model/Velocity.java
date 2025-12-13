@@ -20,6 +20,12 @@ public class Velocity {
         this.maxSpeed = maxSpeed;
     }
 
+    public Velocity(Velocity velocity) {
+        this.x = velocity.x;
+        this.y = velocity.y;
+        this.maxSpeed = velocity.maxSpeed;
+    }
+
     /**
      * Updates velocity state each frame. Handles knockback decay.
      *

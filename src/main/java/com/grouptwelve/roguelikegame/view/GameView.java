@@ -188,9 +188,6 @@ public class GameView {
             int roundedHp = (int)Math.round(currentHp);
             int roundedMaxHp = (int)Math.round(maxHp);
             hpLabel.setText(roundedHp + " / " + roundedMaxHp);
-
-        } else if (entity instanceof Enemy) {
-            ((Enemy) entity).getHpBar().setWidth(200 * percentage);
         }
     }
 
