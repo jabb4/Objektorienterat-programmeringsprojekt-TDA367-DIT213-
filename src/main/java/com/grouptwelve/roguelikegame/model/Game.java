@@ -155,17 +155,27 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
 
     /**
      * Updates all enemies.
-     * Attacks are handled via AttackListener callbacks when enemies attack.
+     * check if enemy is alive and then handles that evnt otherwise it enemhy should move towards player
      */
     private void updateEnemies(double deltaTime) {
         double playerX = player.getX();
         double playerY = player.getY();
 
+
         for (Enemy enemy : enemiesAlive) {
-            enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
-            enemy.update(deltaTime);
-            // Enemy attack() is called by enemy's internal state machine
-            // When it attacks, onEntityAttacked() is called automatically
+            if(!enemy.getAliveStatus())
+            {
+                player.gainXP(enemy.getXpValue());
+                eventPublisher.onEnemyDeath(enemy.getX(), enemy.getY(), enemy.getXpValue());
+                EnemyPool.getInstance().returnEnemy(enemy);
+                enemiesAlive.remove(enemy);
+            }
+            else
+            {
+                enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
+                enemy.update(deltaTime);
+            }
+
         }
     }
 

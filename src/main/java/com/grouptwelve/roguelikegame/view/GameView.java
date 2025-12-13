@@ -121,24 +121,26 @@ public class GameView {
                 
                 enemyCircle.setManaged(false);
                 gameObjectsLayer.getChildren().add(enemyCircle);
-            }
 
-            double barWidth = 40;
-            double barHeight = 5;
-            double barOffset = 10;
+                double barWidth = 40;
+                double barHeight = 5;
+                double barOffset = 10;
 
-            // HP bar background
-            gc.setFill(Color.GRAY);
-            gc.fillRect(enemy.getX() - barWidth / 2,
+                // HP bar background
+                gc.setFill(Color.GRAY);
+                gc.fillRect(enemy.getX() - barWidth / 2,
                         enemy.getY() - enemy.getSize() - barOffset,
                         barWidth, barHeight);
 
-            // HP bar fill
-            double hpPercentage = enemy.getHp() / enemy.getMaxHP();
-            gc.setFill(Color.RED);
-            gc.fillRect(enemy.getX() - barWidth / 2,
+                // HP bar fill
+                double hpPercentage = enemy.getHp() / enemy.getMaxHP();
+                gc.setFill(Color.RED);
+                gc.fillRect(enemy.getX() - barWidth / 2,
                         enemy.getY() - enemy.getSize() - barOffset,
                         barWidth * hpPercentage, barHeight);
+            }
+
+
         }
     }
 

@@ -16,6 +16,7 @@ public class Player extends Entity {
         super("Player", x, y, 100, 10, 100);
         this.velocity.setMaxSpeed(150);
         this.weapon = new Sword();
+
         this.wantMove = false;
     }
 

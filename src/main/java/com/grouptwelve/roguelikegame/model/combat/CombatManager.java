@@ -65,36 +65,25 @@ public class CombatManager {
         
         // Find all enemies in range
         List<Enemy> hitEnemies = CollisionSystem.getEntitiesInRange(x, y, range, enemies);
+
         
         for (Enemy enemy : hitEnemies) {
             // Apply damage
-            boolean died = HitSystem.applyDamage(enemy, damage);
-            
+            HitSystem.applyEffects(enemy, effects, x, y, knockbackStrength);
+            enemy.takeDamage(damage);
+
             // Publish hit event
             publishEnemyHit(enemy, damage, isCritical);
-            
-            if (died) {
-                handleEnemyDeath(enemy, enemies);
-            } else {
-                // Apply effects to living enemies
-                HitSystem.applyEffects(enemy, effects, x, y, knockbackStrength);
-            }
+
+
+
         }
     }
 
     /**
      * Handles enemy death: grants XP, publishes event, returns to pool.
      */
-    private void handleEnemyDeath(Enemy enemy, List<Enemy> enemies) {
-        player.gainXP(enemy.getXpValue());
-        
-        if (eventPublisher != null) {
-            eventPublisher.onEnemyDeath(enemy.getX(), enemy.getY(), enemy.getXpValue());
-        }
 
-        EnemyPool.getInstance().returnEnemy(enemy);
-        enemies.remove(enemy);
-    }
 
     /**
      * Handles enemies attacking player.
