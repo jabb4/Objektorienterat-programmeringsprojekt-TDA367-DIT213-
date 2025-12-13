@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model.entities;
 
+import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
 import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.level.LevelSystem;
 import com.grouptwelve.roguelikegame.model.weapons.Sword;
@@ -12,7 +13,7 @@ public class Player extends Entity {
 
 
     public Player(double x, double y) {
-        super("Player",Entities.PLAYER, x, y, 100, 10, 100);
+        super("Player", x, y, 100, 10, 100);
         this.velocity.setMaxSpeed(150);
         this.weapon = new Sword();
         this.wantMove = false;
@@ -86,15 +87,6 @@ public class Player extends Entity {
             this.isAlive = false;
             // Player death event is now published by Game/CombatManager
         }
-    }
-
-    static {
-        EntityFactory.getInstance().registerEntity(Entities.PLAYER, new Player(0,0));
-    }
-
-    @Override
-    public Player createEntity(double x, double y) {
-        return new Player(x, y);
     }
 
     @Override
