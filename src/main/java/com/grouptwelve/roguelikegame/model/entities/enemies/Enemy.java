@@ -50,6 +50,16 @@ public class Enemy extends Entity implements Obstacle {
         this.weapon = weapon;
     }
 
+    public Enemy(Enemy enemy) {
+        super(enemy.name, enemy.x, enemy.y, enemy.hp, enemy.size, enemy.maxHP);
+        this.type = enemy.type;
+        this.velocity = enemy.velocity;
+        this.attackRange = enemy.attackRange;
+        this.windUpTime = enemy.windUpTime;
+        this.xpValue = enemy.xpValue;
+        this.weapon = enemy.weapon.copy();
+    }
+
     /**
      * This method calculates the path the enemy should take to get to the target.
      * Also changes its velocity if it collides with another enemy by trying to walk around it instead.

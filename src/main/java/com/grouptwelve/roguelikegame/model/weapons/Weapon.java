@@ -14,10 +14,10 @@ public abstract class Weapon implements WeaponInterface {
     protected double damage;
     protected double range;
     protected double attackCooldown;
-    protected double cooldownRemaining;
-    protected double critChance;
-    protected double critMultiplier;
-    protected double knockbackStrength;
+    protected double cooldownRemaining = 0;
+    protected double critChance = 0.05;
+    protected double critMultiplier = 2.0;
+    protected double knockbackStrength = 200;
 
 
     protected List<EffectInterface> effects = new ArrayList<>();
@@ -34,10 +34,12 @@ public abstract class Weapon implements WeaponInterface {
         this.damage = damage;
         this.range = range;
         this.attackCooldown = attackCooldown;
-        this.cooldownRemaining = 0;
-        this.critChance = 0.05;    // 5% default crit chance
-        this.critMultiplier = 2.0; // 2x damage on crit
-        this.knockbackStrength = 200;
+    }
+
+    public Weapon(Weapon weapon) {
+        this.damage = weapon.damage;
+        this.range = weapon.range;
+        this.attackCooldown = weapon.attackCooldown;
     }
 
     /**
@@ -51,6 +53,11 @@ public abstract class Weapon implements WeaponInterface {
             cooldownRemaining -= deltaTime;
         }
     }
+
+    /**
+     * @return copied weapon.
+     */
+    public abstract Weapon copy();
 
     /**
      * Checks if the weapon is ready to attack.

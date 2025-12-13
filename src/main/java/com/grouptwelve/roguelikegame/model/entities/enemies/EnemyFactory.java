@@ -27,7 +27,7 @@ public class EnemyFactory {
                 20,
                 new Sword(),
                 0.3,
-                20
+                25
         ));
         enemyRegistry.put(Enemies.TROLL,new Enemy(
                 "Troll",
@@ -50,6 +50,6 @@ public class EnemyFactory {
         if (enemy == null){
             throw new IllegalArgumentException("enemy 2 type '" + type + "' is not registered in the enemy registry.");
         }
-        return enemy.clone(x,y);
+        return new Enemy(enemy);
     }
 }
