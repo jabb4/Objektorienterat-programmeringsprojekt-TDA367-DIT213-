@@ -7,6 +7,25 @@ import java.util.HashMap;
 
 public class EnemyFactory {
     private static final EnemyFactory instance = new EnemyFactory();
+
+    // Goblin stats
+    private static final int GOBLIN_HP = 30;
+    private static final int GOBLIN_SIZE = 5;
+    private static final int GOBLIN_MAX_HP = 30;
+    private static final int GOBLIN_SPEED = 70;
+    private static final int GOBLIN_XP_VALUE = 20;
+    private static final double GOBLIN_WIND_UP_TIME = 0.3;
+    private static final int GOBLIN_ATTACK_RANGE = 25;
+
+    // Troll stats
+    private static final int TROLL_HP = 70;
+    private static final int TROLL_SIZE = 15;
+    private static final int TROLL_MAX_HP = 70;
+    private static final int TROLL_SPEED = 50;
+    private static final int TROLL_XP_VALUE = 40;
+    private static final double TROLL_WIND_UP_TIME = 0.5;
+    private static final int TROLL_ATTACK_RANGE = 40;
+
     private EnemyFactory() {}
     public static EnemyFactory getInstance() {
         return instance;
@@ -20,28 +39,28 @@ public class EnemyFactory {
                 Enemies.GOBLIN,
                 0,
                 0,
-                30,
-                5,
-                30,
-                70,
-                20,
+                GOBLIN_HP,
+                GOBLIN_SIZE,
+                GOBLIN_MAX_HP,
+                GOBLIN_SPEED,
+                GOBLIN_XP_VALUE,
                 new Sword(),
-                0.3,
-                25
+                GOBLIN_WIND_UP_TIME,
+                GOBLIN_ATTACK_RANGE
         ));
         enemyRegistry.put(Enemies.TROLL,new Enemy(
                 "Troll",
                 Enemies.TROLL,
                 0,
                 0,
-                70,
-                15,
-                70,
-                50,
-                40,
+                TROLL_HP,
+                TROLL_SIZE,
+                TROLL_MAX_HP,
+                TROLL_SPEED,
+                TROLL_XP_VALUE,
                 new Club(),
-                0.5,
-                40
+                TROLL_WIND_UP_TIME,
+                TROLL_ATTACK_RANGE
         ));
     }
 

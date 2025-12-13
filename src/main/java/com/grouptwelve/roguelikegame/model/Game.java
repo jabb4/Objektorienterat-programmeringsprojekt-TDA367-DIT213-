@@ -40,15 +40,25 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     private final List<Enemy> enemiesAlive;
     private final CombatManager combatManager;
     private final GameEventPublisher eventPublisher;
-    private UpgradeInterface[] upgrades;
+    private final UpgradeInterface[] upgrades;
 
-    // Enemy spawning
+    // World dimensions
+    private static final int WORLD_WIDTH = 1280;
+    private static final int WORLD_HEIGHT = 720;
+
+    // Spawning configuration
+    private static final int ENEMY_BASE_SPAWN_RATE = 5;
+    private static final int ENEMY_BASE_MAX_SPAWN_AMOUNT = 3;
+    private static final int ENEMY_SPAWN_RATE_MAX_TIME = 300;
+    private static final int SPAWN_MARGIN = 20;
+    private static final double SPAWN_RATE_SCALING_FACTOR = 4.0;
+    private static final int SPAWN_AMOUNT_INCREASE_INTERVAL = 60;
+    private static final int LATE_GAME_SPAWN_MULTIPLIER = 2;
+
+    // Enemy spawning state
     private int lastEnemySpawnTime = 0;
-    private final int enemyBaseSpawnRate = 5;
-    private final int enemyBaseMaxSpawnAmount = 3;
-    private int enemySpawnRate = enemyBaseSpawnRate;
-    private int enemyMaxSpawnAmount = enemyBaseMaxSpawnAmount;
-    private final int enemySpawnRateMaxTime = 300; // The time (in seconds) the game has run until enemies spawns every second
+    private int enemySpawnRate = ENEMY_BASE_SPAWN_RATE;
+    private int enemyMaxSpawnAmount = ENEMY_BASE_MAX_SPAWN_AMOUNT;
 
     /**
      * Creates a new Game instance with an event publisher.
@@ -60,14 +70,13 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         this.upgrades = new UpgradeInterface[3];
 
         // Initialize world and constraint system
-        this.world = new GameWorld(1280, 720);
+        this.world = new GameWorld(WORLD_WIDTH, WORLD_HEIGHT);
         this.constraintSystem = new ConstraintSystem();
         this.constraintSystem.addConstraint(new BoundsConstraint(world));
 
         // Initialize game state
         this.gameTime = 0;
         this.player = new Player(world.getWidth() / 2, world.getHeight() / 2);
-
 
         // Initialize combat system
         this.enemiesAlive = new ArrayList<>();
@@ -189,34 +198,34 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     private void spawnEnemies() {
         if ((int) this.gameTime != this.lastEnemySpawnTime && ((int) this.gameTime - this.lastEnemySpawnTime >= this.enemySpawnRate || this.lastEnemySpawnTime == 0)) {
             for (int i = 0; i <= rand.nextInt(this.enemyMaxSpawnAmount); i++) {
-                int margin = 20;
                 int spawnX;
                 int spawnY;
-                if (rand.nextBoolean()){
-                    if (rand.nextBoolean()){
-                        spawnY = (int) (world.getHeight() - margin);
-                    } else spawnY = margin;
-                    spawnX = margin + rand.nextInt((int) world.getWidth() - 2 * margin);
+                if (rand.nextBoolean()) {
+                    if (rand.nextBoolean()) {
+                        spawnY = (int) (world.getHeight() - SPAWN_MARGIN);
+                    } else {
+                        spawnY = SPAWN_MARGIN;
+                    }
+                    spawnX = SPAWN_MARGIN + rand.nextInt((int) world.getWidth() - 2 * SPAWN_MARGIN);
+                } else {
+                    if (rand.nextBoolean()) {
+                        spawnX = (int) (world.getWidth() - SPAWN_MARGIN);
+                    } else {
+                        spawnX = SPAWN_MARGIN;
+                    }
+                    spawnY = SPAWN_MARGIN + rand.nextInt((int) world.getHeight() - 2 * SPAWN_MARGIN);
                 }
-                else {
-                    if (rand.nextBoolean()){
-                        spawnX = (int) (world.getWidth() - margin);
-                    } else spawnX = margin;
-                    spawnY = margin + rand.nextInt((int) world.getHeight() - 2 * margin);
-                }
-
 
                 Enemy enemy = EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY);
                 enemy.setAttackListener(this);  // Register this Game as the attack listener
                 enemiesAlive.add(enemy);
             }
             this.lastEnemySpawnTime = (int) this.gameTime;
-            this.enemySpawnRate = Math.max(1, Math.min(this.enemyBaseSpawnRate, this.enemyBaseSpawnRate - (int) (4.0 * (int) this.gameTime / this.enemySpawnRateMaxTime)));
-            if ((int) this.gameTime <= this.enemySpawnRateMaxTime){
-                this.enemyMaxSpawnAmount = (int) (this.enemyBaseMaxSpawnAmount + this.gameTime / 60);
-            }
-            else {
-                this.enemyMaxSpawnAmount = (int) (this.enemyBaseMaxSpawnAmount + (double) this.enemySpawnRateMaxTime / 60  + ((this.gameTime - this.enemySpawnRateMaxTime) / 60)*2);
+            this.enemySpawnRate = Math.max(1, Math.min(ENEMY_BASE_SPAWN_RATE, ENEMY_BASE_SPAWN_RATE - (int) (SPAWN_RATE_SCALING_FACTOR * (int) this.gameTime / ENEMY_SPAWN_RATE_MAX_TIME)));
+            if ((int) this.gameTime <= ENEMY_SPAWN_RATE_MAX_TIME) {
+                this.enemyMaxSpawnAmount = (int) (ENEMY_BASE_MAX_SPAWN_AMOUNT + this.gameTime / SPAWN_AMOUNT_INCREASE_INTERVAL);
+            } else {
+                this.enemyMaxSpawnAmount = (int) (ENEMY_BASE_MAX_SPAWN_AMOUNT + (double) ENEMY_SPAWN_RATE_MAX_TIME / SPAWN_AMOUNT_INCREASE_INTERVAL + ((this.gameTime - ENEMY_SPAWN_RATE_MAX_TIME) / SPAWN_AMOUNT_INCREASE_INTERVAL) * LATE_GAME_SPAWN_MULTIPLIER);
             }
         }
     }

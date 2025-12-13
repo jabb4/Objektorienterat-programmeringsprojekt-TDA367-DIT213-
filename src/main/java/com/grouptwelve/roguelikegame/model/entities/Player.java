@@ -6,17 +6,20 @@ import com.grouptwelve.roguelikegame.model.level.LevelSystem;
 import com.grouptwelve.roguelikegame.model.weapons.Sword;
 
 public class Player extends Entity {
+
+    private static final int PLAYER_HP = 100;
+    private static final int PLAYER_SIZE = 10;
+    private static final int PLAYER_MAX_HP = 100;
+    private static final int PLAYER_MAX_SPEED = 150;
+
     private boolean wantMove;
     private LevelUpListener levelUpListener;
-
     private LevelSystem levelSystem = new LevelSystem();
 
-
     public Player(double x, double y) {
-        super("Player", x, y, 100, 10, 100);
-        this.velocity.setMaxSpeed(150);
+        super("Player", x, y, PLAYER_HP, PLAYER_SIZE, PLAYER_MAX_HP);
+        this.velocity.setMaxSpeed(PLAYER_MAX_SPEED);
         this.weapon = new Sword();
-
         this.wantMove = false;
     }
 
