@@ -20,7 +20,7 @@ public class EnemyFactory {
                 Enemies.GOBLIN,
                 0,
                 0,
-                50,
+                30,
                 5,
                 30,
                 70,
@@ -50,6 +50,6 @@ public class EnemyFactory {
         if (enemy == null){
             throw new IllegalArgumentException("enemy 2 type '" + type + "' is not registered in the enemy registry.");
         }
-        return new Enemy(enemy);
+        return new Enemy(enemy, x, y);
     }
 }

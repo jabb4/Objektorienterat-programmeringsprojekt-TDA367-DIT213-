@@ -51,8 +51,8 @@ public class Enemy extends Entity implements Obstacle {
         this.weapon = weapon;
     }
 
-    public Enemy(Enemy enemy) {
-        super(enemy.name, enemy.x, enemy.y, enemy.hp, enemy.size, enemy.maxHP);
+    public Enemy(Enemy enemy, double x, double y) {
+        super(enemy.name, x, y, enemy.hp, enemy.size, enemy.maxHP);
         this.type = enemy.type;
         this.velocity = new Velocity(enemy.velocity);
         this.attackRange = enemy.attackRange;
