@@ -6,6 +6,6 @@ package com.grouptwelve.roguelikegame.model.events.input;
  */
 public interface GameEventListener {
     void onMovement(MovementEvent event);
-    void onAttack(AttackEvent event);
+    void onAttack();
     void onChooseBuff(int level);
 }

@@ -112,6 +112,10 @@ public class Enemy extends Entity implements Obstacle {
         velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
     }
 
+    /**
+     * moves enemy and updates state
+     * @param deltaTime Time since last update
+     */
     @Override
     public void update(double deltaTime) {
         super.update(deltaTime);

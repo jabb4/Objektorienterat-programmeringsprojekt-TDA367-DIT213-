@@ -125,25 +125,39 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     }
     // ==================== GameEventListener Implementation ====================
 
+    /**
+     * controller tells buff was chosen by user
+     * @param i index where buff lies in list
+     */
+
     @Override
-    public void onChooseBuff(int level) {
-        upgrades[level].apply(player);
-        System.out.println(upgrades[level].toString() +" was choosen" );
+    public void onChooseBuff(int i) {
+        if(i >= 0 && i < upgrades.length)
+        {
+            upgrades[i].apply(player);
+        }
     }
 
+    /**
+     * called continuously by controller for updating player direction
+     * @param event contains the specifics of player movement(x direction and y direction)
+     */
     @Override
     public void onMovement(MovementEvent event) {
-        setPlayerMovement(event.getDx(), event.getDy());
+        player.setMovementDirection(event.getDx(), event.getDy());
+
     }
 
+    /**
+     * called when player wants to attack
+     */
     @Override
-    public void onAttack(AttackEvent event) {
-        // Player attacks - entity handles combat via AttackListener callback
+    public void onAttack() {
         player.attack();
     }
 
-    // ==================== Game Logic ====================
 
+    // ==================== Game Logic ====================
     /**
      * Updates the game state by one frame.
      * 
@@ -164,12 +178,11 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
 
     /**
      * Updates all enemies.
-     * check if enemy is alive and then handles that evnt otherwise it enemhy should move towards player
+     * check if enemy is alive and then handles that event otherwise should move towards player
      */
     private void updateEnemies(double deltaTime) {
         double playerX = player.getX();
         double playerY = player.getY();
-
 
         for (Enemy enemy : enemiesAlive) {
             if(!enemy.getAliveStatus())
@@ -184,7 +197,6 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
                 enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
                 enemy.update(deltaTime);
             }
-
         }
     }
 
@@ -230,16 +242,6 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         }
     }
 
-    /**
-     * Sets player movement direction based on input.
-     *
-     * @param dx Horizontal direction (-1, 0, or 1)
-     * @param dy Vertical direction (-1, 0, or 1)
-     */
-    public void setPlayerMovement(int dx, int dy) {
-        player.setMovementDirection(dx, dy);
-    }
-
     // ==================== Getters ====================
 
     public Player getPlayer() {
@@ -254,24 +256,15 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
         return gameTime;
     }
 
-    public void resetPlayer() {
-        player.revive();
-        player.setX(400);
-        player.setY(300);
-        // player.getVelocity().reset();
-    }
-
+    /**
+     * used when player died and want to play again
+     * resets game state
+     */
     public void reset() {
         this.gameTime = 0;
         this.lastEnemySpawnTime = 0;
 
-        // Reset the player
-        resetPlayer();
-
-        // Clear enemies
+        player.revive();
         enemiesAlive.clear();
-
-        this.enemiesAlive.add(EnemyPool.getInstance().borrowEnemy(Enemies.GOBLIN, 10,20));
-        this.gameTime = 0;
     }
 }

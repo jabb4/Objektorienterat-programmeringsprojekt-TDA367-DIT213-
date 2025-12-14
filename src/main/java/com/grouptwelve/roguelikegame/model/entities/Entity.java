@@ -23,6 +23,7 @@ public abstract class Entity {
     // Facing direction (used for attack direction)
     protected double dirX;
     protected double dirY;
+    //protected double attackStart = ;
 
     protected Weapon weapon;
 
@@ -30,9 +31,8 @@ public abstract class Entity {
     protected AttackListener attackListener;
 
     // Hit effect state
-    protected boolean isHit;
-    protected double hitTimer;
-
+    protected boolean isHit = false;
+    protected double hitTimer = 0.0;
     private List<ActiveEffect> activeEffects = new ArrayList<>();
 
 
@@ -45,8 +45,6 @@ public abstract class Entity {
         this.size = size;
         this.velocity = new Velocity(100);
         this.isAlive = true;
-        this.isHit = false;
-        this.hitTimer = 0.0;
     }
 
     /**
@@ -81,11 +79,18 @@ public abstract class Entity {
         }
     }
 
-
+    /**
+     * applies effects to entity
+     * @param effect ex fire
+     */
     public void addEffect(ActiveEffect effect) {
         activeEffects.add(effect);
     }
 
+    /**
+     * moves entitiy based on direction and speed
+     * @param deltaTime -multiply change by delta time so frame rate not affect speed
+     */
     protected void move(double deltaTime) {
         x += velocity.getX() * deltaTime;
         y += velocity.getY() * deltaTime;
@@ -93,12 +98,21 @@ public abstract class Entity {
 
     // ==================== Combat ====================
 
+    /**
+     * returns the position where entity attacks
+     * (its own size plus weapon range) far away from center of entity
+     * @return x-coordinate
+     */
     public double getAttackPointX() {
-        return this.x + this.dirX * 20;
+        return this.x + this.dirX * (size + weapon.getRange());
     }
-
+    /**
+     * returns the position where entity attacks
+     * (its own size plus weapon range) far away from center of entity
+     * @return y-coordinate
+     */
     public double getAttackPointY() {
-        return this.y + this.dirY* 20;
+        return this.y + this.dirY* (size + weapon.getRange());
     }
 
     /**

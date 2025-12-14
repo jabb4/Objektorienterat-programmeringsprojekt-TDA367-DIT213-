@@ -126,8 +126,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
 
     // Handle action commands (only on press)
     else if (command == Command.ATTACK && isPressed) {
-      AttackEvent event = createAttackEvent();
-      notifyAttack(event);
+      notifyAttack();
     }
 
     // TODO: Handle other commands when implemented
@@ -260,11 +259,10 @@ public class GameController implements InputEventListener, GameEventPublisher {
   /**
    * Notifies all listeners about an attack event.
    *
-   * @param event The attack event to broadcast
    */
-  private void notifyAttack(AttackEvent event) {
+  private void notifyAttack() {
     for (GameEventListener listener : eventListeners) {
-      listener.onAttack(event);
+      listener.onAttack();
     }
   }
 
@@ -382,20 +380,6 @@ public class GameController implements InputEventListener, GameEventPublisher {
       } else {  // resume game loop
           gameView.showPauseMenu(false);
       }
-  }
-
-  public void takeDamage(Entity entity, double damage) {
-      if (!entity.getAliveStatus()) return; // already dead
-
-      // Apply damage
-      entity.takeDamage(damage);
-
-      // Update health bar
-      gameView.updateHealthBar(entity.getHp(), entity.getMaxHP(), entity);
-  }
-
-  public void levelUp(int xp, int xptonext, int level) {
-      gameView.updateLevelBar(xp, xptonext, level);
   }
 
   public void resume() {

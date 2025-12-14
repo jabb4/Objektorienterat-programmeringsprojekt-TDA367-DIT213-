@@ -1,6 +1,4 @@
 package com.grouptwelve.roguelikegame.model.entities;
-
-import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
 import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.level.LevelSystem;
 import com.grouptwelve.roguelikegame.model.weapons.Sword;
@@ -12,11 +10,17 @@ public class Player extends Entity {
     private static final int PLAYER_MAX_HP = 100;
     private static final int PLAYER_MAX_SPEED = 150;
 
+    //need to be stored for reviving
+    private final double startX;
+    private final double startY;
+
     private boolean wantMove;
     private LevelUpListener levelUpListener;
     private LevelSystem levelSystem = new LevelSystem();
 
     public Player(double x, double y) {
+        this.startX = x;
+        this.startY = y;
         super("Player", x, y, PLAYER_HP, PLAYER_SIZE, PLAYER_MAX_HP);
         this.velocity.setMaxSpeed(PLAYER_MAX_SPEED);
         this.weapon = new Sword();
@@ -40,6 +44,8 @@ public class Player extends Entity {
     private void onLevelUp() {
         levelUpListener.onLevelUp(levelSystem.getLevel());
     }
+
+
     public void setLevelUpListener(LevelUpListener listener) {
         this.levelUpListener = listener;
     }
@@ -80,7 +86,13 @@ public class Player extends Entity {
             velocity.stop();
         }
     }
-
+    @Override
+    public void revive()
+    {
+        super.revive();
+        this.x = startX;
+        this.y = startY;
+    }
     @Override
     public void takeDamage(double dmg)
     {

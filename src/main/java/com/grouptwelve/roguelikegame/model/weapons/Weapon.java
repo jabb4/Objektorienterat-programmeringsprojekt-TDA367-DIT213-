@@ -42,13 +42,6 @@ public abstract class Weapon implements WeaponInterface {
         this.knockbackStrength = knockbackStrength;
     }
 
-    public Weapon(Weapon weapon) {
-        this.damage = weapon.damage;
-        this.range = weapon.range;
-        this.attackCooldown = weapon.attackCooldown;
-        this.knockbackStrength = weapon.knockbackStrength;
-    }
-
     /**
      * Updates the weapon's cooldown timer.
      *

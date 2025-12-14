@@ -83,7 +83,5 @@ public class EventPublisher implements GameEventPublisher {
         }
     }
 
-    // ==================== Legacy Methods (for backward compatibility) ====================
-
 
 }

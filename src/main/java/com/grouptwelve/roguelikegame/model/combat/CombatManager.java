@@ -74,16 +74,8 @@ public class CombatManager {
 
             // Publish hit event
             publishEnemyHit(enemy, damage, isCritical);
-
-
-
         }
     }
-
-    /**
-     * Handles enemy death: grants XP, publishes event, returns to pool.
-     */
-
 
     /**
      * Handles enemies attacking player.
