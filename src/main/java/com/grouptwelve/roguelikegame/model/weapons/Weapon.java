@@ -11,9 +11,8 @@ public abstract class Weapon implements WeaponInterface {
 
     private static final Random random = new Random();
 
-    // Default weapon stats
-    private static final double DEFAULT_CRIT_CHANCE = 0.05;      // 5%
-    private static final double DEFAULT_CRIT_MULTIPLIER = 2.0;   // 2x damage
+    private static final double DEFAULT_CRIT_CHANCE = 0.05;
+    private static final double DEFAULT_CRIT_MULTIPLIER = 2.0;
 
     protected double damage;
     protected double range;
