@@ -28,12 +28,6 @@ public interface EntityPublisher
     void unsubscribeEntityDeath(EntityDeathListener entityDeathListener);
     void onEntityDeath(EntityDeathEvent event);
 
-    /**
-     * called when an entity dies
-     * @param entity who died
-     */
-    void onEntityDeath(Entity entity);
-
     void subscribeEntityHit(EntityHitListener entityHitListener);
     void unsubscribeEntityHit(EntityHitListener entityHitListener);
 
