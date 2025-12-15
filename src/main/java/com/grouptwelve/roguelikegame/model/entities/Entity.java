@@ -123,7 +123,6 @@ public abstract class Entity {
     public void takeDamage(CombatResult combatResult)
     {
         double dmg = combatResult.getDamage();
-        boolean isCritical = combatResult.isCritical();
         this.hp -= dmg;
 
 

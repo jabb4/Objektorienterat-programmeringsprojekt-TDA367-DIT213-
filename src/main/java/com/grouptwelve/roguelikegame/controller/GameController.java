@@ -7,10 +7,7 @@ import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.EventPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
@@ -288,7 +285,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
    * Renders the current game state.
    */
   private void render() {
-    gameView.render(lastUpdate);
+    gameView.render(game, lastUpdate);
   }
 
   /**
@@ -362,10 +359,12 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       LevelUpPublisher levelUpPublisher = (LevelUpPublisher) eventPublisher;
       EntityPublisher entityPublisher = (EntityPublisher) eventPublisher;
       ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
+      XpPublisher xpPublisher = (XpPublisher) eventPublisher;
 
-      Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher);
 
-      gameView.setGame(game);
+      Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher, xpPublisher);
+
+
 
 
       Scene scene = new Scene(root, 1280, 720);
@@ -385,6 +384,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       entityPublisher.subscribeAttack(gameView);
       entityPublisher.subscribeEntityDeath(gameView);
       chooseBuffPublisher.subscribeBuff(gameView);
+      xpPublisher.subscribeXp(gameView);
 
       gameView.setGameController(gameController); // Connect FXML components with GameController
       gameView.setGameController(gameController);

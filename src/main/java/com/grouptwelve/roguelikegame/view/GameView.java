@@ -7,6 +7,7 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
@@ -36,7 +37,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-public class GameView implements AttackListener, EntityDeathListener, ChooseBuffListener, EntityHitListener {
+public class GameView implements AttackListener, EntityDeathListener,
+        ChooseBuffListener, EntityHitListener, XpListener {
 
     @FXML private StackPane root;
     @FXML private Canvas gameCanvas;
@@ -68,7 +70,6 @@ public class GameView implements AttackListener, EntityDeathListener, ChooseBuff
 
     private GraphicsContext gc;
     private GameController gameController;
-    private Game game;
     private GaussianBlur blur = new GaussianBlur(0);
     Random rand;
 
@@ -76,10 +77,7 @@ public class GameView implements AttackListener, EntityDeathListener, ChooseBuff
     public void setGameController(GameController controller) {
         this.gameController = controller;
     }
-    public void setGame(Game game)
-    {
-        this.game = game;
-    }
+
 
     @FXML
     private void initialize() {
@@ -98,7 +96,7 @@ public class GameView implements AttackListener, EntityDeathListener, ChooseBuff
         return root;
     }
 
-    public void render(double deltaTime) {
+    public void render(Game game, double deltaTime) {
         // Clear the canvas
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
 
@@ -287,6 +285,10 @@ public class GameView implements AttackListener, EntityDeathListener, ChooseBuff
         upgradeMenu.setVisible(show);
         blur.setRadius(show ? 10 : 0);
     }
+    @Override
+    public void onUpdateXP(XpChangeEvent xpChangeEvent) {
+        updateLevelBar(xpChangeEvent.getTotalXP(), xpChangeEvent.getXPtoNext(), xpChangeEvent.getLevel());
+    }
 
     // ==================== Effects ====================
     @Override
@@ -298,7 +300,7 @@ public class GameView implements AttackListener, EntityDeathListener, ChooseBuff
         }
         else
         {
-            updateLevelBar(game.getPlayer().getLevelSystem().getXP(), game.getPlayer().getLevelSystem().getXPToNext(), game.getPlayer().getLevelSystem().getLevel());
+
 
             System.out.println("spawning death particles .....////:/.,.,-.,.1&¤/#)#&¤%(#=#");
         }
@@ -308,10 +310,13 @@ public class GameView implements AttackListener, EntityDeathListener, ChooseBuff
     {
         if(entity instanceof Player)
         {
-            updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP());
+            updateHealthBar(entity.getHp(), entity.getMaxHP());
         }
-        showDamageNumber(entity.getX(), entity.getY(), combatResult.getDamage(), combatResult.isCritical());
-        spawnHitParticles(entity.getX(), entity.getY());
+        else {
+            showDamageNumber(entity.getX(), entity.getY(), combatResult.getDamage(), combatResult.isCritical());
+            spawnHitParticles(entity.getX(), entity.getY());
+        }
+
     }
     /**
      * Plays the player death effect with ripple/shockwave, screen shake, red flash and toggles death menu.
@@ -499,4 +504,6 @@ public class GameView implements AttackListener, EntityDeathListener, ChooseBuff
         highlightedItem.setStroke(javafx.scene.paint.Color.YELLOW);
         highlightedItem.setStrokeWidth(3);
     }
+
+
 }

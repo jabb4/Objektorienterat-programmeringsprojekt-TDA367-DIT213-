@@ -6,6 +6,7 @@ import com.grouptwelve.roguelikegame.model.constraints.ConstraintSystem;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
+import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
@@ -13,6 +14,7 @@ import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.XpPublisher;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.UpgradeRegistry;
 
@@ -37,8 +39,8 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private final CombatManager combatManager;
-    //private final PlayerPublisher PlayerPublisher;
     private final EntityPublisher entityPublisher;
+    private final XpPublisher xpPublisher;
     private final ChooseBuffPublisher chooseBuffPublisher;
     private final LevelUpPublisher levelUpPublisher;
     private final UpgradeInterface[] upgrades =  new UpgradeInterface[3];
@@ -66,11 +68,12 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
      *
      * @param eventPublisher Publisher for game events (visual feedback, etc.)
      */
-    public Game(EntityPublisher entityPublisher, ChooseBuffPublisher chooseBuffPublisher, LevelUpPublisher levelUpPublisher) {
+    public Game(EntityPublisher entityPublisher, ChooseBuffPublisher chooseBuffPublisher, LevelUpPublisher levelUpPublisher, XpPublisher xpPublisher) {
         //this.PlayerPublisher = playerPublisher;
         this.entityPublisher = entityPublisher;
         this.chooseBuffPublisher = chooseBuffPublisher;
         this.levelUpPublisher = levelUpPublisher;
+        this.xpPublisher = xpPublisher;
 
         levelUpPublisher.subscribeLevelUp(this);
         entityPublisher.subscribeEntityDeath(this);
@@ -104,10 +107,15 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
             player.gainXP(enemy.getXpValue());
             EnemyPool.getInstance().returnEnemy(enemy);
             enemiesAlive.remove(enemy);
-
+            xpPublisher.onUpdateXp(new XpChangeEvent(player.getLevelSystem().getXP(), player.getLevelSystem().getXPToNext(), player.getLevelSystem().getLevel()));
 
             // Note: Actual removal from enemiesAlive and return to pool
             // happens in updateEnemies() to avoid ConcurrentModificationException
+        }
+        else if(entity instanceof Player)
+        {
+            //fire event
+            //updateLevelBar(game.getPlayer().getLevelSystem().getXP(), game.getPlayer().getLevelSystem().getXPToNext(), game.getPlayer().getLevelSystem().getLevel());
         }
     }
 

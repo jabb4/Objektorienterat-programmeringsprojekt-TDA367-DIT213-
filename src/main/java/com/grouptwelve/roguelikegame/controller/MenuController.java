@@ -3,10 +3,7 @@ package com.grouptwelve.roguelikegame.controller;
 import java.io.IOException;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.EventPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
 import com.grouptwelve.roguelikegame.view.GameView;
 
 import javafx.scene.control.Button;
@@ -75,12 +72,13 @@ public class MenuController implements InputEventListener {
         LevelUpPublisher levelUpPublisher = (LevelUpPublisher) eventPublisher;
         EntityPublisher entityPublisher = (EntityPublisher) eventPublisher;
         ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
+        XpPublisher xpPublisher = (XpPublisher) eventPublisher;
 
         //inputHandler.setListener(this);
         //eventPublisher.subscribeBuff(this);
 
         // Create game with event publisher
-        Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher);
+        Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher, xpPublisher);
         game.reset(); // To make sure that previous session doesnt effect new one
 
         // Load FXML
@@ -90,7 +88,7 @@ public class MenuController implements InputEventListener {
         // Create view and input handler
         GameView gameView = loader.getController();
         InputHandler inputHandler = new InputHandler();
-        gameView.setGame(game);
+
 
 
         Scene gameScene = new Scene(root, 1280, 720);
@@ -111,6 +109,7 @@ public class MenuController implements InputEventListener {
         entityPublisher.subscribeAttack(gameView);
         entityPublisher.subscribeEntityDeath(gameView);
         chooseBuffPublisher.subscribeBuff(gameView);
+        xpPublisher.subscribeXp(gameView);
 
         gameView.setGameController(gameController); // Connect FXML components with GameController
         gameController.start();
