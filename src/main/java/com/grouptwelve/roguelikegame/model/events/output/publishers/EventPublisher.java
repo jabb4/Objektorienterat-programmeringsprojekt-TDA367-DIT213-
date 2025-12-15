@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.model.events.output.publishers;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
@@ -11,6 +12,13 @@ import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
 import java.util.LinkedList;
 import java.util.List;
+
+/**
+ * centralized event publisher class for handling events from the model
+ * contains list of listeners which can sub and unsubscribe
+ * all methods are overridden from specific interfaces(one concern)
+ * this class in a whole is never given out, only used though interfaces
+ */
 
 public class EventPublisher implements LevelUpPublisher, EntityPublisher, ChooseBuffPublisher, XpPublisher {
     private List<AttackListener> attackListeners = new LinkedList<>();
@@ -30,7 +38,7 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
 
     @Override
     public void onLevelUp() {
-        for(com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener levelUpListener : levelUpListeners)
+        for(LevelUpListener levelUpListener : levelUpListeners)
         {
             levelUpListener.onLevelUp();
         }
@@ -45,11 +53,11 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
     }
 
     @Override
-    public void onEntityHit(Entity entity, CombatResult combatResult)
+    public void onEntityHit(EntityHitEvent entityHitEvent)
     {
         for (EntityHitListener entityHitListener : entityHitListeners)
         {
-            entityHitListener.onEntityHit(entity, combatResult);
+            entityHitListener.onEntityHit(entityHitEvent);
         }
     }
 

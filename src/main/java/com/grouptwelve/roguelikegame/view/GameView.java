@@ -8,6 +8,7 @@ import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
@@ -187,7 +188,6 @@ public class GameView implements AttackListener, EntityDeathListener,
      * 
      * @param currentHp Entitiy's current hp 
      * @param maxHp Entity's max hp
-     * @param entity from Entity class
      */
     public void updateHealthBar(double currentHp, double maxHp) {
         double percentage = currentHp / maxHp;
@@ -286,6 +286,10 @@ public class GameView implements AttackListener, EntityDeathListener,
         upgradeMenu.setVisible(show);
         blur.setRadius(show ? 10 : 0);
     }
+
+
+    // ==================== GameListeners ====================
+
     @Override
     public void onUpdateXP(XpChangeEvent xpChangeEvent) {
         updateLevelBar(xpChangeEvent.getTotalXP(), xpChangeEvent.getXPtoNext(), xpChangeEvent.getLevel());
@@ -303,13 +307,15 @@ public class GameView implements AttackListener, EntityDeathListener,
         else
         {
 
-
+            // TODO: implement effect when eneimes die
             System.out.println("spawning death particles .....////:/.,.,-.,.1&¤/#)#&¤%(#=#");
         }
     }
     @Override
-    public void onEntityHit(Entity entity, CombatResult combatResult)
+    public void onEntityHit(EntityHitEvent entityHitEvent)
     {
+        Entity entity = entityHitEvent.getEntity();
+        CombatResult combatResult = entityHitEvent.getCombatResult();
         if(entity instanceof Player)
         {
             updateHealthBar(entity.getHp(), entity.getMaxHP());
@@ -328,8 +334,6 @@ public class GameView implements AttackListener, EntityDeathListener,
      */
     public void playerDied(double x, double y)
     {
-        System.out.println("YOU DIED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        
         // Brief freeze frame before effects start
         PauseTransition freeze = new PauseTransition(Duration.millis(100));
         freeze.setOnFinished(e -> {
@@ -476,9 +480,6 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private void onQuit() throws IOException { gameController.quit(); }
     @FXML private void onPlayAgain() throws IOException { gameController.playAgain(); }
     @FXML protected void onOptions() throws IOException { }
-    public Button setUpgrade1() { return fireBuffBox; }
-    public Button setUpgrade2() { return speedBuffBox; }
-    public Button setUpgrade3() { return healthBuffBox; }
 
 
     // ==================== Item Hotbar (MAYBE REMOVE FOR NOW SINCE WE ONlY HAVE ONE ITEM AT THE MOMENT?) ====================
