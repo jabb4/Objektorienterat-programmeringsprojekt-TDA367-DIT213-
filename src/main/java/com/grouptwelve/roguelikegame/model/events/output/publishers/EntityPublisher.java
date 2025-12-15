@@ -6,18 +6,39 @@ import com.grouptwelve.roguelikegame.model.events.output.listeners.AttackListene
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityHitListener;
 
+/**
+ * publisher interface that EventPublisher implements,
+ * contains methods and that entities use to publish events
+ * sub and unsubscribers for listeners to use
+ */
 public interface EntityPublisher
 {
+
     void subscribeAttack(AttackListener attackListener);
     void unsubscribeAttack(AttackListener attackListener);
+    /**
+     * called by entities(player, enemy) sends information encapsulated in an attackEvent
+     * @param attackEvent contains information such as position of attack and radius
+     */
     void onAttack(AttackEvent attackEvent);
 
     void subscribeEntityDeath(EntityDeathListener entityDeathListener);
     void unsubscribeEntityDeath(EntityDeathListener entityDeathListener);
+
+    /**
+     * called when an entity dies
+     * @param entity who died
+     */
     void onEntityDeath(Entity entity);
 
     void subscribeEntityHit(EntityHitListener entityHitListener);
     void unsubscribeEntityHit(EntityHitListener entityHitListener);
+
+    /**
+     * called when en enemy is hit
+     * @param entity who was hit
+     * @param combatResult damage and tells if the entity was damaged with crit(change to do more damage should be drawn differently )
+     */
     void onEntityHit(Entity entity, CombatResult combatResult);
 
 }

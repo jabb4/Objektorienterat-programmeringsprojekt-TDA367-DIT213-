@@ -64,9 +64,11 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     private int enemyMaxSpawnAmount = ENEMY_BASE_MAX_SPAWN_AMOUNT;
 
     /**
-     * Creates a new Game instance with an event publisher.
-     *
-     * @param eventPublisher Publisher for game events (visual feedback, etc.)
+     * constructor that initialise game state
+     * @param entityPublisher -gives publisher to entities
+     * @param chooseBuffPublisher -uses itself
+     * @param levelUpPublisher - used by player
+     * @param xpPublisher - uses itself
      */
     public Game(EntityPublisher entityPublisher, ChooseBuffPublisher chooseBuffPublisher, LevelUpPublisher levelUpPublisher, XpPublisher xpPublisher) {
         //this.PlayerPublisher = playerPublisher;
@@ -119,9 +121,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         }
     }
 
-    /**
-     * called by only player when level up. publishes event
-     */
     @Override
     public void onLevelUp()
     {
@@ -133,11 +132,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     }
     // ==================== GameEventListener Implementation ====================
 
-    /**
-     * controller tells buff was chosen by user
-     * @param i index where buff lies in list
-     */
-
     @Override
     public void onApplyBuff(int i) {
         if(i >= 0 && i < upgrades.length)
@@ -146,19 +140,12 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         }
     }
 
-    /**
-     * called continuously by controller for updating player direction
-     * @param event contains the specifics of player movement(x direction and y direction)
-     */
     @Override
     public void onMovement(MovementEvent event) {
         player.setMovementDirection(event.getDx(), event.getDy());
 
     }
 
-    /**
-     * called when player wants to attack
-     */
     @Override
     public void onAttack() {
         player.attack();
@@ -166,11 +153,7 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
 
 
     // ==================== Game Logic ====================
-    /**
-     * Updates the game state by one frame.
-     * 
-     * @param deltaTime Time elapsed since last update (in seconds)
-     */
+
     public void update(double deltaTime) {
         gameTime += deltaTime;
 

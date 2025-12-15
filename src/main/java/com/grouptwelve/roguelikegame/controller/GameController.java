@@ -192,47 +192,10 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     for (GameEventListener listener : eventListeners) {
       listener.onMovement(event);
     }
-
-    //gameView.updateDirectionLabel(event.getDx(), event.getDy());
-
-    // TEMPORARY FOR DEBUGGING
-    updateStatusDisplay();
   }
-
-  /**
-   * TEMPORARY FOR DEBUGGING
-   * Updates the status display based on currently active commands.
-   * Shows which keys are currently pressed.
-   */
-  private void updateStatusDisplay() {
-    List<String> activeKeys = getStrings();
-
-    // Update label
-    /*if (activeKeys.isEmpty()) {
-      gameView.updateStatusLabel("No keys pressed");
-    } else {
-      gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
-    }*/
-  }
-
-  private List<String> getStrings() {
-    Set<Command> activeCommands = inputHandler.getActiveCommands();
-    List<String> activeKeys = new ArrayList<>();
-
-        // Check movement keys
-        if (activeCommands.contains(Command.MOVE_UP)) activeKeys.add("UP");
-        if (activeCommands.contains(Command.MOVE_DOWN)) activeKeys.add("DOWN");
-        if (activeCommands.contains(Command.MOVE_LEFT)) activeKeys.add("LEFT");
-        if (activeCommands.contains(Command.MOVE_RIGHT)) activeKeys.add("RIGHT");
-
-        // Check action keys
-        if (activeCommands.contains(Command.ATTACK)) activeKeys.add("ATTACK");
-        return activeKeys;
-    }
 
   /**
    * Notifies all listeners about an attack event.
-   *
    */
   private void notifyAttack() {
     for (GameEventListener listener : eventListeners) {
@@ -240,7 +203,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     }
   }
 
-  // TODO: Add notification methods for other events
 
   // ==================== Game Loop ====================
 
@@ -311,8 +273,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
         System.out.println("enmy died");
     }
   }
-
-
 
   @Override
   public void onChooseBuff(UpgradeInterface[] upgrades)

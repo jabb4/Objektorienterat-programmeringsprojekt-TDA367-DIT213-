@@ -11,6 +11,13 @@ import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * centralized event publisher class for handling events from the model
+ * contains list of listeners which can sub and unsubscribe
+ * all methods are overridden from specific interfaces(one concern)
+ * this class in a whole is never given out, only used though interfaces
+ */
+
 public class EventPublisher implements LevelUpPublisher, EntityPublisher, ChooseBuffPublisher, XpPublisher {
     private List<AttackListener> attackListeners = new LinkedList<>();
     private List<EntityDeathListener> entityDeathListeners = new LinkedList<>();
@@ -18,6 +25,8 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
     private List<EntityHitListener> entityHitListeners = new LinkedList<>();
     private List<ChooseBuffListener> chooseBuffListeners = new LinkedList<>();
     private List<XpListener> xpListeners = new LinkedList<>();
+
+
 
     @Override
     public void onAttack(AttackEvent attackEvent) {
@@ -29,7 +38,7 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
 
     @Override
     public void onLevelUp() {
-        for(com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener levelUpListener : levelUpListeners)
+        for(LevelUpListener levelUpListener : levelUpListeners)
         {
             levelUpListener.onLevelUp();
         }
