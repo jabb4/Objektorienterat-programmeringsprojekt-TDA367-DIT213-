@@ -3,7 +3,7 @@ package com.grouptwelve.roguelikegame.model.entities;
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
-import com.grouptwelve.roguelikegame.model.events.output.EntityPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
 

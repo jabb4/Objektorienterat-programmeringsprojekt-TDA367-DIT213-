@@ -1,7 +1,5 @@
 package com.grouptwelve.roguelikegame.model.entities;
-import com.grouptwelve.roguelikegame.model.events.output.LevelUpPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
-import com.grouptwelve.roguelikegame.model.events.output.PlayerPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
 import com.grouptwelve.roguelikegame.model.level.LevelSystem;
 import com.grouptwelve.roguelikegame.model.weapons.Sword;
 
@@ -21,9 +19,9 @@ public class Player extends Entity {
     private LevelSystem levelSystem = new LevelSystem();
 
     public Player(double x, double y) {
+        super("Player", x, y, PLAYER_HP, PLAYER_SIZE, PLAYER_MAX_HP);
         this.startX = x;
         this.startY = y;
-        super("Player", x, y, PLAYER_HP, PLAYER_SIZE, PLAYER_MAX_HP);
         this.velocity.setMaxSpeed(PLAYER_MAX_SPEED);
         this.weapon = new Sword();
         this.wantMove = false;

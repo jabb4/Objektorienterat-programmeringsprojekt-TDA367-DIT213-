@@ -5,10 +5,12 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
-import com.grouptwelve.roguelikegame.model.events.output.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
-import com.grouptwelve.roguelikegame.model.events.output.listeners.PlayerDeathListener;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.EventPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
@@ -16,8 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -55,15 +55,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     this.gameView = gameView;
     this.inputHandler = inputHandler;
 
-    // Register listeners
     addEventListener(game);
-
-
-
-    // TODO: Other systems that needs to react to events such as audio and
-    // animations.
-    // addEventListener(audioManager);
-    // ...
   }
 
   /**

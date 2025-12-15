@@ -4,7 +4,5 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 
 public interface EntityDeathListener {
-
-    public void onEntityDeath(Entity entity);
-
+    void onEntityDeath(Entity entity);
 }

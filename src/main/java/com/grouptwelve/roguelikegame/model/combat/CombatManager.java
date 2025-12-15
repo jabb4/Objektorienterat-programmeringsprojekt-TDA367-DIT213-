@@ -3,8 +3,6 @@ package com.grouptwelve.roguelikegame.model.combat;
 import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
-import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.AttackListener;
 

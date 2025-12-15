@@ -1,19 +1,16 @@
 package com.grouptwelve.roguelikegame.model;
 
 import com.grouptwelve.roguelikegame.model.combat.CombatManager;
-import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.constraints.BoundsConstraint;
 import com.grouptwelve.roguelikegame.model.constraints.ConstraintSystem;
-import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.events.output.ChooseBuffPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.EntityPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
-import com.grouptwelve.roguelikegame.model.events.output.LevelUpPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.PlayerPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;

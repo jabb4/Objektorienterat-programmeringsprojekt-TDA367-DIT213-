@@ -15,8 +15,7 @@ public class AttackEvent {
     private final List<EffectInterface> effects;
     private final double knockbackStrength;
 
-    public AttackEvent(Entity attacker, double x, double y, double range,
-                      CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
+    public AttackEvent(Entity attacker, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
         this.knockbackStrength = knockbackStrength;
         this.attacker = attacker;
         this.x = x;
@@ -49,6 +48,7 @@ public class AttackEvent {
     public List<EffectInterface> getEffects() {
         return effects;
     }
+
     public double getKnockbackStrength()
     {
         return knockbackStrength;
