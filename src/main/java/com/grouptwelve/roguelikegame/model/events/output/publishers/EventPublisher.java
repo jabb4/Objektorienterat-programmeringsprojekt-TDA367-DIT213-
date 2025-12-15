@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.model.events.output.publishers;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
@@ -36,10 +37,10 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
     }
 
     @Override
-    public void onEntityDeath(Entity entity) {
+    public void onEntityDeath(EntityDeathEvent event) {
         for(EntityDeathListener entityDeathListener : entityDeathListeners)
         {
-            entityDeathListener.onEntityDeath(entity);
+            entityDeathListener.onEntityDeath(event);
         }
     }
 

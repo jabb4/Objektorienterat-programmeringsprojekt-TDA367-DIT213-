@@ -7,6 +7,7 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
@@ -292,8 +293,9 @@ public class GameView implements AttackListener, EntityDeathListener,
 
     // ==================== Effects ====================
     @Override
-    public void onEntityDeath(Entity entity)
+    public void onEntityDeath(EntityDeathEvent event)
     {
+        Entity entity = event.getEntity();
         if(entity instanceof Player)
         {
             playerDied(entity.getX(), entity.getY());

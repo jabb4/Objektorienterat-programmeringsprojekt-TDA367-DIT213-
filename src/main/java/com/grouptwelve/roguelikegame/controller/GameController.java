@@ -5,6 +5,7 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
@@ -301,7 +302,8 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   // ==================== GameEventPublisher Implementation ====================
 
   @Override
-  public void onEntityDeath(Entity entity) {
+  public void onEntityDeath(EntityDeathEvent event) {
+    Entity entity = event.getEntity();
     if(entity instanceof Player)
     {
         paused = true;

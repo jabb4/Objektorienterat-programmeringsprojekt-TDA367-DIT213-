@@ -5,6 +5,7 @@ import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
 
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ public abstract class Entity {
             entityPublisher.onEntityHit(this, combatResult);
             if (this.hp <= 0) {
                 this.isAlive = false;
-                entityPublisher.onEntityDeath(this);
+                entityPublisher.onEntityDeath(new EntityDeathEvent(this));
             }
         }
 

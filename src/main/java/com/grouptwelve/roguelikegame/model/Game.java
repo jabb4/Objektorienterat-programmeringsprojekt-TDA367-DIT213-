@@ -6,6 +6,7 @@ import com.grouptwelve.roguelikegame.model.constraints.ConstraintSystem;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
@@ -99,8 +100,9 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     // ==================== AttackListener Implementation ====================
 
     @Override
-    public void onEntityDeath(Entity entity)
+    public void onEntityDeath(EntityDeathEvent event)
     {
+        Entity entity = event.getEntity();
         if(entity instanceof Enemy)
         {
             Enemy enemy = (Enemy) entity;
