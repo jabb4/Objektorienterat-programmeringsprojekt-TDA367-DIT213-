@@ -3,7 +3,7 @@ package com.grouptwelve.roguelikegame.controller;
 import java.io.IOException;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.events.output.EventPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.*;
 import com.grouptwelve.roguelikegame.view.GameView;
 
 import javafx.scene.control.Button;
@@ -67,10 +67,17 @@ public class MenuController implements InputEventListener {
         Stage stage = (Stage) root.getScene().getWindow();
 
         // Get the event manager (acts as event bus between model and controller)
-        EventPublisher eventManager = new EventPublisher();
+        EventPublisher eventPublisher = new EventPublisher();
+
+        LevelUpPublisher levelUpPublisher = (LevelUpPublisher) eventPublisher;
+        EntityPublisher entityPublisher = (EntityPublisher) eventPublisher;
+        ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
+
+        //inputHandler.setListener(this);
+        //eventPublisher.subscribeBuff(this);
 
         // Create game with event publisher
-        Game game = new Game(eventManager);
+        Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher);
         game.reset(); // To make sure that previous session doesnt effect new one
 
         // Load FXML
@@ -80,6 +87,8 @@ public class MenuController implements InputEventListener {
         // Create view and input handler
         GameView gameView = loader.getController();
         InputHandler inputHandler = new InputHandler();
+        gameView.setGame(game);
+
 
         Scene gameScene = new Scene(root, 1280, 720);
         inputHandler.setupInputHandling(gameScene);
@@ -87,7 +96,19 @@ public class MenuController implements InputEventListener {
         // Apply font on scene
         gameScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
         
-        GameController gameController = new GameController(game, gameView, inputHandler, eventManager);
+        GameController gameController = new GameController(game, gameView, inputHandler);
+        inputHandler.setListener(gameController);
+        System.out.println("created");
+        gameController.addEventListener(game);
+
+        entityPublisher.subscribeEntityDeath(gameController);
+        chooseBuffPublisher.subscribeBuff(gameController);
+
+        entityPublisher.subscribeEntityHit(gameView);
+        entityPublisher.subscribeAttack(gameView);
+        entityPublisher.subscribeEntityDeath(gameView);
+        chooseBuffPublisher.subscribeBuff(gameView);
+
         gameView.setGameController(gameController); // Connect FXML components with GameController
         gameController.start();
         

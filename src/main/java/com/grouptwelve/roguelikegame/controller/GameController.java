@@ -2,11 +2,13 @@ package com.grouptwelve.roguelikegame.controller;
 
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
-import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
+import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
-import com.grouptwelve.roguelikegame.model.events.output.EventPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.*;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.PlayerDeathListener;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
@@ -27,13 +29,13 @@ import java.util.Set;
 /**
  * Coordinates the game loop and events.
  */
-public class GameController implements InputEventListener, GameEventPublisher {
+public class GameController implements InputEventListener, ChooseBuffListener, EntityDeathListener {
   private final Game game;
   private final GameView gameView;
   private final InputHandler inputHandler;
   private AnimationTimer gameLoop;
-  private long lastUpdate;
-  private boolean paused;
+  private long lastUpdate = 0;
+  private boolean paused = false;
   private boolean death;
   private boolean chooseBuff;
   private int selectedBuff = 1;
@@ -46,20 +48,17 @@ public class GameController implements InputEventListener, GameEventPublisher {
   private MenuNavigator deathMenuNavigator;
 
   // All systems that want to observe game events
-  private final List<GameEventListener> eventListeners;
+  private final List<GameEventListener> eventListeners = new ArrayList<>();
 
-  public GameController(Game game, GameView gameView, InputHandler inputHandler, EventPublisher eventPublisher) {
+  public GameController(Game game, GameView gameView, InputHandler inputHandler) {
     this.game = game;
     this.gameView = gameView;
     this.inputHandler = inputHandler;
-    this.eventListeners = new ArrayList<>();
-    this.lastUpdate = 0;
-    this.paused = false;
 
     // Register listeners
     addEventListener(game);
-    inputHandler.setListener(this);
-    eventPublisher.subscribe(this);
+
+
 
     // TODO: Other systems that needs to react to events such as audio and
     // animations.
@@ -157,11 +156,11 @@ public class GameController implements InputEventListener, GameEventPublisher {
     else if ((command == Command.SELECT || command == Command.ATTACK) && isPressed)
     {
       for (GameEventListener listener : eventListeners) {
-        listener.onChooseBuff(selectedBuff);
+        listener.onApplyBuff(selectedBuff);
 
       }
       // Update health bar when applying health upgrade
-      gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP(), game.getPlayer());
+      gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP());
       
       game.getPlayer().setMovementDirection(0,0); // Player doesnt automatically move on its own after upgrade
       this.paused = false;
@@ -189,20 +188,6 @@ public class GameController implements InputEventListener, GameEventPublisher {
         if (activeCommands.contains(Command.MOVE_DOWN)) dy += 1;
 
     return new MovementEvent(dx, dy);
-  }
-
-  /**
-   * Creates an attack event based on current player state.
-   * Gets attack position and range from the player's weapon.
-   *
-   * @return AttackEvent containing attack information
-   */
-  private AttackEvent createAttackEvent() {
-    // TODO: Improve to accommodate Law of Demeter pattern
-    return new AttackEvent(
-        game.getPlayer().getAttackPointX(),
-        game.getPlayer().getAttackPointY(),
-        game.getPlayer().getWeapon().getRange());
   }
 
   // TODO: Add more event creation methods as features are implemented
@@ -311,7 +296,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
    * Renders the current game state.
    */
   private void render() {
-    gameView.render(game, lastUpdate);
+    gameView.render(lastUpdate);
   }
 
   /**
@@ -327,48 +312,28 @@ public class GameController implements InputEventListener, GameEventPublisher {
   // ==================== GameEventPublisher Implementation ====================
 
   @Override
-  public void onAttackVisual(double x, double y, double size) {
-    gameView.drawAttack(x, y, size);
-  }
-
-  @Override
-  public void onPlayerHit(double currentHp, double maxHp) {
-    gameView.updateHealthBar(currentHp, maxHp, game.getPlayer());
-  }
-
-  @Override
-  public void onPlayerDeath(double x, double y) {
-    gameView.playerDied(x, y);
-    paused = true;
-  }
-
-  @Override
-  public void onEnemyHit(double x, double y, double damage, boolean isCritical) {
-    gameView.showDamageNumber(x, y, damage, isCritical);
-    gameView.spawnHitParticles(x, y);
-  }
-
-  @Override
-  public void onEnemyDeath(double x, double y, int xpValue) {
-    gameView.updateLevelBar(game.getPlayer().getLevelSystem().getXP(), game.getPlayer().getLevelSystem().getXPToNext(), game.getPlayer().getLevelSystem().getLevel());
+  public void onEntityDeath(Entity entity) {
+    if(entity instanceof Player)
+    {
+        paused = true;
+    }
+    else
+    {
+        System.out.println("enmy died");
+    }
   }
 
 
+
   @Override
-  public void onPlayerLevelUp(int level, UpgradeInterface[] upgrades)
+  public void onChooseBuff(UpgradeInterface[] upgrades)
   {
     chooseBuff = true;
     this.paused = true;
 
     // Update buttons with the new upgrades
-    gameView.updateBuffLabels(upgrades);
-
-    // Show level up menu
-    gameView.showLevelMenu(true);
-
-    // Reset selected index
-    selectedBuff = 0;
-    gameView.updateSelectedLabel(selectedBuff);
+      selectedBuff = 0;
+      gameView.updateSelectedLabel(selectedBuff);
   }
 
 // ==================== FXML ====================
@@ -401,18 +366,39 @@ public class GameController implements InputEventListener, GameEventPublisher {
       GameView gameView = loader.getController();
       InputHandler inputHandler = new InputHandler();
 
-      EventPublisher eventManager = new EventPublisher();
-      
-      Game game = new Game(eventManager);
+      EventPublisher eventPublisher = new EventPublisher();
+      LevelUpPublisher levelUpPublisher = (LevelUpPublisher) eventPublisher;
+      EntityPublisher entityPublisher = (EntityPublisher) eventPublisher;
+      ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
+
+      Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher);
+
+      gameView.setGame(game);
 
 
       Scene scene = new Scene(root, 1280, 720);
       inputHandler.setupInputHandling(scene);
       
       // Create controller (subscribes to event manager)
-      GameController gameController = new GameController(game, gameView, inputHandler, eventManager);
+      GameController gameController = new GameController(game, gameView, inputHandler);
+      inputHandler.setListener(gameController);
+
+
+      gameController.addEventListener(game);
+
+      entityPublisher.subscribeEntityDeath(gameController);
+      chooseBuffPublisher.subscribeBuff(gameController);
+
+      entityPublisher.subscribeEntityHit(gameView);
+      entityPublisher.subscribeAttack(gameView);
+      entityPublisher.subscribeEntityDeath(gameView);
+      chooseBuffPublisher.subscribeBuff(gameView);
+
+      gameView.setGameController(gameController); // Connect FXML components with GameController
       gameView.setGameController(gameController);
       gameController.start();
+
+
       
       stage.setTitle("Roguelike Game");
       stage.setScene(scene);

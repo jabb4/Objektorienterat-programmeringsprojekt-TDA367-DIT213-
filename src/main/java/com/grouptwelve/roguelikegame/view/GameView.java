@@ -2,9 +2,13 @@ package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
+import com.grouptwelve.roguelikegame.model.events.output.ChooseBuffPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
 import javafx.animation.FadeTransition;
@@ -33,7 +37,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-public class GameView {
+public class GameView implements AttackListener, EntityDeathListener, ChooseBuffListener, EntityHitListener {
 
     @FXML private StackPane root;
     @FXML private Canvas gameCanvas;
@@ -65,12 +69,17 @@ public class GameView {
 
     private GraphicsContext gc;
     private GameController gameController;
+    private Game game;
     private GaussianBlur blur = new GaussianBlur(0);
     Random rand;
 
     // This is for setting "FXML" controller
     public void setGameController(GameController controller) {
         this.gameController = controller;
+    }
+    public void setGame(Game game)
+    {
+        this.game = game;
     }
 
     @FXML
@@ -90,7 +99,7 @@ public class GameView {
         return root;
     }
 
-    public void render(Game game, double deltaTime) {
+    public void render(double deltaTime) {
         // Clear the canvas
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
 
@@ -143,11 +152,13 @@ public class GameView {
 
         }
     }
+    @Override
+    public void onAttack(AttackEvent attackEvent) {
 
-    public void drawAttack(double x, double y, double size) {
-        //System.out.println(x + " " + y + " " + size);
-        Circle attackCircle = new Circle(x, y, size);
-        attackCircle.setFill(Color.VIOLET);
+        Circle attackCircle = new Circle(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange());
+        if(attackEvent.getAttacker() instanceof Player) attackCircle.setFill(Color.BLUE);
+        else  attackCircle.setFill(Color.VIOLET);
+
         attackCircle.setManaged(false);
         effectsLayer.getChildren().add(attackCircle);
 
@@ -180,17 +191,16 @@ public class GameView {
      * @param maxHp Entity's max hp
      * @param entity from Entity class
      */
-    public void updateHealthBar(double currentHp, double maxHp, Entity entity) {
+    public void updateHealthBar(double currentHp, double maxHp) {
         double percentage = currentHp / maxHp;
 
-        if (entity instanceof Player) {
-            hpFill.setWidth(200 * percentage);
+        hpFill.setWidth(200 * percentage);
 
-            // Update HP label
-            int roundedHp = (int)Math.round(currentHp);
-            int roundedMaxHp = (int)Math.round(maxHp);
-            hpLabel.setText(roundedHp + " / " + roundedMaxHp);
-        }
+        // Update HP label
+        int roundedHp = (int)Math.round(currentHp);
+        int roundedMaxHp = (int)Math.round(maxHp);
+        hpLabel.setText(roundedHp + " / " + roundedMaxHp);
+
     }
 
     /**
@@ -238,10 +248,17 @@ public class GameView {
      * Updates the text on the buff buttons.
      * @param buffs Array of UpgradeInterface (buffs) to display
      */
-    public void updateBuffLabels(UpgradeInterface[] buffs) {
+    @Override
+    public void onChooseBuff(UpgradeInterface[] buffs) {
         fireBuffBox.setText(buffs[0].getName());
         speedBuffBox.setText(buffs[1].getName());
         healthBuffBox.setText(buffs[2].getName());
+        // Show level up menu
+        showLevelMenu(true);
+
+        // Reset selected index
+
+
     }
 
     // ==================== FXML Layers state (pause, death, levelUp) ====================
@@ -273,6 +290,30 @@ public class GameView {
     }
 
     // ==================== Effects ====================
+    @Override
+    public void onEntityDeath(Entity entity)
+    {
+        if(entity instanceof Player)
+        {
+            playerDied(entity.getX(), entity.getY());
+        }
+        else
+        {
+            updateLevelBar(game.getPlayer().getLevelSystem().getXP(), game.getPlayer().getLevelSystem().getXPToNext(), game.getPlayer().getLevelSystem().getLevel());
+
+            System.out.println("spawning death particles .....////:/.,.,-.,.1&¤/#)#&¤%(#=#");
+        }
+    }
+    @Override
+    public void onEntityHit(Entity entity, CombatResult combatResult)
+    {
+        if(entity instanceof Player)
+        {
+            updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP());
+        }
+        showDamageNumber(entity.getX(), entity.getY(), combatResult.getDamage(), combatResult.isCritical());
+        spawnHitParticles(entity.getX(), entity.getY());
+    }
     /**
      * Plays the player death effect with ripple/shockwave, screen shake, red flash and toggles death menu.
      * 
@@ -295,13 +336,6 @@ public class GameView {
         blur.setRadius(10);
     }
 
-    public void drawBuffs(String[] list)
-    {
-        for(String buff: list)
-        {
-            System.out.println(buff);
-        }
-    }
 
     /**
      * Creates an expanding ripple/shockwave effect from the death location.

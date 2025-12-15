@@ -1,5 +1,7 @@
 package com.grouptwelve.roguelikegame.model.entities;
-import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
+import com.grouptwelve.roguelikegame.model.events.output.LevelUpPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
+import com.grouptwelve.roguelikegame.model.events.output.PlayerPublisher;
 import com.grouptwelve.roguelikegame.model.level.LevelSystem;
 import com.grouptwelve.roguelikegame.model.weapons.Sword;
 
@@ -15,7 +17,7 @@ public class Player extends Entity {
     private final double startY;
 
     private boolean wantMove;
-    private LevelUpListener levelUpListener;
+    private LevelUpPublisher levelUpPublisher;
     private LevelSystem levelSystem = new LevelSystem();
 
     public Player(double x, double y) {
@@ -30,7 +32,7 @@ public class Player extends Entity {
     public void gainXP(int amount) {
         boolean leveledUp = levelSystem.addXP(amount);
         if (leveledUp) {
-            onLevelUp();
+            levelUpPublisher.onLevelUp();
         }
     }
 
@@ -41,13 +43,8 @@ public class Player extends Entity {
     /**
      * tells game when leveling up
      */
-    private void onLevelUp() {
-        levelUpListener.onLevelUp(levelSystem.getLevel());
-    }
-
-
-    public void setLevelUpListener(LevelUpListener listener) {
-        this.levelUpListener = listener;
+    public void setLevelUpPublisher(LevelUpPublisher publisher) {
+        this.levelUpPublisher = publisher;
     }
 
     @Override
@@ -92,17 +89,6 @@ public class Player extends Entity {
         super.revive();
         this.x = startX;
         this.y = startY;
-    }
-    @Override
-    public void takeDamage(double dmg)
-    {
-        this.hp -= dmg;
-
-        if(this.hp <= 0)
-        {
-            this.isAlive = false;
-            // Player death event is now published by Game/CombatManager
-        }
     }
 
     @Override

@@ -3,8 +3,8 @@ package com.grouptwelve.roguelikegame.model.entities;
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
-import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
-import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
+import com.grouptwelve.roguelikegame.model.events.output.EntityPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public abstract class Entity {
     protected Weapon weapon;
 
     // Attack listener - notified when this entity attacks (Observer pattern)
-    protected AttackListener attackListener;
+    protected EntityPublisher entityPublisher;
 
     // Hit effect state
     protected boolean isHit = false;
@@ -104,7 +104,7 @@ public abstract class Entity {
      * @return x-coordinate
      */
     public double getAttackPointX() {
-        return this.x + this.dirX * (size + weapon.getRange());
+        return this.x + this.dirX * (weapon.getRange());
     }
     /**
      * returns the position where entity attacks
@@ -112,7 +112,7 @@ public abstract class Entity {
      * @return y-coordinate
      */
     public double getAttackPointY() {
-        return this.y + this.dirY* (size + weapon.getRange());
+        return this.y + this.dirY* ( weapon.getRange());
     }
 
     /**
@@ -120,13 +120,22 @@ public abstract class Entity {
      *
      * @param dmg Amount of damage to apply
      */
-    public void takeDamage(double dmg)
+    public void takeDamage(CombatResult combatResult)
     {
+        double dmg = combatResult.getDamage();
+        boolean isCritical = combatResult.isCritical();
         this.hp -= dmg;
 
-        if (this.hp <= 0) {
-            this.isAlive = false;
+
+        if(entityPublisher != null)
+        {
+            entityPublisher.onEntityHit(this, combatResult);
+            if (this.hp <= 0) {
+                this.isAlive = false;
+                entityPublisher.onEntityDeath(this);
+            }
         }
+
     }
 
     /**
@@ -136,29 +145,21 @@ public abstract class Entity {
      * @return true if the attack was performed, false if weapon on cooldown or no weapon
      */
     public boolean attack() {
-        if (this.weapon == null) return false;
+        if (this.weapon == null || entityPublisher == null) return false;
         if (!this.weapon.canAttack()) return false;
 
         // Reset weapon cooldown
         this.weapon.resetCooldown();
 
-        // Notify listener to handle combat resolution
-        if (attackListener != null) {
-            CombatResult result = weapon.calculateDamage();
-            attackListener.onEntityAttacked(this, getAttackPointX(), getAttackPointY(), weapon.getRange(), result, weapon.getEffects());
-        }
+
+        CombatResult result = weapon.calculateDamage();
+        entityPublisher.onAttack(new AttackEvent(this, getAttackPointX(), getAttackPointY(), weapon.getRange(), result, weapon.getEffects(),  weapon.getKnockbackStrength()));
+
         return true;
     }
 
-    /**
-     * Sets the attack listener that will be notified when this entity attacks.
-     * Used by Game to handle combat resolution.
-     *
-     * @param listener The listener to notify on attack
-     */
-    public void setAttackListener(AttackListener listener) {
-        this.attackListener = listener;
-    }
+
+
 
     /**
      * Applies a knockback force to this entity.
@@ -236,6 +237,10 @@ public abstract class Entity {
     }
 
     // ==================== Setters ====================
+
+    public void setEntityPublisher(EntityPublisher publisher) {
+        this.entityPublisher = publisher;
+    }
 
     public void setMaxHP(double maxHP) {
         this.maxHP = maxHP;
