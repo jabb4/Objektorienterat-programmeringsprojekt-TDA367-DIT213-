@@ -116,8 +116,7 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         }
         else if(entity instanceof Player)
         {
-            //fire event
-            //updateLevelBar(game.getPlayer().getLevelSystem().getXP(), game.getPlayer().getLevelSystem().getXPToNext(), game.getPlayer().getLevelSystem().getLevel());
+            reset();
         }
     }
 

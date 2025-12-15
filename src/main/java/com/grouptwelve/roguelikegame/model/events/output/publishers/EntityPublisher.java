@@ -2,6 +2,7 @@ package com.grouptwelve.roguelikegame.model.events.output.publishers;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.AttackListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityHitListener;
@@ -36,9 +37,8 @@ public interface EntityPublisher
 
     /**
      * called when en enemy is hit
-     * @param entity who was hit
-     * @param combatResult damage and tells if the entity was damaged with crit(change to do more damage should be drawn differently )
+     * @param entityHitEvent contains who got hit and damage info
      */
-    void onEntityHit(Entity entity, CombatResult combatResult);
+    void onEntityHit(EntityHitEvent entityHitEvent);
 
 }

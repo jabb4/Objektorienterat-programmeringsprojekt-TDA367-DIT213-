@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.model.entities;
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
@@ -117,8 +118,8 @@ public abstract class Entity {
 
     /**
      * Applies damage to itself. Sets isAlive to false if HP drops to 0 or below.
-     *
-     * @param dmg Amount of damage to apply
+     * publishes onEntityHit and onEntityDeath events
+     * @param combatResult damage ifo
      */
     public void takeDamage(CombatResult combatResult)
     {
@@ -128,7 +129,7 @@ public abstract class Entity {
 
         if(entityPublisher != null)
         {
-            entityPublisher.onEntityHit(this, combatResult);
+            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult));
             if (this.hp <= 0) {
                 this.isAlive = false;
                 entityPublisher.onEntityDeath(this);

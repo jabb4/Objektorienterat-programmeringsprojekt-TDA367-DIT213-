@@ -7,6 +7,7 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
@@ -309,8 +310,10 @@ public class GameView implements AttackListener, EntityDeathListener,
         }
     }
     @Override
-    public void onEntityHit(Entity entity, CombatResult combatResult)
+    public void onEntityHit(EntityHitEvent entityHitEvent)
     {
+        Entity entity = entityHitEvent.getEntity();
+        CombatResult combatResult = entityHitEvent.getCombatResult();
         if(entity instanceof Player)
         {
             updateHealthBar(entity.getHp(), entity.getMaxHP());

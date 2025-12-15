@@ -270,6 +270,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     }
     else
     {
+        //TODO: implement show game statistics that are also not done
         System.out.println("enmy died");
     }
   }
