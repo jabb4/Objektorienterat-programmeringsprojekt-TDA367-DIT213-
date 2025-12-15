@@ -11,35 +11,34 @@ public abstract class Weapon implements WeaponInterface {
 
     private static final Random random = new Random();
 
+    private static final double DEFAULT_CRIT_CHANCE = 0.05;
+    private static final double DEFAULT_CRIT_MULTIPLIER = 2.0;
+
     protected double damage;
     protected double range;
     protected double attackCooldown;
     protected double cooldownRemaining = 0;
-    protected double critChance = 0.05;
-    protected double critMultiplier = 2.0;
-    protected double knockbackStrength = 200;
+    protected double critChance = DEFAULT_CRIT_CHANCE;
+    protected double critMultiplier = DEFAULT_CRIT_MULTIPLIER;
+    protected double knockbackStrength;
 
 
     protected List<EffectInterface> effects = new ArrayList<>();
 
     /**
-     * Creates a weapon with specified damage, range, and attack cooldown.
+     * Creates a weapon with specified damage, range, attack cooldown, and knockback.
      * Default critical hit chance is 5% with 2x damage multiplier.
      *
      * @param damage Base damage of the weapon
      * @param range Attack range in pixels
      * @param attackCooldown Time in seconds between attacks
+     * @param knockbackStrength Knockback force applied to enemies
      */
-    public Weapon(double damage, double range, double attackCooldown) {
+    public Weapon(double damage, double range, double attackCooldown, double knockbackStrength) {
         this.damage = damage;
         this.range = range;
         this.attackCooldown = attackCooldown;
-    }
-
-    public Weapon(Weapon weapon) {
-        this.damage = weapon.damage;
-        this.range = weapon.range;
-        this.attackCooldown = weapon.attackCooldown;
+        this.knockbackStrength = knockbackStrength;
     }
 
     /**

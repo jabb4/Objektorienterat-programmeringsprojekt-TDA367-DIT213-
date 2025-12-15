@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model.entities.enemies;
 
+import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
@@ -50,10 +51,10 @@ public class Enemy extends Entity implements Obstacle {
         this.weapon = weapon;
     }
 
-    public Enemy(Enemy enemy) {
-        super(enemy.name, enemy.x, enemy.y, enemy.hp, enemy.size, enemy.maxHP);
+    public Enemy(Enemy enemy, double x, double y) {
+        super(enemy.name, x, y, enemy.hp, enemy.size, enemy.maxHP);
         this.type = enemy.type;
-        this.velocity = enemy.velocity;
+        this.velocity = new Velocity(enemy.velocity);
         this.attackRange = enemy.attackRange;
         this.windUpTime = enemy.windUpTime;
         this.xpValue = enemy.xpValue;
@@ -111,6 +112,10 @@ public class Enemy extends Entity implements Obstacle {
         velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
     }
 
+    /**
+     * moves enemy and updates state
+     * @param deltaTime Time since last update
+     */
     @Override
     public void update(double deltaTime) {
         super.update(deltaTime);

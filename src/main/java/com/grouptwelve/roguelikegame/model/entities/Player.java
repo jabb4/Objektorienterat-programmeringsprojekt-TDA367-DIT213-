@@ -1,20 +1,28 @@
 package com.grouptwelve.roguelikegame.model.entities;
-
-import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
-import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
 import com.grouptwelve.roguelikegame.model.level.LevelSystem;
 import com.grouptwelve.roguelikegame.model.weapons.Sword;
 
 public class Player extends Entity {
-    private boolean wantMove;
-    private LevelUpListener levelUpListener;
 
+    private static final int PLAYER_HP = 100;
+    private static final int PLAYER_SIZE = 10;
+    private static final int PLAYER_MAX_HP = 100;
+    private static final int PLAYER_MAX_SPEED = 150;
+
+    //need to be stored for reviving
+    private final double startX;
+    private final double startY;
+
+    private boolean wantMove;
+    private LevelUpPublisher levelUpPublisher;
     private LevelSystem levelSystem = new LevelSystem();
 
-
     public Player(double x, double y) {
-        super("Player", x, y, 100, 10, 100);
-        this.velocity.setMaxSpeed(150);
+        super("Player", x, y, PLAYER_HP, PLAYER_SIZE, PLAYER_MAX_HP);
+        this.startX = x;
+        this.startY = y;
+        this.velocity.setMaxSpeed(PLAYER_MAX_SPEED);
         this.weapon = new Sword();
         this.wantMove = false;
     }
@@ -22,7 +30,7 @@ public class Player extends Entity {
     public void gainXP(int amount) {
         boolean leveledUp = levelSystem.addXP(amount);
         if (leveledUp) {
-            onLevelUp();
+            levelUpPublisher.onLevelUp();
         }
     }
 
@@ -33,11 +41,8 @@ public class Player extends Entity {
     /**
      * tells game when leveling up
      */
-    private void onLevelUp() {
-        levelUpListener.onLevelUp(levelSystem.getLevel());
-    }
-    public void setLevelUpListener(LevelUpListener listener) {
-        this.levelUpListener = listener;
+    public void setLevelUpPublisher(LevelUpPublisher publisher) {
+        this.levelUpPublisher = publisher;
     }
 
     @Override
@@ -76,17 +81,12 @@ public class Player extends Entity {
             velocity.stop();
         }
     }
-
     @Override
-    public void takeDamage(double dmg)
+    public void revive()
     {
-        this.hp -= dmg;
-
-        if(this.hp <= 0)
-        {
-            this.isAlive = false;
-            // Player death event is now published by Game/CombatManager
-        }
+        super.revive();
+        this.x = startX;
+        this.y = startY;
     }
 
     @Override

@@ -1,18 +1,21 @@
 package com.grouptwelve.roguelikegame.model.events.input;
 
 /**
- * Event representing a change in player movement intent.
- * Called when the player presses/releases movement keys.
+ * Event data for player movement input.
  */
 public class MovementEvent {
     private int dy;
     private int dx;
-    private boolean isMoving;
 
+    /**
+     * Creates a new movement event.
+     *
+     * @param dx the horizontal movement direction
+     * @param dy the vertical movement direction
+     */
     public MovementEvent(int dx, int dy) {
         this.dx = dx;
         this.dy = dy;
-        this.isMoving = (dx != 0 || dy != 0);
     }
 
     // ==================== Getters ====================
@@ -23,10 +26,6 @@ public class MovementEvent {
 
     public int getDy() {
         return dy;
-    }
-
-    public boolean isMoving() {
-        return isMoving;
     }
 }
 

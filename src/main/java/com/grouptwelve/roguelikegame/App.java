@@ -1,12 +1,11 @@
 package com.grouptwelve.roguelikegame;
 
-import com.grouptwelve.roguelikegame.controller.GameController;
-import com.grouptwelve.roguelikegame.controller.InputHandler;
-import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.events.output.EventPublisher;
-import com.grouptwelve.roguelikegame.view.GameView;
+import java.io.IOException;
+
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -14,28 +13,15 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
     @Override
-    public void start(Stage stage) {
-        // Get the event manager (acts as event bus between model and controller)
-        EventPublisher eventManager = new EventPublisher();
-        
-        // Create game with event publisher
-        Game game = new Game(eventManager);
-        
-        // Create view and input handler
-        GameView gameView = new GameView();
-        InputHandler inputHandler = new InputHandler();
+    public void start(Stage stage) throws IOException {
+        // Load the font
+        Font.loadFont(getClass().getResource("fonts/PressStart2P-Regular.ttf").toExternalForm(), 12);
 
-        Scene scene = new Scene(gameView.getRoot(), 1280, 720);
-        inputHandler.setupInputHandling(scene);
-        
-        // Create controller (subscribes to event manager)
-        GameController gameController = new GameController(game, gameView, inputHandler, eventManager);
-
-        gameController.start();
-        
-        stage.setTitle("Roguelike Game");
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("menu-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
+        scene.getStylesheets().add(getClass().getResource("global.css").toExternalForm());
         stage.setScene(scene);
-        stage.show();
+        stage.show(); 
     }
 
     public static void main(String[] args) {

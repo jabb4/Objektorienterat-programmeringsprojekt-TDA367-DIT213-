@@ -20,10 +20,9 @@ public class HitSystem {
      * @param damage Amount of damage to apply
      * @return true if the entity died from this damage
      */
-    public static boolean applyDamage(Entity target, double damage) {
-        boolean wasAlive = target.getAliveStatus();
-        target.takeDamage(damage);
-        return wasAlive && !target.getAliveStatus();
+    public static void applyDamage(Entity target, CombatResult combatResult)
+    {
+        target.takeDamage(combatResult);
     }
 
     /**

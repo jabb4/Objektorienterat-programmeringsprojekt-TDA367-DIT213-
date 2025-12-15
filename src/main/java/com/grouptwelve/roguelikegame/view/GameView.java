@@ -1,14 +1,33 @@
 package com.grouptwelve.roguelikegame.view;
 
+import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.model.combat.CombatResult;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
+import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
+import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -16,78 +35,82 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Handles all rendering and visual presentation of the game.
- */
-public class GameView{
-    private final VBox root;
-    private final Pane gamePane;
-    private final Pane gamePaneSlow;
+public class GameView implements AttackListener, EntityDeathListener,
+        ChooseBuffListener, EntityHitListener, XpListener {
 
+    @FXML private StackPane root;
+    @FXML private Canvas gameCanvas;
+    @FXML private AnchorPane gameLayer;
+    @FXML private AnchorPane gameObjectsLayer;
+    @FXML private AnchorPane effectsLayer;
+    @FXML private AnchorPane uiButtonsLayer;
+    @FXML private Rectangle hpBackground;
+    @FXML private Rectangle hpFill;
+    @FXML private Label hpLabel;
+    @FXML private Rectangle levelBackground;
+    @FXML private Rectangle levelFill;
+    @FXML private Label levelLabel;
+    @FXML private Label xpLabel;
+    @FXML private ImageView firstItemImage;
+    @FXML private Label actionLabel;
+    @FXML private Label timerLabel;
+    @FXML private VBox pauseMenu;
+    @FXML private VBox deathMenu;
+    @FXML private VBox upgradeMenu;
+    @FXML private Button fireBuffBox;
+    @FXML private Button speedBuffBox;
+    @FXML private Button healthBuffBox;
+    @FXML private Rectangle firstItem;
+    @FXML private Rectangle secondItem;
+    @FXML private Rectangle thirdItem;
 
-    //private final Label positionLabel;
-    //private final Label directionLabel;
-    //private final Label statusLabel;
-    private final Label gameTimeLabel;
-    private final Label bufflabals;
-    private final Label selectedLabel;
-    private final Random rand = new Random();
+    private Rectangle highlightedItem = null;
 
+    private GraphicsContext gc;
+    private GameController gameController;
+    private GaussianBlur blur = new GaussianBlur(0);
+    Random rand;
 
-    
-    public GameView() {
-        StackPane gameContainer = new StackPane();
-        gamePaneSlow = new Pane();
-        gamePane = new Pane();
-        gamePane.setPrefSize(1280, 720);
-        gamePane.setStyle("-fx-background-color: #2a2a2a;");
-        gameContainer.getChildren().addAll(gamePane, gamePaneSlow);
-
-        // Labels
-        //positionLabel = new Label("Player Position: [0.0, 0.0]");
-        //positionLabel.setTextFill(Color.WHITE);
-        //directionLabel = new Label("Direction: [0, 0]");
-        //directionLabel.setTextFill(Color.WHITE);
-        //statusLabel = new Label("No keys pressed");
-        //statusLabel.setTextFill(Color.WHITE);
-        gameTimeLabel = new Label("Time elapsed: 0:00");
-        gameTimeLabel.setTextFill(Color.WHITE);
-
-        bufflabals = new Label("WASD for Move       K for Attack");
-        selectedLabel = new Label(" ");
-
-        bufflabals.setTextFill(Color.WHITE);
-        selectedLabel.setTextFill(Color.WHITE);
-
-        
-        // Layout
-        //VBox uiBox = new VBox(5, positionLabel, directionLabel, statusLabel, gameTimeLabel, bufflabals, selectedLabel);
-        VBox uiBox = new VBox(5, gameTimeLabel, bufflabals, selectedLabel);
-        uiBox.setStyle("-fx-padding: 10; -fx-background-color: #1a1a1a;");
-        
-        root = new VBox(gameContainer, uiBox);
-
-
+    // This is for setting "FXML" controller
+    public void setGameController(GameController controller) {
+        this.gameController = controller;
     }
-    
-    /**
-     * Renders the current game state.
-     * 
-     * @param game The game model to render
-     */
-    public void render(Game game) {
+
+
+    @FXML
+    private void initialize() {
+        // TEMPORARY IMAGE ON SLOT 1
+        Image sword = new Image(getClass().getResourceAsStream("/com/grouptwelve/roguelikegame/img/sword1.png"));
+        firstItemImage.setImage(sword);
+        highlightItem(1); // Weapon in first slot is selected automatically
+        root.requestFocus();
+
+        this.rand = new Random();
+        this.gc = gameCanvas.getGraphicsContext2D();
+        gameLayer.setEffect(blur);
+    }
+
+    public Parent getRoot() {
+        return root;
+    }
+
+    public void render(Game game, double deltaTime) {
+        // Clear the canvas
+        gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
+
         // Clear previous frame
-        gamePane.getChildren().clear();
+        gameObjectsLayer.getChildren().clear();
         
         // Render player
         Player player = game.getPlayer();
         Circle playerCircle = new Circle(player.getX(), player.getY(), player.getSize());
         playerCircle.setFill(Color.LIGHTBLUE);
-        gamePane.getChildren().add(playerCircle);
+        playerCircle.setManaged(false);
+        gameObjectsLayer.getChildren().add(playerCircle);
 
         // Render enemies
         List<Enemy> enemies = game.getEnemies();
@@ -104,90 +127,213 @@ public class GameView{
                     enemyCircle.setFill(Color.RED);
                 }
                 
-                gamePane.getChildren().add(enemyCircle);
+                enemyCircle.setManaged(false);
+                gameObjectsLayer.getChildren().add(enemyCircle);
+
+                double barWidth = 40;
+                double barHeight = 5;
+                double barOffset = 10;
+
+                // HP bar background
+                gc.setFill(Color.GRAY);
+                gc.fillRect(enemy.getX() - barWidth / 2,
+                        enemy.getY() - enemy.getSize() - barOffset,
+                        barWidth, barHeight);
+
+                // HP bar fill
+                double hpPercentage = enemy.getHp() / enemy.getMaxHP();
+                gc.setFill(Color.RED);
+                gc.fillRect(enemy.getX() - barWidth / 2,
+                        enemy.getY() - enemy.getSize() - barOffset,
+                        barWidth * hpPercentage, barHeight);
             }
 
+
         }
-        // Update position label (TEMPORARY FOR DEBUGGING)
-        //positionLabel.setText(String.format("Player Position: [%.1f, %.1f]", player.getX(), player.getY()));
     }
+    @Override
+    public void onAttack(AttackEvent attackEvent) {
 
-    /**
-     * for a short timer draw attackCircle at attack-pos
-     * @param x x-coordinate for attack
-     * @param y y-coordinate for attack
-     * @param size size to draw attackCircle
-     */
+        Circle attackCircle = new Circle(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange());
+        if(attackEvent.getAttacker() instanceof Player) attackCircle.setFill(Color.BLUE);
+        else  attackCircle.setFill(Color.VIOLET);
 
-         public void drawAttack(double x, double y, double size) {
-        //System.out.println(x + " " + y + " " + size);
-        Circle attackCircle = new Circle(x, y, size);
-        attackCircle.setFill(Color.VIOLET);
-        gamePaneSlow.getChildren().add(attackCircle);
+        attackCircle.setManaged(false);
+        effectsLayer.getChildren().add(attackCircle);
 
         //remove attackcircle after a short timer
         PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
-        pause.setOnFinished(_ -> gamePaneSlow.getChildren().remove(attackCircle));
+        pause.setOnFinished(_ -> effectsLayer.getChildren().remove(attackCircle));
         pause.play();
+    }
 
+    // ==================== FOR DEBUGGING PURPOSES ====================
+    public void updateDirectionLabel(int dx, int dy) {
+        // actionLabel.setText(String.format("Direction: [%d, %d]", dx, dy));
     }
-    public  void clearBuffVisuals()
-    {
-        bufflabals.setText("WASD for Move       K for Attack");
+
+    public void updateStatusLabel(String status) {
+        // actionLabel.setText(status);
     }
-    public void updateBuffLabels(String[] buffs)
-    {
-        bufflabals.setText(buffs[0]+ buffs[1]+ buffs[2]);
-    }
-    public void updateSelectedLabel(int selectedIndex)
-    {
-        selectedLabel.setText(String.format("Select buff with Enter key: %d", selectedIndex + 1));
-    }
-    /**
-     * Updates the direction label. (TEMPORARY FOR DEBUGGING)
-     * 
-     * @param dx Horizontal direction
-     * @param dy Vertical direction
-     */
-    //public void updateDirectionLabel(int dx, int dy) {
-     //   directionLabel.setText(String.format("Direction: [%d, %d]", dx, dy));
-    //}
-    
-    /**
-     * Updates the status label. (TEMPORARY FOR DEBUGGING)
-     * 
-     * @param status Status text to display
-     */
-    //public void updateStatusLabel(String status) {
-    //    statusLabel.setText(status);
-    //}
-    
-    /**
-     * Updates the game time label.
-     * 
-     * @param gameTime Game time in seconds
-     */
+
+    // ==================== Updating FXML UI Components ====================
     public void updateGameTimeLabel(double gameTime) {
         int minutes = (int) (gameTime / 60);
         int seconds = (int) (gameTime % 60);
-        gameTimeLabel.setText(String.format("Time: %d:%02d", minutes, seconds));
+        timerLabel.setText(String.format("%d:%02d", minutes, seconds));
     }
-    
-    public Pane getRoot() {
-        return root;
-    }
-
 
     /**
-     * Plays the player death effect with ripple/shockwave, screen shake, and red flash.
+     * Updates an given entity (player and enemies) hp bar
+     * 
+     * @param currentHp Entitiy's current hp 
+     * @param maxHp Entity's max hp
+     */
+    public void updateHealthBar(double currentHp, double maxHp) {
+        double percentage = currentHp / maxHp;
+
+        hpFill.setWidth(200 * percentage);
+
+        // Update HP label
+        int roundedHp = (int)Math.round(currentHp);
+        int roundedMaxHp = (int)Math.round(maxHp);
+        hpLabel.setText(roundedHp + " / " + roundedMaxHp);
+
+    }
+
+    /**
+     * Updates the FXML levelUpBar that displays player's xp state
+     * 
+     * @param xp Player's current xp amount
+     * @param xpToNext The amount of xp to next level
+     * @param level Player's level amount
+     */
+    public void updateLevelBar(int xp, int xpToNext, int level) {
+        double percentage = (double) xp / xpToNext;
+        levelFill.setWidth(200 * percentage);  // adjust width according to percentage
+        levelLabel.setText("LVL: " + level);
+        xpLabel.setText(xp + "/" + xpToNext);
+    }
+
+    /**
+     * Highlights the selected buff button based on the index.
+     * @param selectedBuff index of selected buff (0, 1, or 2)
+     */
+    public void updateSelectedLabel(int selectedBuff) {
+        // Reset all buttons' border
+        fireBuffBox.setStyle("-fx-border-color: transparent;");
+        speedBuffBox.setStyle("-fx-border-color: transparent;");
+        healthBuffBox.setStyle("-fx-border-color: transparent;");
+
+        // Highlight selected button
+        switch (selectedBuff) {
+            case 0 -> fireBuffBox.setStyle("-fx-border-color: orange; -fx-border-width: 3;");
+            case 1 -> speedBuffBox.setStyle("-fx-border-color: cyan; -fx-border-width: 3;");
+            case 2 -> healthBuffBox.setStyle("-fx-border-color: lime; -fx-border-width: 3;");
+        }
+    }
+
+    /**
+     * Clears buff selection highlights.
+     */
+    public void clearBuffVisuals() {
+        fireBuffBox.setStyle("-fx-border-color: transparent;");
+        speedBuffBox.setStyle("-fx-border-color: transparent;");
+        healthBuffBox.setStyle("-fx-border-color: transparent;");
+    }
+
+    /**
+     * Updates the text on the buff buttons.
+     * @param buffs Array of UpgradeInterface (buffs) to display
+     */
+    @Override
+    public void onChooseBuff(UpgradeInterface[] buffs) {
+        fireBuffBox.setText(buffs[0].getName());
+        speedBuffBox.setText(buffs[1].getName());
+        healthBuffBox.setText(buffs[2].getName());
+        // Show level up menu
+        showLevelMenu(true);
+
+        // Reset selected index
+
+
+    }
+
+    // ==================== FXML Layers state (pause, death, levelUp) ====================
+    /**
+     * Changes visibility of pause menu layer in FXML
+     * 
+     * @param show If show is true, then pause menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
+     */
+    public void showPauseMenu(boolean show) {
+        pauseMenu.setVisible(show);
+        pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
+        gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
+        uiButtonsLayer.setDisable(show);
+        blur.setRadius(show ? 10 : 0);
+
+        if (show) {
+        Platform.runLater(() -> pauseMenu.getChildren().get(1).requestFocus()); // When paused, it should automatically focus on the first button on pause layer
+    }
+    }
+
+    /**
+     * Changes visibility of upgrade menu layer in FXML
+     * 
+     * @param show If show is true, then upgrade menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
+     */
+    public void showLevelMenu(boolean show) {
+        upgradeMenu.setVisible(show);
+        blur.setRadius(show ? 10 : 0);
+    }
+
+
+    // ==================== GameListeners ====================
+
+    @Override
+    public void onUpdateXP(XpChangeEvent xpChangeEvent) {
+        updateLevelBar(xpChangeEvent.getTotalXP(), xpChangeEvent.getXPtoNext(), xpChangeEvent.getLevel());
+    }
+
+    // ==================== Effects ====================
+    @Override
+    public void onEntityDeath(EntityDeathEvent event)
+    {
+        Entity entity = event.getEntity();
+        if(entity instanceof Player)
+        {
+            playerDied(entity.getX(), entity.getY());
+        }
+        else
+        {
+
+            // TODO: implement effect when eneimes die
+            System.out.println("spawning death particles .....////:/.,.,-.,.1&¤/#)#&¤%(#=#");
+        }
+    }
+    @Override
+    public void onEntityHit(EntityHitEvent entityHitEvent)
+    {
+        Entity entity = entityHitEvent.getEntity();
+        CombatResult combatResult = entityHitEvent.getCombatResult();
+        if(entity instanceof Player)
+        {
+            updateHealthBar(entity.getHp(), entity.getMaxHP());
+        }
+        else {
+            showDamageNumber(entity.getX(), entity.getY(), combatResult.getDamage(), combatResult.isCritical());
+            spawnHitParticles(entity.getX(), entity.getY());
+        }
+
+    }
+    /**
+     * Plays the player death effect with ripple/shockwave, screen shake, red flash and toggles death menu.
      * 
      * @param x X position of the player
      * @param y Y position of the player
      */
     public void playerDied(double x, double y)
     {
-        System.out.println("YOU DIED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        
         // Brief freeze frame before effects start
         PauseTransition freeze = new PauseTransition(Duration.millis(100));
         freeze.setOnFinished(e -> {
@@ -195,14 +341,11 @@ public class GameView{
             showRedFlash();
         });
         freeze.play();
+
+        deathMenu.setVisible(true);
+        blur.setRadius(10);
     }
-    public void drawBuffs(String[] list)
-    {
-        for(String buff: list)
-        {
-            System.out.println(buff);
-        }
-    }
+
 
     /**
      * Creates an expanding ripple/shockwave effect from the death location.
@@ -218,7 +361,7 @@ public class GameView{
             ripple.setFill(Color.TRANSPARENT);
             ripple.setStroke(Color.WHITE);
             ripple.setStrokeWidth(3);
-            gamePaneSlow.getChildren().add(ripple);
+            effectsLayer.getChildren().add(ripple);
             
             // Delay each ripple slightly
             PauseTransition delay = new PauseTransition(Duration.millis(i * 150));
@@ -234,7 +377,7 @@ public class GameView{
                 FadeTransition fade = new FadeTransition(Duration.millis(500), ripple);
                 fade.setFromValue(1.0);
                 fade.setToValue(0.0);
-                fade.setOnFinished(ev -> gamePaneSlow.getChildren().remove(ripple));
+                fade.setOnFinished(ev -> effectsLayer.getChildren().remove(ripple));
                 
                 expand.play();
                 fade.play();
@@ -250,12 +393,12 @@ public class GameView{
         Rectangle flash = new Rectangle(0, 0, 1280, 720);
         flash.setFill(Color.RED);
         flash.setOpacity(0.4);
-        gamePaneSlow.getChildren().add(flash);
+        effectsLayer.getChildren().add(flash);
         
         FadeTransition fadeFlash = new FadeTransition(Duration.millis(300), flash);
         fadeFlash.setFromValue(0.4);
         fadeFlash.setToValue(0.0);
-        fadeFlash.setOnFinished(e -> gamePaneSlow.getChildren().remove(flash));
+        fadeFlash.setOnFinished(e -> effectsLayer.getChildren().remove(flash));
         fadeFlash.play();
     }
 
@@ -281,7 +424,7 @@ public class GameView{
         
         dmgLabel.setLayoutX(x - 10);
         dmgLabel.setLayoutY(y - 30);
-        gamePaneSlow.getChildren().add(dmgLabel);
+        effectsLayer.getChildren().add(dmgLabel);
 
         // Float up animation
         TranslateTransition floatUp = new TranslateTransition(Duration.millis(400), dmgLabel);
@@ -291,7 +434,7 @@ public class GameView{
         FadeTransition fadeOut = new FadeTransition(Duration.millis(400), dmgLabel);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
-        fadeOut.setOnFinished(e -> gamePaneSlow.getChildren().remove(dmgLabel));
+        fadeOut.setOnFinished(e -> effectsLayer.getChildren().remove(dmgLabel));
 
         floatUp.play();
         fadeOut.play();
@@ -309,7 +452,8 @@ public class GameView{
         
         for (int i = 0; i < particleCount; i++) {
             Circle particle = new Circle(x, y, 3, Color.WHITE);
-            gamePaneSlow.getChildren().add(particle);
+            particle.setManaged(false);
+            effectsLayer.getChildren().add(particle);
             
             // Random direction and distance
             double angle = rand.nextDouble() * 2 * Math.PI;
@@ -324,10 +468,45 @@ public class GameView{
             FadeTransition fade = new FadeTransition(Duration.millis(300), particle);
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
-            fade.setOnFinished(e -> gamePaneSlow.getChildren().remove(particle));
+            fade.setOnFinished(e -> effectsLayer.getChildren().remove(particle));
             
             move.play();
             fade.play();
         }
     }
+
+    // ==================== FXML Controls ====================
+    @FXML private void onResume() { gameController.resume(); }
+    @FXML private void onQuit() throws IOException { gameController.quit(); }
+    @FXML private void onPlayAgain() throws IOException { gameController.playAgain(); }
+    @FXML protected void onOptions() throws IOException { }
+
+
+    // ==================== Item Hotbar (MAYBE REMOVE FOR NOW SINCE WE ONlY HAVE ONE ITEM AT THE MOMENT?) ====================
+    public void highlightItem(int index) {
+        // Reset previous highlight
+        if (highlightedItem != null) {
+            highlightedItem.setStroke(null); // remove border
+            highlightedItem.setStrokeWidth(0);
+        }
+
+        // Highlight new item
+        switch (index) {
+            case 1:
+                highlightedItem = firstItem;
+                break;
+            case 2:
+                highlightedItem = secondItem;
+                break;
+            case 3:
+                highlightedItem = thirdItem;
+                break;
+        }
+
+        // Apply highlight style
+        highlightedItem.setStroke(javafx.scene.paint.Color.YELLOW);
+        highlightedItem.setStrokeWidth(3);
+    }
+
+
 }

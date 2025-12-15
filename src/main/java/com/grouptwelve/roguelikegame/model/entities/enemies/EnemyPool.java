@@ -55,6 +55,12 @@ public class EnemyPool {
     public void returnEnemy(Enemy enemy){
         Enemies type = enemy.getType();
         LinkedList<Enemy> availableEnemies =  pool.get(type);
+
+        if (availableEnemies == null) {
+            availableEnemies = new LinkedList<>();
+            pool.put(type, availableEnemies);
+        }
+
         availableEnemies.add(enemy);
     }
 

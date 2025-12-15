@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Pos?>
+
+<StackPane fx:id="root" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.grouptwelve.roguelikegame.view.GameView"
+           style="-fx-background-color: #2a2a2a;"
+           stylesheets="@global.css">
+
+
+    <!-- Game layer: canvas + HUD -->
+    <AnchorPane fx:id="gameLayer">
+
+        <AnchorPane fx:id="gameObjectsLayer"/>
+        <AnchorPane fx:id="effectsLayer"/>
+
+        <!-- Game Canvas -->
+        <Canvas fx:id="gameCanvas" width="1280" height="720"
+                AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"/>
+        
+
+        <!-- Timer -->
+        <Label fx:id="timerLabel" text="00:00"
+            style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"
+            AnchorPane.topAnchor="10"
+            AnchorPane.leftAnchor="0"
+            AnchorPane.rightAnchor="0"
+            alignment="CENTER"/>
+
+        <!-- HP bar -->
+        <HBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10">
+            <StackPane>
+                <Rectangle fx:id="hpBackground" width="200" height="20" style="-fx-fill: #550000;"/>
+                <HBox alignment="CENTER_RIGHT" nodeOrientation="RIGHT_TO_LEFT"> 
+                    <Rectangle fx:id="hpFill" width="200" height="20" style="-fx-fill: red;"/>
+                </HBox>
+                <Label fx:id="hpLabel" text="100 / 100" 
+                    style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;"
+                    StackPane.alignment="CENTER"/>
+            </StackPane>
+        </HBox>
+
+        <!-- Level bar -->
+        <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.rightAnchor="10">
+            <StackPane>
+                <Rectangle fx:id="levelBackground" width="200" height="20" style="-fx-fill: #CCFFCC;"/>
+                <HBox alignment="CENTER_RIGHT" nodeOrientation="RIGHT_TO_LEFT"> 
+                    <Rectangle fx:id="levelFill" width="0" height="20" style="-fx-fill: green;"/>
+                </HBox>
+                    <Label fx:id="xpLabel" text="" 
+                    style="-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 6px;"
+                    StackPane.alignment="CENTER"/>
+            </StackPane>
+            <Label fx:id="levelLabel" text="LVL: 1" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+        </VBox>
+
+        <!-- Item Hotbar centered at bottom -->
+        <HBox spacing="8" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+            alignment="CENTER">
+
+            <!-- First Item -->
+            <StackPane>
+                <Rectangle fx:id="firstItem" width="40" height="40" style="-fx-fill: #222;"/>
+                <ImageView fx:id="firstItemImage" fitWidth="36" fitHeight="36"
+                        pickOnBounds="true" preserveRatio="true"
+                        StackPane.alignment="CENTER"/>
+                <Label text="1" style="-fx-text-fill: white; -fx-font-weight: bold;" 
+                    StackPane.alignment="TOP_RIGHT" 
+                    translateX="-2" translateY="2"/>
+            </StackPane>
+
+            <!-- Second Item -->
+            <StackPane>
+                <Rectangle fx:id="secondItem" width="40" height="40" style="-fx-fill: #222;"/>
+                <Label text="2" style="-fx-text-fill: white; -fx-font-weight: bold;" 
+                    StackPane.alignment="TOP_RIGHT" 
+                    translateX="-2" translateY="2"/>
+            </StackPane>
+
+            <!-- Third Item -->
+            <StackPane>
+                <Rectangle fx:id="thirdItem" width="40" height="40" style="-fx-fill: #222;"/>
+                <Label text="3" style="-fx-text-fill: white; -fx-font-weight: bold;" 
+                    StackPane.alignment="TOP_RIGHT" 
+                    translateX="-2" translateY="2"/>
+            </StackPane>
+
+        </HBox>
+
+        <!-- Status/feedback label -->
+        <Label fx:id="actionLabel" AnchorPane.topAnchor="10" AnchorPane.rightAnchor="10"/>
+
+        <!-- Controls display (bottom-left corner) -->
+        <VBox spacing="5" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" alignment="BOTTOM_LEFT">
+            <Label text="W A S D - Move" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="K - Attack" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="Esc - Pause" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="1, 2, 3 - Switch Weapons" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+        </VBox>
+
+    </AnchorPane>
+
+
+    <!-- Death menu overlay (centered, initially hidden) -->
+    <VBox fx:id="deathMenu" spacing="20" alignment="CENTER" visible="false"
+          style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
+        <Label text="YOU DIED!" style="-fx-font-size: 32px; -fx-text-fill: white;"/>
+        <Button text="Play Again" onAction="#onPlayAgain"/>
+        <Button text="Quit" onAction="#onQuit"/>
+    </VBox>
+
+    <!-- Vertical version -->
+    <VBox fx:id="upgradeMenu"
+        spacing="20" alignment="CENTER" visible="false"
+        style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
+
+        <Label text="LEVEL UP!"
+            style="-fx-font-size: 32px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
+        <Label text="Select an upgrade"
+            style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+
+        <VBox spacing="20" alignment="CENTER">
+
+        <Button fx:id="fireBuffBox"
+                prefWidth="300" prefHeight="100"
+                wrapText="true"
+                styleClass="button-upgrade"
+                focusTraversable="false"
+                style="-fx-border-color: orange;">
+            <text>
+                Fire Buff
+                Adds fire damage to your sword.
+                Deals 10% of sword damage for 5s
+            </text>
+        </Button>
+
+        <Button fx:id="speedBuffBox"
+                prefWidth="300" prefHeight="100"
+                wrapText="true"
+                styleClass="button-upgrade"
+                focusTraversable="false"
+                style="-fx-border-color: cyan;">
+            <text>
+                Speed Buff
+                Increases speed by 25%
+            </text>
+        </Button>
+
+        <Button fx:id="healthBuffBox"
+                prefWidth="300" prefHeight="100"
+                wrapText="true"
+                styleClass="button-upgrade"
+                focusTraversable="false"
+                style="-fx-border-color: lime;">
+            <text>
+                Health Increase
+                Restores 25% health
+            </text>
+        </Button>
+        </VBox>
+    </VBox>
+
+    <!-- Pause menu overlay (centered, initially hidden) -->
+    <VBox fx:id="pauseMenu" spacing="20" alignment="CENTER" visible="false" disable="true"
+          style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
+        <Label text="GAME PAUSED" style="-fx-font-size: 32px; -fx-text-fill: white;"/>
+        <Button text="Resume" onAction="#onResume"/>
+        <Button text="Options" onAction="#onOptions"/>
+        <Button text="Quit" onAction="#onQuit"/>
+    </VBox>
+
+</StackPane>

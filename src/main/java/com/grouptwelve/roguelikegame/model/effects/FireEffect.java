@@ -17,16 +17,15 @@ public class FireEffect extends Effects {
     public void increaseDmg(double amount) {
         this.dps += amount;
     }
-    public void increaseDuration(double amount) {
-        this.dps += amount;
-    }
 
+    public void increaseDuration(double amount) {
+        this.duration += amount;
+    }
 
     @Override
     public void apply(Entity target) {
         if (target instanceof Player)
-            return;//kunde bränna sig själv lol
-
+            return;
         target.addEffect(new DamageOverTime(dps, duration));
     }
 }

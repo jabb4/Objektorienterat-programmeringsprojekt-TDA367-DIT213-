@@ -1,15 +1,25 @@
 package com.grouptwelve.roguelikegame.controller;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
+import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
-import com.grouptwelve.roguelikegame.model.events.output.EventPublisher;
-import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,36 +27,33 @@ import java.util.Set;
 /**
  * Coordinates the game loop and events.
  */
-public class GameController implements InputEventListener, GameEventPublisher {
+public class GameController implements InputEventListener, ChooseBuffListener, EntityDeathListener {
   private final Game game;
   private final GameView gameView;
   private final InputHandler inputHandler;
   private AnimationTimer gameLoop;
-  private long lastUpdate;
-  private boolean paused;
+  private long lastUpdate = 0;
+  private boolean paused = false;
+  private boolean death;
   private boolean chooseBuff;
   private int selectedBuff = 1;
+  private MenuNavigator menuNavigator;
+
+  @FXML private VBox pauseMenu;    // Pause menu buttons
+  @FXML private VBox deathMenu;    // Death menu buttons
+
+  private MenuNavigator pauseMenuNavigator;
+  private MenuNavigator deathMenuNavigator;
 
   // All systems that want to observe game events
-  private final List<GameEventListener> eventListeners;
+  private final List<GameEventListener> eventListeners = new ArrayList<>();
 
-  public GameController(Game game, GameView gameView, InputHandler inputHandler, EventPublisher eventPublisher) {
+  public GameController(Game game, GameView gameView, InputHandler inputHandler) {
     this.game = game;
     this.gameView = gameView;
     this.inputHandler = inputHandler;
-    this.eventListeners = new ArrayList<>();
-    this.lastUpdate = 0;
-    this.paused = false;
 
-    // Register listeners
     addEventListener(game);
-    inputHandler.setListener(this);
-    eventPublisher.subscribe(this);
-
-    // TODO: Other systems that needs to react to events such as audio and
-    // animations.
-    // addEventListener(audioManager);
-    // ...
   }
 
   /**
@@ -93,7 +100,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
       handleCommandBuff(command, isPressed);
       return;
     }
-    if (command == Command.PAUSE && isPressed) {
+    if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus() == true) {
       togglePause();
     }
     if (paused) {
@@ -108,8 +115,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
 
     // Handle action commands (only on press)
     else if (command == Command.ATTACK && isPressed) {
-      AttackEvent event = createAttackEvent();
-      notifyAttack(event);
+      notifyAttack();
     }
 
     // TODO: Handle other commands when implemented
@@ -137,15 +143,20 @@ public class GameController implements InputEventListener, GameEventPublisher {
 
 
     }
-    else if (command == Command.SELECT && isPressed)
+    else if ((command == Command.SELECT || command == Command.ATTACK) && isPressed)
     {
       for (GameEventListener listener : eventListeners) {
-        listener.onChooseBuff(selectedBuff);
+        listener.onApplyBuff(selectedBuff);
 
       }
-      paused = false;
+      // Update health bar when applying health upgrade
+      gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP());
+      
+      game.getPlayer().setMovementDirection(0,0); // Player doesnt automatically move on its own after upgrade
+      this.paused = false;
       chooseBuff = false;
       gameView.clearBuffVisuals();
+      gameView.showLevelMenu(false);
     }
 
   }
@@ -169,20 +180,6 @@ public class GameController implements InputEventListener, GameEventPublisher {
     return new MovementEvent(dx, dy);
   }
 
-  /**
-   * Creates an attack event based on current player state.
-   * Gets attack position and range from the player's weapon.
-   *
-   * @return AttackEvent containing attack information
-   */
-  private AttackEvent createAttackEvent() {
-    // TODO: Improve to accommodate Law of Demeter pattern
-    return new AttackEvent(
-        game.getPlayer().getAttackPointX(),
-        game.getPlayer().getAttackPointY(),
-        game.getPlayer().getWeapon().getRange());
-  }
-
   // TODO: Add more event creation methods as features are implemented
 
   // ==================== Event Notification ====================
@@ -196,56 +193,17 @@ public class GameController implements InputEventListener, GameEventPublisher {
     for (GameEventListener listener : eventListeners) {
       listener.onMovement(event);
     }
-
-    //gameView.updateDirectionLabel(event.getDx(), event.getDy());
-
-    // TEMPORARY FOR DEBUGGING
-    updateStatusDisplay();
   }
-
-  /**
-   * TEMPORARY FOR DEBUGGING
-   * Updates the status display based on currently active commands.
-   * Shows which keys are currently pressed.
-   */
-  private void updateStatusDisplay() {
-    List<String> activeKeys = getStrings();
-
-    // Update label
-    /*if (activeKeys.isEmpty()) {
-      gameView.updateStatusLabel("No keys pressed");
-    } else {
-      gameView.updateStatusLabel("Active: " + String.join(", ", activeKeys));
-    }*/
-  }
-
-  private List<String> getStrings() {
-    Set<Command> activeCommands = inputHandler.getActiveCommands();
-    List<String> activeKeys = new ArrayList<>();
-
-        // Check movement keys
-        if (activeCommands.contains(Command.MOVE_UP)) activeKeys.add("UP");
-        if (activeCommands.contains(Command.MOVE_DOWN)) activeKeys.add("DOWN");
-        if (activeCommands.contains(Command.MOVE_LEFT)) activeKeys.add("LEFT");
-        if (activeCommands.contains(Command.MOVE_RIGHT)) activeKeys.add("RIGHT");
-
-        // Check action keys
-        if (activeCommands.contains(Command.ATTACK)) activeKeys.add("ATTACK");
-        return activeKeys;
-    }
 
   /**
    * Notifies all listeners about an attack event.
-   *
-   * @param event The attack event to broadcast
    */
-  private void notifyAttack(AttackEvent event) {
+  private void notifyAttack() {
     for (GameEventListener listener : eventListeners) {
-      listener.onAttack(event);
+      listener.onAttack();
     }
   }
 
-  // TODO: Add notification methods for other events
 
   // ==================== Game Loop ====================
 
@@ -290,7 +248,7 @@ public class GameController implements InputEventListener, GameEventPublisher {
    * Renders the current game state.
    */
   private void render() {
-    gameView.render(game);
+    gameView.render(game, lastUpdate);
   }
 
   /**
@@ -306,43 +264,116 @@ public class GameController implements InputEventListener, GameEventPublisher {
   // ==================== GameEventPublisher Implementation ====================
 
   @Override
-  public void onAttackVisual(double x, double y, double size) {
-    gameView.drawAttack(x, y, size);
+  public void onEntityDeath(EntityDeathEvent event) {
+    Entity entity = event.getEntity();
+    if(entity instanceof Player)
+    {
+        paused = true;
+    }
+    else
+    {
+        //TODO: implement show game statistics that are also not done
+        System.out.println("enmy died");
+    }
   }
 
   @Override
-  public void onPlayerDeath(double x, double y) {
-    gameView.playerDied(x, y);
-    paused = true;
-  }
-
-  @Override
-  public void onEnemyHit(double x, double y, double damage, boolean isCritical) {
-    gameView.showDamageNumber(x, y, damage, isCritical);
-    gameView.spawnHitParticles(x, y);
-  }
-
-  @Override
-  public void onEnemyDeath(double x, double y, int xpValue) {
-    // Visual effects for enemy death can be added here
-    // XP handling is done in the model layer
-  }
-  @Override
-  public void onPlayerLevelUp(int level, UpgradeInterface[] upgrades)
+  public void onChooseBuff(UpgradeInterface[] upgrades)
   {
     chooseBuff = true;
     this.paused = true;
-    String[] stringValues = new String[upgrades.length];
-    for(int i = 0; i < upgrades.length; i++)
-    {
-      stringValues[i] ="Buff "+ (i + 1) + ":   " + upgrades[i].getName() + "          ";
-    }
-    gameView.updateBuffLabels(stringValues);
+
+    // Update buttons with the new upgrades
+      selectedBuff = 0;
+      gameView.updateSelectedLabel(selectedBuff);
+  }
+
+// ==================== FXML ====================
+  public void togglePause() {
+      this.paused = !paused;
+
+      if (paused) {   // stop the game loop
+          gameView.showPauseMenu(true);
+      } else {  // resume game loop
+          gameView.showPauseMenu(false);
+      }
+  }
+
+  public void resume() {
+      if (paused) {
+          paused = false;      
+          gameView.showPauseMenu(false);
+      }
+  }
+
+  public void playAgain() throws IOException {
+      stop();
+      game.reset();
+
+      Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
+
+      
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));
+      Parent root = loader.load();
+      GameView gameView = loader.getController();
+      InputHandler inputHandler = new InputHandler();
+
+      EventPublisher eventPublisher = new EventPublisher();
+      LevelUpPublisher levelUpPublisher = (LevelUpPublisher) eventPublisher;
+      EntityPublisher entityPublisher = (EntityPublisher) eventPublisher;
+      ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
+      XpPublisher xpPublisher = (XpPublisher) eventPublisher;
+
+
+      Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher, xpPublisher);
+
+
+
+
+      Scene scene = new Scene(root, 1280, 720);
+      inputHandler.setupInputHandling(scene);
+      
+      // Create controller (subscribes to event manager)
+      GameController gameController = new GameController(game, gameView, inputHandler);
+      inputHandler.setListener(gameController);
+
+
+      gameController.addEventListener(game);
+
+      entityPublisher.subscribeEntityDeath(gameController);
+      chooseBuffPublisher.subscribeBuff(gameController);
+
+      entityPublisher.subscribeEntityHit(gameView);
+      entityPublisher.subscribeAttack(gameView);
+      entityPublisher.subscribeEntityDeath(gameView);
+      chooseBuffPublisher.subscribeBuff(gameView);
+      xpPublisher.subscribeXp(gameView);
+
+      gameView.setGameController(gameController); // Connect FXML components with GameController
+      gameView.setGameController(gameController);
+      gameController.start();
+
+
+      
+      stage.setTitle("Roguelike Game");
+      stage.setScene(scene);
+      stage.show();
 
   }
 
-  private void togglePause() {
-    this.paused = !paused;
-    System.out.println("paaaaaaaaaaaaaaaaaaaause!!!!!!!!!!!!!!!!!!!");
+  public void quit() throws IOException {
+      stop();
+      game.reset();
+
+      Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
+
+      FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));
+      Scene menuScene = new Scene(menuLoader.load(), 1280, 720);
+
+      // Attach global CSS
+      menuScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
+
+      stage.setScene(menuScene);
+      stage.show();
   }
 }

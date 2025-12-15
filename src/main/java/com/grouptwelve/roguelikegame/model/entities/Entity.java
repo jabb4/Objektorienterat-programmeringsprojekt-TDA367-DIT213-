@@ -3,8 +3,10 @@ package com.grouptwelve.roguelikegame.model.entities;
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
-import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
-import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
 
 import java.util.ArrayList;
@@ -23,16 +25,16 @@ public abstract class Entity {
     // Facing direction (used for attack direction)
     protected double dirX;
     protected double dirY;
+    //protected double attackStart = ;
 
     protected Weapon weapon;
 
     // Attack listener - notified when this entity attacks (Observer pattern)
-    protected AttackListener attackListener;
+    protected EntityPublisher entityPublisher;
 
     // Hit effect state
-    protected boolean isHit;
-    protected double hitTimer;
-
+    protected boolean isHit = false;
+    protected double hitTimer = 0.0;
     private List<ActiveEffect> activeEffects = new ArrayList<>();
 
 
@@ -45,8 +47,6 @@ public abstract class Entity {
         this.size = size;
         this.velocity = new Velocity(100);
         this.isAlive = true;
-        this.isHit = false;
-        this.hitTimer = 0.0;
     }
 
     /**
@@ -81,11 +81,18 @@ public abstract class Entity {
         }
     }
 
-
+    /**
+     * applies effects to entity
+     * @param effect ex fire
+     */
     public void addEffect(ActiveEffect effect) {
         activeEffects.add(effect);
     }
 
+    /**
+     * moves entitiy based on direction and speed
+     * @param deltaTime -multiply change by delta time so frame rate not affect speed
+     */
     protected void move(double deltaTime) {
         x += velocity.getX() * deltaTime;
         y += velocity.getY() * deltaTime;
@@ -93,26 +100,43 @@ public abstract class Entity {
 
     // ==================== Combat ====================
 
+    /**
+     * returns the position where entity attacks
+     * (its own size plus weapon range) far away from center of entity
+     * @return x-coordinate
+     */
     public double getAttackPointX() {
-        return this.x + this.dirX * 20;
+        return this.x + this.dirX * (weapon.getRange());
     }
-
+    /**
+     * returns the position where entity attacks
+     * (its own size plus weapon range) far away from center of entity
+     * @return y-coordinate
+     */
     public double getAttackPointY() {
-        return this.y + this.dirY* 20;
+        return this.y + this.dirY* ( weapon.getRange());
     }
 
     /**
      * Applies damage to itself. Sets isAlive to false if HP drops to 0 or below.
-     *
-     * @param dmg Amount of damage to apply
+     * publishes onEntityHit and onEntityDeath events
+     * @param combatResult damage ifo
      */
-    public void takeDamage(double dmg)
+    public void takeDamage(CombatResult combatResult)
     {
+        double dmg = combatResult.getDamage();
         this.hp -= dmg;
 
-        if (this.hp <= 0) {
-            this.isAlive = false;
+
+        if(entityPublisher != null)
+        {
+            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult));
+            if (this.hp <= 0) {
+                this.isAlive = false;
+                entityPublisher.onEntityDeath(new EntityDeathEvent(this));
+            }
         }
+
     }
 
     /**
@@ -122,29 +146,21 @@ public abstract class Entity {
      * @return true if the attack was performed, false if weapon on cooldown or no weapon
      */
     public boolean attack() {
-        if (this.weapon == null) return false;
+        if (this.weapon == null || entityPublisher == null) return false;
         if (!this.weapon.canAttack()) return false;
 
         // Reset weapon cooldown
         this.weapon.resetCooldown();
 
-        // Notify listener to handle combat resolution
-        if (attackListener != null) {
-            CombatResult result = weapon.calculateDamage();
-            attackListener.onEntityAttacked(this, getAttackPointX(), getAttackPointY(), weapon.getRange(), result, weapon.getEffects());
-        }
+
+        CombatResult result = weapon.calculateDamage();
+        entityPublisher.onAttack(new AttackEvent(this, getAttackPointX(), getAttackPointY(), weapon.getRange(), result, weapon.getEffects(),  weapon.getKnockbackStrength()));
+
         return true;
     }
 
-    /**
-     * Sets the attack listener that will be notified when this entity attacks.
-     * Used by Game to handle combat resolution.
-     *
-     * @param listener The listener to notify on attack
-     */
-    public void setAttackListener(AttackListener listener) {
-        this.attackListener = listener;
-    }
+
+
 
     /**
      * Applies a knockback force to this entity.
@@ -222,6 +238,10 @@ public abstract class Entity {
     }
 
     // ==================== Setters ====================
+
+    public void setEntityPublisher(EntityPublisher publisher) {
+        this.entityPublisher = publisher;
+    }
 
     public void setMaxHP(double maxHP) {
         this.maxHP = maxHP;

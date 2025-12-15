@@ -37,6 +37,11 @@ public class InputHandler {
         keyBindings.put(KeyCode.ENTER, Command.SELECT);
         // keyBindings.put(KeyCode.E, Command.ABILITY_1);
 
+        // Item selection keys
+        keyBindings.put(KeyCode.DIGIT1, Command.SELECT_1);
+        keyBindings.put(KeyCode.DIGIT2, Command.SELECT_2);
+        keyBindings.put(KeyCode.DIGIT3, Command.SELECT_3);
+
         // System keys
          keyBindings.put(KeyCode.ESCAPE, Command.PAUSE);
     }

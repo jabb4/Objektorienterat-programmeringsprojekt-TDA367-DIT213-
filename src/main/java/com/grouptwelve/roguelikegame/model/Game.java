@@ -1,20 +1,21 @@
 package com.grouptwelve.roguelikegame.model;
 
 import com.grouptwelve.roguelikegame.model.combat.CombatManager;
-import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.constraints.BoundsConstraint;
 import com.grouptwelve.roguelikegame.model.constraints.ConstraintSystem;
-import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.entities.enemies.Enemies;
-import com.grouptwelve.roguelikegame.model.events.LevelUpListener;
-import com.grouptwelve.roguelikegame.model.events.input.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
-import com.grouptwelve.roguelikegame.model.events.output.AttackListener;
-import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.LevelUpPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.XpPublisher;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.UpgradeRegistry;
 
@@ -29,7 +30,7 @@ import java.util.Random;
  * This follows the Observer pattern - entities notify Game when they attack,
  * and Game handles the combat logic.
  */
-public class Game implements GameEventListener, AttackListener, LevelUpListener {
+public class Game implements GameEventListener, LevelUpListener, EntityDeathListener {
 
     private final Random rand = new Random();
 
@@ -39,107 +40,121 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     private final Player player;
     private final List<Enemy> enemiesAlive;
     private final CombatManager combatManager;
-    private final GameEventPublisher eventPublisher;
-    private UpgradeInterface[] upgrades;
+    private final EntityPublisher entityPublisher;
+    private final XpPublisher xpPublisher;
+    private final ChooseBuffPublisher chooseBuffPublisher;
+    private final LevelUpPublisher levelUpPublisher;
+    private final UpgradeInterface[] upgrades =  new UpgradeInterface[3];
 
-    // Enemy spawning
+    // World dimensions
+    private static final int WORLD_WIDTH = 1280;
+    private static final int WORLD_HEIGHT = 720;
+
+    // Spawning configuration
+    private static final int ENEMY_BASE_SPAWN_RATE = 5;
+    private static final int ENEMY_BASE_MAX_SPAWN_AMOUNT = 3;
+    private static final int ENEMY_SPAWN_RATE_MAX_TIME = 300;
+    private static final int SPAWN_MARGIN = 20;
+    private static final double SPAWN_RATE_SCALING_FACTOR = 4.0;
+    private static final int SPAWN_AMOUNT_INCREASE_INTERVAL = 60;
+    private static final int LATE_GAME_SPAWN_MULTIPLIER = 2;
+
+    // Enemy spawning state
     private int lastEnemySpawnTime = 0;
-    private final int enemyBaseSpawnRate = 5;
-    private final int enemyBaseMaxSpawnAmount = 3;
-    private int enemySpawnRate = enemyBaseSpawnRate;
-    private int enemyMaxSpawnAmount = enemyBaseMaxSpawnAmount;
-    private final int enemySpawnRateMaxTime = 300; // The time (in seconds) the game has run until enemies spawns every second
+    private int enemySpawnRate = ENEMY_BASE_SPAWN_RATE;
+    private int enemyMaxSpawnAmount = ENEMY_BASE_MAX_SPAWN_AMOUNT;
 
     /**
-     * Creates a new Game instance with an event publisher.
-     *
-     * @param eventPublisher Publisher for game events (visual feedback, etc.)
+     * constructor that initialise game state
+     * @param entityPublisher -gives publisher to entities
+     * @param chooseBuffPublisher -uses itself
+     * @param levelUpPublisher - used by player
+     * @param xpPublisher - uses itself
      */
-    public Game(GameEventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
-        this.upgrades = new UpgradeInterface[3];
+    public Game(EntityPublisher entityPublisher, ChooseBuffPublisher chooseBuffPublisher, LevelUpPublisher levelUpPublisher, XpPublisher xpPublisher) {
+        //this.PlayerPublisher = playerPublisher;
+        this.entityPublisher = entityPublisher;
+        this.chooseBuffPublisher = chooseBuffPublisher;
+        this.levelUpPublisher = levelUpPublisher;
+        this.xpPublisher = xpPublisher;
+
+        levelUpPublisher.subscribeLevelUp(this);
+        entityPublisher.subscribeEntityDeath(this);
 
         // Initialize world and constraint system
-        this.world = new GameWorld(1280, 720);
+        this.world = new GameWorld(WORLD_WIDTH, WORLD_HEIGHT);
         this.constraintSystem = new ConstraintSystem();
         this.constraintSystem.addConstraint(new BoundsConstraint(world));
 
         // Initialize game state
         this.gameTime = 0;
         this.player = new Player(world.getWidth() / 2, world.getHeight() / 2);
+        this.player.setLevelUpPublisher(levelUpPublisher);
+        this.player.setEntityPublisher(entityPublisher);
 
 
         // Initialize combat system
         this.enemiesAlive = new ArrayList<>();
-        this.combatManager = new CombatManager(player, () -> enemiesAlive, eventPublisher);
-
-        // Set up player to notify this Game when attacking
-        player.setAttackListener(this);
-        player.setLevelUpListener(this);
+        this.combatManager = new CombatManager(player, () -> enemiesAlive);
+        entityPublisher.subscribeAttack(this.combatManager);
     }
 
     // ==================== AttackListener Implementation ====================
 
-    /**
-     * Called when any entity (player or enemy) performs an attack.
-     * Resolves combat and publishes visual events.
-     */
     @Override
-    public void onEntityAttacked(Entity attacker, double x, double y, double range, CombatResult result, List<EffectInterface> effects) {
-        // Determine if attacker is friendly (player) or enemy
-        boolean isFriendly = attacker instanceof Player;
+    public void onEntityDeath(EntityDeathEvent event)
+    {
+        Entity entity = event.getEntity();
+        if(entity instanceof Enemy)
+        {
+            Enemy enemy = (Enemy) entity;
+            player.gainXP(enemy.getXpValue());
+            EnemyPool.getInstance().returnEnemy(enemy);
+            enemiesAlive.remove(enemy);
+            xpPublisher.onUpdateXp(new XpChangeEvent(player.getLevelSystem().getXP(), player.getLevelSystem().getXPToNext(), player.getLevelSystem().getLevel()));
 
-        // Get the attacker's knockback strength
-        double knockbackStrength = attacker.getWeapon().getKnockbackStrength();
-
-        // Resolve combat through the combat manager
-        combatManager.attack(isFriendly, x, y, range, result, effects, knockbackStrength);
-
-        // Publish attack visual event for the view
-        if (eventPublisher != null) {
-            eventPublisher.onAttackVisual(x, y, range);
+            // Note: Actual removal from enemiesAlive and return to pool
+            // happens in updateEnemies() to avoid ConcurrentModificationException
+        }
+        else if(entity instanceof Player)
+        {
+            reset();
         }
     }
 
-    /**
-     * called by only player when level up. publishes event
-     * @param level of player
-     */
     @Override
-    public void onLevelUp(int level)
+    public void onLevelUp()
     {
         for(int i = 0; i < upgrades.length; i++)
         {
             upgrades[i] = UpgradeRegistry.randomUpgrade();
         }
-        eventPublisher.onPlayerLevelUp(level, upgrades);
+        chooseBuffPublisher.onChooseBuff(upgrades);
     }
     // ==================== GameEventListener Implementation ====================
 
     @Override
-    public void onChooseBuff(int level) {
-        upgrades[level].apply(player);
-        System.out.println(upgrades[level].toString() +" was choosen" );
+    public void onApplyBuff(int i) {
+        if(i >= 0 && i < upgrades.length)
+        {
+            upgrades[i].apply(player);
+        }
     }
 
     @Override
     public void onMovement(MovementEvent event) {
-        setPlayerMovement(event.getDx(), event.getDy());
+        player.setMovementDirection(event.getDx(), event.getDy());
+
     }
 
     @Override
-    public void onAttack(AttackEvent event) {
-        // Player attacks - entity handles combat via AttackListener callback
+    public void onAttack() {
         player.attack();
     }
 
+
     // ==================== Game Logic ====================
 
-    /**
-     * Updates the game state by one frame.
-     * 
-     * @param deltaTime Time elapsed since last update (in seconds)
-     */
     public void update(double deltaTime) {
         gameTime += deltaTime;
 
@@ -155,18 +170,20 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
 
     /**
      * Updates all enemies.
-     * Attacks are handled via AttackListener callbacks when enemies attack.
+     * check if enemy is alive and then handles that event otherwise should move towards player
      */
     private void updateEnemies(double deltaTime) {
         double playerX = player.getX();
         double playerY = player.getY();
 
+        // Update only living enemies
         for (Enemy enemy : enemiesAlive) {
+
             enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
             enemy.update(deltaTime);
-            // Enemy attack() is called by enemy's internal state machine
-            // When it attacks, onEntityAttacked() is called automatically
+
         }
+
     }
 
     /**
@@ -179,46 +196,36 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
     private void spawnEnemies() {
         if ((int) this.gameTime != this.lastEnemySpawnTime && ((int) this.gameTime - this.lastEnemySpawnTime >= this.enemySpawnRate || this.lastEnemySpawnTime == 0)) {
             for (int i = 0; i <= rand.nextInt(this.enemyMaxSpawnAmount); i++) {
-                int margin = 20;
                 int spawnX;
                 int spawnY;
-                if (rand.nextBoolean()){
-                    if (rand.nextBoolean()){
-                        spawnY = (int) (world.getHeight() - margin);
-                    } else spawnY = margin;
-                    spawnX = margin + rand.nextInt((int) world.getWidth() - 2 * margin);
+                if (rand.nextBoolean()) {
+                    if (rand.nextBoolean()) {
+                        spawnY = (int) (world.getHeight() - SPAWN_MARGIN);
+                    } else {
+                        spawnY = SPAWN_MARGIN;
+                    }
+                    spawnX = SPAWN_MARGIN + rand.nextInt((int) world.getWidth() - 2 * SPAWN_MARGIN);
+                } else {
+                    if (rand.nextBoolean()) {
+                        spawnX = (int) (world.getWidth() - SPAWN_MARGIN);
+                    } else {
+                        spawnX = SPAWN_MARGIN;
+                    }
+                    spawnY = SPAWN_MARGIN + rand.nextInt((int) world.getHeight() - 2 * SPAWN_MARGIN);
                 }
-                else {
-                    if (rand.nextBoolean()){
-                        spawnX = (int) (world.getWidth() - margin);
-                    } else spawnX = margin;
-                    spawnY = margin + rand.nextInt((int) world.getHeight() - 2 * margin);
-                }
-
 
                 Enemy enemy = EnemyPool.getInstance().borrowRandomEnemy(spawnX, spawnY);
-                enemy.setAttackListener(this);  // Register this Game as the attack listener
+                enemy.setEntityPublisher(entityPublisher);  // Register this Game as the attack listener
                 enemiesAlive.add(enemy);
             }
             this.lastEnemySpawnTime = (int) this.gameTime;
-            this.enemySpawnRate = Math.max(1, Math.min(this.enemyBaseSpawnRate, this.enemyBaseSpawnRate - (int) (4.0 * (int) this.gameTime / this.enemySpawnRateMaxTime)));
-            if ((int) this.gameTime <= this.enemySpawnRateMaxTime){
-                this.enemyMaxSpawnAmount = (int) (this.enemyBaseMaxSpawnAmount + this.gameTime / 60);
-            }
-            else {
-                this.enemyMaxSpawnAmount = (int) (this.enemyBaseMaxSpawnAmount + (double) this.enemySpawnRateMaxTime / 60  + ((this.gameTime - this.enemySpawnRateMaxTime) / 60)*2);
+            this.enemySpawnRate = Math.max(1, Math.min(ENEMY_BASE_SPAWN_RATE, ENEMY_BASE_SPAWN_RATE - (int) (SPAWN_RATE_SCALING_FACTOR * (int) this.gameTime / ENEMY_SPAWN_RATE_MAX_TIME)));
+            if ((int) this.gameTime <= ENEMY_SPAWN_RATE_MAX_TIME) {
+                this.enemyMaxSpawnAmount = (int) (ENEMY_BASE_MAX_SPAWN_AMOUNT + this.gameTime / SPAWN_AMOUNT_INCREASE_INTERVAL);
+            } else {
+                this.enemyMaxSpawnAmount = (int) (ENEMY_BASE_MAX_SPAWN_AMOUNT + (double) ENEMY_SPAWN_RATE_MAX_TIME / SPAWN_AMOUNT_INCREASE_INTERVAL + ((this.gameTime - ENEMY_SPAWN_RATE_MAX_TIME) / SPAWN_AMOUNT_INCREASE_INTERVAL) * LATE_GAME_SPAWN_MULTIPLIER);
             }
         }
-    }
-
-    /**
-     * Sets player movement direction based on input.
-     *
-     * @param dx Horizontal direction (-1, 0, or 1)
-     * @param dy Vertical direction (-1, 0, or 1)
-     */
-    public void setPlayerMovement(int dx, int dy) {
-        player.setMovementDirection(dx, dy);
     }
 
     // ==================== Getters ====================
@@ -233,5 +240,17 @@ public class Game implements GameEventListener, AttackListener, LevelUpListener 
 
     public double getGameTime() {
         return gameTime;
+    }
+
+    /**
+     * used when player died and want to play again
+     * resets game state
+     */
+    public void reset() {
+        this.gameTime = 0;
+        this.lastEnemySpawnTime = 0;
+
+        player.revive();
+        enemiesAlive.clear();
     }
 }

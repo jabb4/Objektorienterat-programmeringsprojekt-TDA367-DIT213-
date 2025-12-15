@@ -3,8 +3,8 @@ package com.grouptwelve.roguelikegame.model.combat;
 import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
-import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
-import com.grouptwelve.roguelikegame.model.events.output.GameEventPublisher;
+import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.AttackListener;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -17,23 +17,22 @@ import java.util.function.Supplier;
  * 
  * This class handles combat flow and game-level concerns like XP and death.
  */
-public class CombatManager {
+public class CombatManager implements AttackListener {
     
     private final Player player;
     private final Supplier<List<Enemy>> enemiesSupplier;
-    private final GameEventPublisher eventPublisher;
 
     /**
      * Creates a CombatManager with explicit dependencies.
      *
      * @param player The player entity
      * @param enemiesSupplier Supplier that provides the current list of enemies
-     * @param eventPublisher Publisher for combat events (can be null for no events)
+
      */
-    public CombatManager(Player player, Supplier<List<Enemy>> enemiesSupplier, GameEventPublisher eventPublisher) {
+    public CombatManager(Player player, Supplier<List<Enemy>> enemiesSupplier) {
         this.player = player;
         this.enemiesSupplier = enemiesSupplier;
-        this.eventPublisher = eventPublisher;
+
     }
 
     /**
@@ -47,11 +46,15 @@ public class CombatManager {
      * @param effects list of effects to apply on hit
      * @param knockbackStrength the attacker's knockback strength
      */
-    public void attack(boolean isFriendly, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
-        if (isFriendly) {
-            attackEnemies(x, y, range, combatResult, effects, knockbackStrength);
-        } else {
-            attackPlayer(x, y, range, combatResult.getDamage(), effects, knockbackStrength);
+    @Override
+    public void onAttack(AttackEvent attackEvent) {
+        if(attackEvent.getAttacker() instanceof Player)
+        {
+            attackEnemies(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange(), attackEvent.getCombatResult(), attackEvent.getEffects(), attackEvent.getKnockbackStrength());
+        }
+        else
+        {
+            attackPlayer(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange(), attackEvent.getCombatResult(), attackEvent.getEffects(), attackEvent.getKnockbackStrength());
         }
     }
 
@@ -59,65 +62,28 @@ public class CombatManager {
      * Handles player attacking enemies.
      */
     private void attackEnemies(double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
-        double damage = combatResult.getDamage();
-        boolean isCritical = combatResult.isCritical();
+
         List<Enemy> enemies = enemiesSupplier.get();
         
         // Find all enemies in range
         List<Enemy> hitEnemies = CollisionSystem.getEntitiesInRange(x, y, range, enemies);
         
         for (Enemy enemy : hitEnemies) {
-            // Apply damage
-            boolean died = HitSystem.applyDamage(enemy, damage);
-            
-            // Publish hit event
-            publishEnemyHit(enemy, damage, isCritical);
-            
-            if (died) {
-                handleEnemyDeath(enemy, enemies);
-            } else {
-                // Apply effects to living enemies
-                HitSystem.applyEffects(enemy, effects, x, y, knockbackStrength);
-            }
-        }
-    }
 
-    /**
-     * Handles enemy death: grants XP, publishes event, returns to pool.
-     */
-    private void handleEnemyDeath(Enemy enemy, List<Enemy> enemies) {
-        player.gainXP(enemy.getXpValue());
-        
-        if (eventPublisher != null) {
-            eventPublisher.onEnemyDeath(enemy.getX(), enemy.getY(), enemy.getXpValue());
-        }
+            HitSystem.applyEffects(enemy, effects, x, y, knockbackStrength);
+            HitSystem.applyDamage(enemy, combatResult);
 
-        EnemyPool.getInstance().returnEnemy(enemy);
-        enemies.remove(enemy);
+        }
     }
 
     /**
      * Handles enemies attacking player.
      */
-    private void attackPlayer(double x, double y, double range, double damage, List<EffectInterface> effects, double knockbackStrength) {
+    private void attackPlayer(double x, double y, double range,  CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
         if (CollisionSystem.isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
-            boolean died = HitSystem.applyDamage(player, damage);
-            
-            if (died && eventPublisher != null) {
-                eventPublisher.onPlayerDeath(player.getX(), player.getY());
-            }
-            
-            // Apply effects
-            HitSystem.applyEffects(player, effects, x, y, knockbackStrength);
-        }
-    }
 
-    /**
-     * Publishes enemy hit event if publisher is available.
-     */
-    private void publishEnemyHit(Enemy enemy, double damage, boolean isCritical) {
-        if (eventPublisher != null) {
-            eventPublisher.onEnemyHit(enemy.getX(), enemy.getY(), damage, isCritical);
+            HitSystem.applyDamage(player,combatResult );
+            HitSystem.applyEffects(player, effects, x, y, knockbackStrength);
         }
     }
 }
