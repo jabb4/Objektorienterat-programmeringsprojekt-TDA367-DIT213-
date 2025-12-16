@@ -102,22 +102,16 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     // ==================== AttackListener Implementation ====================
 
     @Override
-    public void onEntityDeath(EntityDeathEvent event)
-    {
+    public void onEntityDeath(EntityDeathEvent event) {
         Entity entity = event.getEntity();
-        if(entity instanceof Enemy)
-        {
-            Enemy enemy = (Enemy) entity;
+
+        if (entity instanceof Enemy enemy) {
             player.gainXP(enemy.getXpValue());
             EnemyPool.getInstance().returnEnemy(enemy);
             enemiesAlive.remove(enemy);
-            xpPublisher.onUpdateXp(new XpChangeEvent(player.getLevelSystem().getXP(), player.getLevelSystem().getXPToNext(), player.getLevelSystem().getLevel()));
-
-            // Note: Actual removal from enemiesAlive and return to pool
-            // happens in updateEnemies() to avoid ConcurrentModificationException
+            xpPublisher.onUpdateXp(new XpChangeEvent(player.getXP(), player.getXPToNext(), player.getLevel()));
         }
-        else if(entity instanceof Player)
-        {
+        else if (entity instanceof Player) {
             reset();
         }
     }
