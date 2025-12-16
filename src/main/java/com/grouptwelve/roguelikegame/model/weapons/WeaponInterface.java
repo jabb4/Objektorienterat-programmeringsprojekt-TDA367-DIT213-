@@ -27,9 +27,14 @@ public interface WeaponInterface {
     boolean canAttack();
 
     /**
-     * Resets the cooldown timer after an attack.
+     * Refreshes the cooldown timer after an attack.
      */
-    void resetCooldown();
+    void refreshCooldown();
+
+    /**
+     * Resets the weapon
+     */
+    void reset();
 
     /**
      * Calculates damage for an attack, including critical hit chance.

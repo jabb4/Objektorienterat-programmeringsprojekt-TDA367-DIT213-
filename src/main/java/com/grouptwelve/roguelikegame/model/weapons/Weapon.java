@@ -58,21 +58,21 @@ public abstract class Weapon implements WeaponInterface {
      */
     public abstract Weapon copy();
 
-    /**
-     * Checks if the weapon is ready to attack.
-     *
-     * @return true if cooldown has elapsed, false otherwise
-     */
+
     @Override
     public boolean canAttack() {
         return cooldownRemaining <= 0;
     }
 
-    /**
-     * Resets the cooldown timer after an attack.
-     */
-    public void resetCooldown() {
+    @Override
+    public void refreshCooldown() {
         cooldownRemaining = attackCooldown;
+    }
+
+    public void reset() {
+        this.cooldownRemaining = 0;
+        this.critChance = DEFAULT_CRIT_CHANCE;
+        this.critMultiplier = DEFAULT_CRIT_MULTIPLIER;
     }
 
     /**

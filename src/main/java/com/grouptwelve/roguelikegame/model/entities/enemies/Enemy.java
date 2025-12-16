@@ -250,10 +250,5 @@ public class Enemy extends Entity implements Obstacle {
         windUpRemaining = 0;
         lockedDirX = 0;
         lockedDirY = 0;
-
-        // Reset weapon cooldown
-        if (weapon != null) {
-            weapon.resetCooldown();
-        }
     }
 }

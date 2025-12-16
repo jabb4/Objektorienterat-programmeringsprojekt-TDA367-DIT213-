@@ -35,7 +35,7 @@ public abstract class Entity {
     // Hit effect state
     protected boolean isHit = false;
     protected double hitTimer = 0.0;
-    private List<ActiveEffect> activeEffects = new ArrayList<>();
+    private final List<ActiveEffect> activeEffects = new ArrayList<>();
 
 
     public Entity(String name, double x, double y, double hp, int size, double maxHP){
@@ -87,6 +87,13 @@ public abstract class Entity {
      */
     public void addEffect(ActiveEffect effect) {
         activeEffects.add(effect);
+    }
+
+    /**
+     * Clears all active effects from the entity
+     */
+    public void clearEffects() {
+        activeEffects.clear();
     }
 
     /**
@@ -150,7 +157,7 @@ public abstract class Entity {
         if (!this.weapon.canAttack()) return false;
 
         // Reset weapon cooldown
-        this.weapon.resetCooldown();
+        this.weapon.refreshCooldown();
 
 
         CombatResult result = weapon.calculateDamage();
@@ -222,10 +229,25 @@ public abstract class Entity {
         return this.isAlive;
     }
 
+    /**
+     * Resets the different states
+     * This should not be used as a reset because it will keep certain stats that have been upgraded during the game
+     */
     public void revive()
     {
+        this.isHit = false;
+        this.hitTimer = 0.0;
         this.hp = maxHP;
         this.isAlive = true;
+
+        //Reset Velocity
+        this.velocity.reset();
+
+        // Clear effects
+        this.clearEffects();
+
+        // Reset weapon
+        weapon.reset();
     }
 
     //fix later

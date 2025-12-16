@@ -308,7 +308,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
   public void playAgain() throws IOException {
       stop();
-      game.reset();
 
       Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
@@ -363,7 +362,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
   public void quit() throws IOException {
       stop();
-      game.reset();
 
       Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 

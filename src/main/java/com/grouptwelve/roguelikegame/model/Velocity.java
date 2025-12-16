@@ -52,7 +52,9 @@ public class Velocity {
         this.y = 0;
     }
 
-    // what is this for?
+    /**
+     * Is used when an enemy is revived, and we don't want it to spawn with a velocity or knockback
+     */
     public void reset() {
         this.x = 0;
         this.y = 0;
