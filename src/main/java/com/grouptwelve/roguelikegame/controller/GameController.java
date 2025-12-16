@@ -1,8 +1,8 @@
 package com.grouptwelve.roguelikegame.controller;
 
 import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.entities.Entity;
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Obstacle;
+import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
@@ -259,8 +259,8 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
   @Override
   public void onEntityDeath(EntityDeathEvent event) {
-    Entity entity = event.getEntity();
-    if(entity instanceof Player)
+    Obstacle obstacle = event.getObstacle();
+    if(obstacle.getObstacleType() == ObstacleType.PLAYER)
     {
         paused = true;
     }
@@ -303,7 +303,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
   public void playAgain() throws IOException {
       stop();
-      game.reset();
 
       Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
@@ -349,7 +348,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
   public void quit() throws IOException {
       stop();
-      game.reset();
 
       Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 

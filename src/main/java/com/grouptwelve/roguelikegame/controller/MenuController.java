@@ -79,7 +79,6 @@ public class MenuController implements InputEventListener {
 
         // Create game with event publisher
         Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher, xpPublisher);
-        game.reset(); // To make sure that previous session doesnt effect new one
 
         // Load FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));

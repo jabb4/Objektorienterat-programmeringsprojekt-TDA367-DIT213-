@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.model.events.output.events;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
+import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Event data from an attack.
  */
 public class AttackEvent {
-    private final Entity attacker;
+    private final Obstacle attacker;
     private final double x;
     private final double y;
     private final double range;
@@ -21,7 +22,7 @@ public class AttackEvent {
     /**
      * Creates a new attack event.
      *
-     * @param attacker the entity that performed the attack
+     * @param attacker the entity that performed the attack, is obstacle to hide unnecessary information
      * @param x the x-coordinate of the attack
      * @param y the y-coordinate of the attack
      * @param range the range of the attack
@@ -29,7 +30,7 @@ public class AttackEvent {
      * @param effects the list of effects applied by this attack
      * @param knockbackStrength the knockback strength of the knockback
      */
-    public AttackEvent(Entity attacker, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
+    public AttackEvent(Obstacle attacker, double x, double y, double range, CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
         this.knockbackStrength = knockbackStrength;
         this.attacker = attacker;
         this.x = x;
@@ -39,7 +40,7 @@ public class AttackEvent {
         this.effects = effects;
     }
 
-    public Entity getAttacker() {
+    public Obstacle getAttacker() {
         return attacker;
     }
 
