@@ -116,10 +116,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
             // Note: Actual removal from enemiesAlive and return to pool
             // happens in updateEnemies() to avoid ConcurrentModificationException
         }
-        else if(entity instanceof Player)
-        {
-            reset();
-        }
     }
 
     @Override
