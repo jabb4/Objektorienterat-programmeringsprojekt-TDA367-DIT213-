@@ -82,12 +82,7 @@ public class Player extends Entity {
         }
     }
 
-
     // ==================== Getters ====================
-
-    public LevelSystem getLevelSystem() {
-        return levelSystem;
-    }
 
     public int getXP() {
         return levelSystem.getXP();
