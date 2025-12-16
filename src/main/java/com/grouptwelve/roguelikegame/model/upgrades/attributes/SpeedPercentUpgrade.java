@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.attributes;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.PercentAttributeUpgrade;
 
 public class SpeedPercentUpgrade extends PercentAttributeUpgrade {
@@ -10,9 +10,9 @@ public class SpeedPercentUpgrade extends PercentAttributeUpgrade {
     }
 
     @Override
-    public void apply(Player player) {
-        double extra = player.getMoveSpeed() * percent;
-        player.increaseMoveSpeed(extra);
+    public void apply(Entity entity) {
+        double extra = entity.getMoveSpeed() * percent;
+        entity.increaseMoveSpeed(extra);
     }
 
     @Override

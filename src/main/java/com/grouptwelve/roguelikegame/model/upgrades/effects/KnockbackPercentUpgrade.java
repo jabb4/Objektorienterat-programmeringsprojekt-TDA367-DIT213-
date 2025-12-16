@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.effects;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.PercentAttributeUpgrade;
 
 public class KnockbackPercentUpgrade extends PercentAttributeUpgrade {
@@ -10,9 +10,9 @@ public class KnockbackPercentUpgrade extends PercentAttributeUpgrade {
     }
 
     @Override
-    public void apply(Player player) {
-        double extra = player.getWeapon().getKnockbackStrength() * percent;
-        player.getWeapon().addKnockback(extra);
+    public void apply(Entity entity) {
+        double extra = entity.getWeaponKnockbackStrength() * percent;
+        entity.addWeaponKnockbackStrength(extra);
     }
 
     @Override

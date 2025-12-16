@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.weapons;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.PercentAttributeUpgrade;
 
 public class WeaponCritMultiplierPercentUpgrade extends PercentAttributeUpgrade {
@@ -10,9 +10,9 @@ public class WeaponCritMultiplierPercentUpgrade extends PercentAttributeUpgrade 
     }
 
     @Override
-    public void apply(Player player) {
-        double extra = player.getWeapon().getCritMultiplier() * percent;
-        player.getWeapon().addCritMultiplier(extra);
+    public void apply(Entity entity) {
+        double extra = entity.getWeaponCritMultiplier() * percent;
+        entity.addWeaponCritMultiplier(extra);
     }
 
     @Override

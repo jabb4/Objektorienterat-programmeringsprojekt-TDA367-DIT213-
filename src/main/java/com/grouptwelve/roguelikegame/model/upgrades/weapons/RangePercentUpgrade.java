@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.weapons;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.PercentAttributeUpgrade;
 
 public class RangePercentUpgrade extends PercentAttributeUpgrade {
@@ -10,9 +10,9 @@ public class RangePercentUpgrade extends PercentAttributeUpgrade {
     }
 
     @Override
-    public void apply(Player player) {
-        double extra = player.getWeapon().getRange() * percent;
-        player.getWeapon().addRange(extra);
+    public void apply(Entity entity) {
+        double extra = entity.getWeaponRange() * percent;
+        entity.addWeaponRange(extra);
     }
 
     @Override
