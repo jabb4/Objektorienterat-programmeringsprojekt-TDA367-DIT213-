@@ -69,6 +69,7 @@ public abstract class Weapon implements WeaponInterface {
         cooldownRemaining = attackCooldown;
     }
 
+    @Override
     public void reset() {
         this.cooldownRemaining = 0;
         this.critChance = DEFAULT_CRIT_CHANCE;
