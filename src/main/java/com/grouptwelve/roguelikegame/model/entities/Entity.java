@@ -90,13 +90,6 @@ public abstract class Entity {
     }
 
     /**
-     * Clears all active effects from the entity
-     */
-    public void clearEffects() {
-        activeEffects.clear();
-    }
-
-    /**
      * moves entitiy based on direction and speed
      * @param deltaTime -multiply change by delta time so frame rate not affect speed
      */
@@ -230,7 +223,7 @@ public abstract class Entity {
     }
 
     /**
-     * Resets the different states
+     * Sets some default values for the entity which should represent a revived state
      * This should not be used as a reset because it will keep certain stats that have been upgraded during the game
      */
     public void revive()
@@ -244,7 +237,7 @@ public abstract class Entity {
         this.velocity.reset();
 
         // Clear effects
-        this.clearEffects();
+        this.activeEffects.clear();
 
         // Reset weapon
         weapon.reset();
