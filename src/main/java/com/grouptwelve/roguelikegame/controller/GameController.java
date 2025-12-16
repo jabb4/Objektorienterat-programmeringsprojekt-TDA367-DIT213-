@@ -100,7 +100,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       handleCommandBuff(command, isPressed);
       return;
     }
-    if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus() == true) {
+    if (command == Command.PAUSE && isPressed && game.isPlayerAlive()) {
       togglePause();
     }
     if (paused) {
@@ -117,8 +117,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     else if (command == Command.ATTACK && isPressed) {
       notifyAttack();
     }
-
-    // TODO: Handle other commands when implemented
   }
 
   /**
@@ -140,26 +138,25 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       if(this.selectedBuff == 0) this.selectedBuff = 1;
       else this.selectedBuff = 2;
         gameView.updateSelectedLabel(selectedBuff);
-
-
     }
     else if ((command == Command.SELECT || command == Command.ATTACK) && isPressed)
     {
       for (GameEventListener listener : eventListeners) {
         listener.onApplyBuff(selectedBuff);
-
       }
-      // Update health bar when applying health upgrade
-      gameView.updateHealthBar(game.getPlayer().getHp(), game.getPlayer().getMaxHP());
-      
-      game.getPlayer().setMovementDirection(0,0); // Player doesnt automatically move on its own after upgrade
+      // TODO: Entity should publish a stat change event and the View should subscribe to update
+      gameView.updateHealthBar(game.getPlayerHp(), game.getPlayerMaxHp()); // Unnecessary when not choosing health upgrade
+
+      // Moving while pausing will continue the movement when you let go during pause
+        // TODO: Generalize this to when game is pausing
+      game.resetPlayerMovement();
       this.paused = false;
       chooseBuff = false;
       gameView.clearBuffVisuals();
       gameView.showLevelMenu(false);
     }
-
   }
+
   // ==================== Event Creation ====================
 
   /**
@@ -179,8 +176,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
     return new MovementEvent(dx, dy);
   }
-
-  // TODO: Add more event creation methods as features are implemented
 
   // ==================== Event Notification ====================
 
@@ -203,7 +198,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       listener.onAttack();
     }
   }
-
 
   // ==================== Game Loop ====================
 
@@ -289,6 +283,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   }
 
 // ==================== FXML ====================
+
   public void togglePause() {
       this.paused = !paused;
 
@@ -312,7 +307,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
       Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
 
-      
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));
       Parent root = loader.load();
       GameView gameView = loader.getController();
@@ -324,11 +318,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
       XpPublisher xpPublisher = (XpPublisher) eventPublisher;
 
-
       Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher, xpPublisher);
-
-
-
 
       Scene scene = new Scene(root, 1280, 720);
       inputHandler.setupInputHandling(scene);
@@ -336,7 +326,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       // Create controller (subscribes to event manager)
       GameController gameController = new GameController(game, gameView, inputHandler);
       inputHandler.setListener(gameController);
-
 
       gameController.addEventListener(game);
 
@@ -353,12 +342,9 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       gameView.setGameController(gameController);
       gameController.start();
 
-
-      
       stage.setTitle("Roguelike Game");
       stage.setScene(scene);
       stage.show();
-
   }
 
   public void quit() throws IOException {

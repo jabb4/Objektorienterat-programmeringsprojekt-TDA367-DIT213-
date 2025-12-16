@@ -72,7 +72,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
      * @param xpPublisher - uses itself
      */
     public Game(EntityPublisher entityPublisher, ChooseBuffPublisher chooseBuffPublisher, LevelUpPublisher levelUpPublisher, XpPublisher xpPublisher) {
-        //this.PlayerPublisher = playerPublisher;
         this.entityPublisher = entityPublisher;
         this.chooseBuffPublisher = chooseBuffPublisher;
         this.levelUpPublisher = levelUpPublisher;
@@ -125,6 +124,7 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         }
         chooseBuffPublisher.onChooseBuff(upgrades);
     }
+
     // ==================== GameEventListener Implementation ====================
 
     @Override
@@ -138,7 +138,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     @Override
     public void onMovement(MovementEvent event) {
         player.setMovementDirection(event.getDx(), event.getDy());
-
     }
 
     @Override
@@ -155,7 +154,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         player.update(deltaTime);
         updateEnemies(deltaTime);
 
-        // Apply world constraints (bounds, etc.)
         constraintSystem.apply(player);
         constraintSystem.applyAll(enemiesAlive);
 
@@ -172,12 +170,9 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
 
         // Update only living enemies
         for (Enemy enemy : enemiesAlive) {
-
             enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
             enemy.update(deltaTime);
-
         }
-
     }
 
     /**
@@ -222,20 +217,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         }
     }
 
-    // ==================== Getters ====================
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public List<Enemy> getEnemies() {
-        return enemiesAlive;
-    }
-
-    public double getGameTime() {
-        return gameTime;
-    }
-
     /**
      * used when player died and want to play again
      * resets game state
@@ -246,5 +227,35 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
 
         player.revive();
         enemiesAlive.clear();
+    }
+
+    public void resetPlayerMovement() {
+        player.setMovementDirection(0, 0);
+    }
+
+    // ==================== Getters ====================
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public boolean isPlayerAlive() {
+        return player.getAliveStatus();
+    }
+
+    public double getPlayerHp() {
+        return player.getHp();
+    }
+
+    public double getPlayerMaxHp() {
+        return player.getMaxHP();
+    }
+
+    public List<Enemy> getEnemies() {
+        return enemiesAlive;
+    }
+
+    public double getGameTime() {
+        return gameTime;
     }
 }
