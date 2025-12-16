@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class Entity {
+public abstract class Entity implements Obstacle{
     protected String name;
     protected double x, y;
     protected double hp;
@@ -21,6 +21,7 @@ public abstract class Entity {
     protected boolean isAlive;
     protected int size;
     protected Velocity velocity;
+    protected ObstacleType obstacleType;
 
     // Facing direction (used for attack direction)
     protected double dirX;
@@ -130,10 +131,10 @@ public abstract class Entity {
 
         if(entityPublisher != null)
         {
-            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult));
+            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult, hp, maxHP));
             if (this.hp <= 0) {
                 this.isAlive = false;
-                entityPublisher.onEntityDeath(new EntityDeathEvent(this));
+                entityPublisher.onEntityDeath(new EntityDeathEvent(this, x, y));
             }
         }
 
@@ -221,6 +222,8 @@ public abstract class Entity {
     {
         return this.isAlive;
     }
+
+    public ObstacleType getObstacleType(){return this.obstacleType;}
 
     /**
      * Sets some default values for the entity which should represent a revived state

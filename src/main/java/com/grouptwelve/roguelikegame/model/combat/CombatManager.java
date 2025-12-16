@@ -37,14 +37,7 @@ public class CombatManager implements AttackListener {
 
     /**
      * Performs an attack from a position, hitting either enemies or the player.
-     *
-     * @param isFriendly true if the attacker is friendly (player), false for enemies
-     * @param x x-coordinate of the attack
-     * @param y y-coordinate of the attack
-     * @param range range of the attack
-     * @param combatResult the damage calculation result (includes crit info)
-     * @param effects list of effects to apply on hit
-     * @param knockbackStrength the attacker's knockback strength
+     * @param attackEvent contains attack information
      */
     @Override
     public void onAttack(AttackEvent attackEvent) {

@@ -4,6 +4,8 @@ import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
+import com.grouptwelve.roguelikegame.model.entities.Obstacle;
+import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
@@ -155,7 +157,8 @@ public class GameView implements AttackListener, EntityDeathListener,
     public void onAttack(AttackEvent attackEvent) {
 
         Circle attackCircle = new Circle(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange());
-        if(attackEvent.getAttacker() instanceof Player) attackCircle.setFill(Color.BLUE);
+        Obstacle attacker = attackEvent.getAttacker();
+        if(attacker.getObstacleType() == ObstacleType.PLAYER) attackCircle.setFill(Color.BLUE);
         else  attackCircle.setFill(Color.VIOLET);
 
         attackCircle.setManaged(false);
@@ -299,10 +302,10 @@ public class GameView implements AttackListener, EntityDeathListener,
     @Override
     public void onEntityDeath(EntityDeathEvent event)
     {
-        Entity entity = event.getEntity();
-        if(entity instanceof Player)
+        Obstacle obstacle = event.getObstacle();
+        if(obstacle.getObstacleType() == ObstacleType.PLAYER)
         {
-            playerDied(entity.getX(), entity.getY());
+            playerDied(event.getX(), event.getY());
         }
         else
         {
@@ -312,17 +315,17 @@ public class GameView implements AttackListener, EntityDeathListener,
         }
     }
     @Override
-    public void onEntityHit(EntityHitEvent entityHitEvent)
+        public void onEntityHit(EntityHitEvent entityHitEvent)
     {
-        Entity entity = entityHitEvent.getEntity();
+        Obstacle obstacle = entityHitEvent.getObstacle();
         CombatResult combatResult = entityHitEvent.getCombatResult();
-        if(entity instanceof Player)
+        if(obstacle.getObstacleType() == ObstacleType.PLAYER)
         {
-            updateHealthBar(entity.getHp(), entity.getMaxHP());
+            updateHealthBar(entityHitEvent.getHp(), entityHitEvent.getMaxHp());
         }
         else {
-            showDamageNumber(entity.getX(), entity.getY(), combatResult.getDamage(), combatResult.isCritical());
-            spawnHitParticles(entity.getX(), entity.getY());
+            showDamageNumber(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
+            spawnHitParticles(obstacle.getX(), obstacle.getY());
         }
 
     }

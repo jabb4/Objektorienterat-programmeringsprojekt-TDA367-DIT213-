@@ -25,6 +25,7 @@ public class Player extends Entity {
         this.velocity.setMaxSpeed(PLAYER_MAX_SPEED);
         this.weapon = new Sword();
         this.wantMove = false;
+        this.obstacleType = ObstacleType.PLAYER;
     }
 
     public void gainXP(int amount) {

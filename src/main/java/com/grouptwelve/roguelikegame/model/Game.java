@@ -104,10 +104,10 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     @Override
     public void onEntityDeath(EntityDeathEvent event)
     {
-        Entity entity = event.getEntity();
-        if(entity instanceof Enemy)
+
+        if(event.getObstacle()instanceof Enemy)
         {
-            Enemy enemy = (Enemy) entity;
+            Enemy enemy = (Enemy) event.getObstacle();
             player.gainXP(enemy.getXpValue());
             EnemyPool.getInstance().returnEnemy(enemy);
             enemiesAlive.remove(enemy);
