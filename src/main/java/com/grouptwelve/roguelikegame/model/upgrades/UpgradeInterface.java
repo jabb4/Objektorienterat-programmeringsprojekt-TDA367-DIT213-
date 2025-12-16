@@ -1,8 +1,8 @@
 package com.grouptwelve.roguelikegame.model.upgrades;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 
 public interface UpgradeInterface {
-    void apply(Player player);
+    void apply(Entity entity);
     String getName();
 }

@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.weapons;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.FlatAttributeUpgrade;
 
 public class WeaponDamageFlatUpgradeFlat extends FlatAttributeUpgrade {
@@ -10,8 +10,8 @@ public class WeaponDamageFlatUpgradeFlat extends FlatAttributeUpgrade {
     }
 
     @Override
-    public void apply(Player player) {
-        player.getWeapon().addDamage(amount);
+    public void apply(Entity entity) {
+        entity.addWeaponDamage(amount);
     }
 
     @Override
