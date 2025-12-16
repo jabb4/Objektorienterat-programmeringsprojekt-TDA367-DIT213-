@@ -25,9 +25,9 @@ public abstract class Entity {
     // Facing direction (used for attack direction)
     protected double dirX;
     protected double dirY;
-    //protected double attackStart = ;
 
     protected Weapon weapon;
+    private static final double ATTACK_START = 20;
 
     // Attack listener - notified when this entity attacks (Observer pattern)
     protected EntityPublisher entityPublisher;
@@ -106,7 +106,7 @@ public abstract class Entity {
      * @return x-coordinate
      */
     public double getAttackPointX() {
-        return this.x + this.dirX * (weapon.getRange());
+        return this.x + this.dirX * (ATTACK_START);
     }
     /**
      * returns the position where entity attacks
