@@ -7,6 +7,12 @@
     font-family: "Press Start 2P", sans-serif;
     -fx-font-size: 14px; /* optional global size */
     font-size: 14px;      /* optional standard CSS property */
+    -fx-text-fill: white;
+}
+
+.menu-button {
+    -fx-padding: 10 15 10 15;
+    -fx-text-fill: black;
 }
 
 /* Optional reusable class */
@@ -18,26 +24,6 @@
     -fx-text-alignment: center;
 }
 
-.test-button {
-    -fx-background-color: transparent; /* makes background transparent */
-    background-color: transparent;
-    -fx-border-color: white;  
-    border-color: white;          /* optional: border to see the button */
-    -fx-border-width: 1px;
-    border-width: 1px;
-    -fx-text-fill: white;              /* text color */
-}
-.test-button:hover {
-    -fx-background-color: rgba(255,255,255,0.1); /* optional hover effect */
-    background-color: rgba(255,255,255,0.1);
-}
-.test-button:focused {
-    -fx-border-color: yellow;       /* highlight the border when focused */
-    -fx-border-width: 2px;
-    -fx-background-color: rgba(255, 255, 0, 0.2);  /* subtle highlight */
-}
-
-
 .button-upgrade {
     -fx-background-color: rgba(255,255,255,0.15);
     -fx-border-width: 2px;
@@ -46,9 +32,5 @@
     -fx-text-fill: white;
     -fx-font-size: 12px;
     -fx-padding: 15;
-}
-
-.button-upgrade:hover {
-    -fx-background-color: rgba(255,255,255,0.5); /* remove transparency */
 }
 

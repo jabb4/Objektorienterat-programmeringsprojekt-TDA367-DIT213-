@@ -100,7 +100,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       handleCommandBuff(command, isPressed);
       return;
     }
-    if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus() == true) {
+    if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus()) {
       togglePause();
     }
     if (paused) {

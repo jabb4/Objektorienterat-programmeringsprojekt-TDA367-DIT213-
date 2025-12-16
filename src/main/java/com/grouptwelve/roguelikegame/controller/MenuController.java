@@ -15,12 +15,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MenuController implements InputEventListener {
     @FXML private Label actionLabel;
-    @FXML private VBox root;
+    @FXML private AnchorPane root;
     
     private MenuNavigator menuNavigator;
 
@@ -115,22 +117,6 @@ public class MenuController implements InputEventListener {
         
         stage.setTitle("Inheritance of Violance");
         stage.setScene(gameScene);
-        stage.show();
-    }
-
-    @FXML
-    protected void onOptionsPressed() throws IOException {
-        actionLabel.setText("Opening options...");
-
-        Stage stage = (Stage) root.getScene().getWindow();
-
-        FXMLLoader optionLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/option-view.fxml"));
-        Scene optionScene = new Scene(optionLoader.load(), 1280, 720);
-
-        optionScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
-
-        
-        stage.setScene(optionScene);
         stage.show();
     }
 

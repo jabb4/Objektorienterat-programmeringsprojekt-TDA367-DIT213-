@@ -3,24 +3,38 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.Button?>
 
-<VBox fx:id='root' alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.grouptwelve.roguelikegame.controller.MenuController"
-      stylesheets="@../global.css">
+<AnchorPane fx:id="root" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.grouptwelve.roguelikegame.controller.MenuController"
+            style="-fx-background-color: #2a2a2a;"
+            stylesheets="@global.css">
 
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+    <!-- Main menu content (centered) -->
+    <VBox alignment="CENTER" spacing="20.0"
+          AnchorPane.topAnchor="0"
+          AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0">
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        </padding>
 
-    <!-- Titel Label -->
-   <Label text="Inheritance of Violence" style="-fx-font-size: 25px; -fx-font-family: 'Press Start 2P';"/>
+        <!-- Titel Label -->
+        <Label text="Inheritance of Violence" style="-fx-font-size: 25px; -fx-padding:  0 0 20 0;"/>
 
-    <!-- Status/Feedback Label -->
-    <Label fx:id="actionLabel"/>
+        <!-- Buttons -->
+        <Button fx:id="startButton" styleClass="menu-button" text="Start Game" onAction="#onStartGamePressed"/>
+        <Button fx:id="exitButton" styleClass="menu-button" text="Exit" onAction="#onExitPressed"/>
+    </VBox>
 
-    <!-- Buttons -->
-    <Button fx:id="startButton" text="Start Game" onAction="#onStartGamePressed"/>
-    <Button fx:id="optionsButton" text="Options" onAction="#onOptionsPressed"/>
-    <Button fx:id="exitButton" text="Exit" onAction="#onExitPressed"/>
-</VBox>
+    <!-- Controls info (lower left corner) -->
+    <VBox AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" spacing="5">
+        <Label text="Controls" style="-fx-font-weight: bold;"/>
+        <Label text="Move with WASD"/>
+        <Label text="Attack with Space"/>
+        <Label text="Select buff with W/S and hit Enter"/>
+    </VBox>
+
+</AnchorPane>
