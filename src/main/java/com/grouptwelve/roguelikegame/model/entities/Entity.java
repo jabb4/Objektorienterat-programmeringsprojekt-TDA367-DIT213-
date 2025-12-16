@@ -240,7 +240,9 @@ public abstract class Entity {
         this.activeEffects.clear();
 
         // Reset weapon
-        weapon.reset();
+        if (weapon != null) {
+            weapon.reset();
+        }
     }
 
     //fix later
