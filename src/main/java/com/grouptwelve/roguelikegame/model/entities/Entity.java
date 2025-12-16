@@ -27,7 +27,7 @@ public abstract class Entity {
     protected double dirY;
 
     protected Weapon weapon;
-    private static final double ATTACK_START = 20;
+    private static final double ATTACK_OFFSET = 20;
 
     protected EntityPublisher entityPublisher;
 
@@ -105,7 +105,7 @@ public abstract class Entity {
      * @return x-coordinate
      */
     public double getAttackPointX() {
-        return this.x + this.dirX * (ATTACK_START);
+        return this.x + this.dirX * (ATTACK_OFFSET);
     }
     /**
      * returns the position where entity attacks
