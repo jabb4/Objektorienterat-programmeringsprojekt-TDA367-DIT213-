@@ -398,13 +398,11 @@ public class GameView implements AttackListener, EntityDeathListener,
      */
     public void showDamageNumber(double x, double y, double damage, boolean isCritical) {
         Label dmgLabel = new Label(String.format("%.0f", damage) + (isCritical ? "!" : ""));
-        
+
         if (isCritical) {
-            dmgLabel.setTextFill(Color.GOLD);
-            dmgLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+            dmgLabel.setStyle("-fx-text-fill: gold; -fx-font-size:  20px; -fx-font-family: 'Press Start 2P';");
         } else {
-            dmgLabel.setTextFill(Color.WHITE);
-            dmgLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+            dmgLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Press Start 2P';");
         }
         
         dmgLabel.setLayoutX(x - 10);
