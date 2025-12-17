@@ -5,6 +5,7 @@ import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.HealthChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
@@ -141,10 +142,10 @@ public abstract class Entity implements Obstacle{
      */
     public void takeDamage(CombatResult combatResult) {
         double dmg = combatResult.getDamage();
-        this.hp -= dmg;
+        setHp(this.hp - dmg);
 
         if(entityPublisher != null) {
-            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult, hp, maxHP));
+            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult));
             if (this.hp <= 0) {
                 this.isAlive = false;
                 entityPublisher.onEntityDeath(new EntityDeathEvent(this, x, y));
@@ -294,6 +295,9 @@ public abstract class Entity implements Obstacle{
 
     public void setMaxHP(double maxHP) {
         this.maxHP = maxHP;
+        if (entityPublisher != null) {
+            entityPublisher.onHealthChange(new HealthChangeEvent(this, this.hp, this.maxHP));
+        }
     }
 
     public void setName(String name) {
@@ -310,6 +314,9 @@ public abstract class Entity implements Obstacle{
 
     public void setHp(double hp) {
         this.hp = hp;
+        if (entityPublisher != null) {
+            entityPublisher.onHealthChange(new HealthChangeEvent(this, this.hp, this.maxHP));
+        }
     }
 
     public void setSize(int size) {

@@ -3,7 +3,6 @@ package com.grouptwelve.roguelikegame.view;
 import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
-import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.entities.Player;
@@ -11,6 +10,7 @@ import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.HealthChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 public class GameView implements AttackListener, EntityDeathListener,
-        ChooseBuffListener, EntityHitListener, XpListener {
+        ChooseBuffListener, EntityHitListener, XpListener, HealthChangeListener {
 
     @FXML private StackPane root;
     @FXML private Canvas gameCanvas;
@@ -149,10 +149,9 @@ public class GameView implements AttackListener, EntityDeathListener,
                         enemy.getY() - enemy.getSize() - barOffset,
                         barWidth * hpPercentage, barHeight);
             }
-
-
         }
     }
+
     @Override
     public void onAttack(AttackEvent attackEvent) {
 
@@ -256,10 +255,6 @@ public class GameView implements AttackListener, EntityDeathListener,
         healthBuffBox.setText(buffs[2].getName());
         // Show level up menu
         showLevelMenu(true);
-
-        // Reset selected index
-
-
     }
 
     // ==================== FXML Layers state (pause, death, levelUp) ====================
@@ -290,7 +285,6 @@ public class GameView implements AttackListener, EntityDeathListener,
         blur.setRadius(show ? 10 : 0);
     }
 
-
     // ==================== GameListeners ====================
 
     @Override
@@ -299,6 +293,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     }
 
     // ==================== Effects ====================
+
     @Override
     public void onEntityDeath(EntityDeathEvent event)
     {
@@ -315,20 +310,24 @@ public class GameView implements AttackListener, EntityDeathListener,
         }
     }
     @Override
-        public void onEntityHit(EntityHitEvent entityHitEvent)
+    public void onEntityHit(EntityHitEvent entityHitEvent)
     {
         Obstacle obstacle = entityHitEvent.getObstacle();
         CombatResult combatResult = entityHitEvent.getCombatResult();
-        if(obstacle.getObstacleType() == ObstacleType.PLAYER)
+        if(obstacle.getObstacleType() != ObstacleType.PLAYER)
         {
-            updateHealthBar(entityHitEvent.getHp(), entityHitEvent.getMaxHp());
-        }
-        else {
             showDamageNumber(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
             spawnHitParticles(obstacle.getX(), obstacle.getY());
         }
-
     }
+
+    @Override
+    public void onHealthChange(HealthChangeEvent event) {
+        if (event.getEntity() instanceof Player) {
+            updateHealthBar(event.getHp(), event.getMaxHp());
+        }
+    }
+    
     /**
      * Plays the player death effect with ripple/shockwave, screen shake, red flash and toggles death menu.
      * 

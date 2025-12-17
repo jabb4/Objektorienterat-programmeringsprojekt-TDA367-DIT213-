@@ -107,6 +107,7 @@ public class MenuController implements InputEventListener {
         entityPublisher.subscribeEntityHit(gameView);
         entityPublisher.subscribeAttack(gameView);
         entityPublisher.subscribeEntityDeath(gameView);
+        entityPublisher.subscribeHealthChange(gameView);
         chooseBuffPublisher.subscribeBuff(gameView);
         xpPublisher.subscribeXp(gameView);
 
