@@ -2,8 +2,10 @@ package com.grouptwelve.roguelikegame.model.entities;
 
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
+import com.grouptwelve.roguelikegame.model.effects.EffectInterface;
 import com.grouptwelve.roguelikegame.model.effects.active.ActiveEffect;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.HealthChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class Entity {
+public abstract class Entity implements Obstacle{
     protected String name;
     protected double x, y;
     protected double hp;
@@ -21,22 +23,19 @@ public abstract class Entity {
     protected boolean isAlive;
     protected int size;
     protected Velocity velocity;
+    protected ObstacleType obstacleType;
 
-    // Facing direction (used for attack direction)
     protected double dirX;
     protected double dirY;
-    //protected double attackStart = ;
 
     protected Weapon weapon;
+    private static final double ATTACK_OFFSET = 20;
 
-    // Attack listener - notified when this entity attacks (Observer pattern)
     protected EntityPublisher entityPublisher;
 
-    // Hit effect state
     protected boolean isHit = false;
     protected double hitTimer = 0.0;
     private final List<ActiveEffect> activeEffects = new ArrayList<>();
-
 
     public Entity(String name, double x, double y, double hp, int size, double maxHP){
         this.name = name;
@@ -56,20 +55,16 @@ public abstract class Entity {
      * @param deltaTime Time since last update
      */
     protected void update(double deltaTime) {
-        // Update velocity
         velocity.update(deltaTime);
-        
-        // Update weapon cooldown
+
         if (weapon != null) {
             weapon.update(deltaTime);
         }
 
-        // Update hit effect timer
         if (isHit && (hitTimer -= deltaTime) <= 0) {
             isHit = false;
         }
 
-        // === Update all active effects ===
         Iterator<ActiveEffect> it = activeEffects.iterator();
         while (it.hasNext()) {
             ActiveEffect effect = it.next();
@@ -78,6 +73,29 @@ public abstract class Entity {
             if (effect.isFinished()) {
                 it.remove();
             }
+        }
+    }
+
+    /**
+     * Sets some default values for the entity which should represent a revived state
+     * This should not be used as a reset because it will keep certain stats that have been upgraded during the game
+     */
+    public void revive()
+    {
+        this.isHit = false;
+        this.hitTimer = 0.0;
+        this.hp = maxHP;
+        this.isAlive = true;
+
+        //Reset Velocity
+        this.velocity.reset();
+
+        // Clear effects
+        this.activeEffects.clear();
+
+        // Reset weapon
+        if (weapon != null) {
+            weapon.reset();
         }
     }
 
@@ -106,7 +124,7 @@ public abstract class Entity {
      * @return x-coordinate
      */
     public double getAttackPointX() {
-        return this.x + this.dirX * (weapon.getRange());
+        return this.x + this.dirX * (ATTACK_OFFSET);
     }
     /**
      * returns the position where entity attacks
@@ -122,21 +140,17 @@ public abstract class Entity {
      * publishes onEntityHit and onEntityDeath events
      * @param combatResult damage ifo
      */
-    public void takeDamage(CombatResult combatResult)
-    {
+    public void takeDamage(CombatResult combatResult) {
         double dmg = combatResult.getDamage();
-        this.hp -= dmg;
+        setHp(this.hp - dmg);
 
-
-        if(entityPublisher != null)
-        {
+        if(entityPublisher != null) {
             entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult));
             if (this.hp <= 0) {
                 this.isAlive = false;
-                entityPublisher.onEntityDeath(new EntityDeathEvent(this));
+                entityPublisher.onEntityDeath(new EntityDeathEvent(this, x, y));
             }
         }
-
     }
 
     /**
@@ -152,15 +166,11 @@ public abstract class Entity {
         // Reset weapon cooldown
         this.weapon.refreshCooldown();
 
-
         CombatResult result = weapon.calculateDamage();
         entityPublisher.onAttack(new AttackEvent(this, getAttackPointX(), getAttackPointY(), weapon.getRange(), result, weapon.getEffects(),  weapon.getKnockbackStrength()));
 
         return true;
     }
-
-
-
 
     /**
      * Applies a knockback force to this entity.
@@ -217,41 +227,64 @@ public abstract class Entity {
         return this.size;
     }
 
-    public boolean getAliveStatus()
-    {
+    public boolean getAliveStatus() {
         return this.isAlive;
     }
 
-    /**
-     * Sets some default values for the entity which should represent a revived state
-     * This should not be used as a reset because it will keep certain stats that have been upgraded during the game
-     */
-    public void revive()
-    {
-        this.isHit = false;
-        this.hitTimer = 0.0;
-        this.hp = maxHP;
-        this.isAlive = true;
-
-        //Reset Velocity
-        this.velocity.reset();
-
-        // Clear effects
-        this.activeEffects.clear();
-
-        // Reset weapon
-        if (weapon != null) {
-            weapon.reset();
-        }
-    }
-
-    //fix later
-    public Weapon getWeapon() {
-        return this.weapon;
+    public ObstacleType getObstacleType() {
+        return this.obstacleType;
     }
 
     public boolean isHit() {
         return this.isHit;
+    }
+
+    public double getWeaponRange() {
+        return weapon.getRange();
+    }
+
+    public void addWeaponRange(double amount) {
+        weapon.addRange(amount);
+    }
+
+    public double getWeaponDamage() {
+        return weapon.getDamage();
+    }
+
+    public void addWeaponDamage(double amount) {
+        weapon.addDamage(amount);
+    }
+
+    public double getWeaponCritChance() {
+        return weapon.getCritChance();
+    }
+
+    public void addWeaponCritChance(double amount) {
+        weapon.addCritChance(amount);
+    }
+
+    public double getWeaponCritMultiplier() {
+        return weapon.getCritMultiplier();
+    }
+
+    public void addWeaponCritMultiplier(double amount) {
+        weapon.addCritMultiplier(amount);
+    }
+
+    public double getWeaponKnockbackStrength() {
+        return weapon.getKnockbackStrength();
+    }
+
+    public void addWeaponKnockbackStrength(double amount) {
+        weapon.addKnockbackStrength(amount);
+    }
+
+    public List<EffectInterface> getWeaponEffects() {
+        return weapon.getEffects();
+    }
+
+    public void addWeaponEffect(EffectInterface effect) {
+        weapon.addEffect(effect);
     }
 
     // ==================== Setters ====================
@@ -262,6 +295,9 @@ public abstract class Entity {
 
     public void setMaxHP(double maxHP) {
         this.maxHP = maxHP;
+        if (entityPublisher != null) {
+            entityPublisher.onHealthChange(new HealthChangeEvent(this, this.hp, this.maxHP));
+        }
     }
 
     public void setName(String name) {
@@ -278,6 +314,9 @@ public abstract class Entity {
 
     public void setHp(double hp) {
         this.hp = hp;
+        if (entityPublisher != null) {
+            entityPublisher.onHealthChange(new HealthChangeEvent(this, this.hp, this.maxHP));
+        }
     }
 
     public void setSize(int size) {

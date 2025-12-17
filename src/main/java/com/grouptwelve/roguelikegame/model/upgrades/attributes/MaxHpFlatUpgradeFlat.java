@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.attributes;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.FlatAttributeUpgrade;
 
 public class MaxHpFlatUpgradeFlat extends FlatAttributeUpgrade {
@@ -10,9 +10,9 @@ public class MaxHpFlatUpgradeFlat extends FlatAttributeUpgrade {
     }
 
     @Override
-    public void apply(Player player) {
-        player.setMaxHP(player.getMaxHP() + amount);
-        player.setHp(player.getHp() + amount); // also heal the flat amount
+    public void apply(Entity entity) {
+        entity.setMaxHP(entity.getMaxHP() + amount);
+        entity.setHp(entity.getHp() + amount); // also heal the flat amount
     }
 
     @Override

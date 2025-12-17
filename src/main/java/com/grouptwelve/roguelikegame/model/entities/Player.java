@@ -10,7 +10,6 @@ public class Player extends Entity {
     private static final int PLAYER_MAX_HP = 100;
     private static final int PLAYER_MAX_SPEED = 150;
 
-    //need to be stored for reviving
     private final double startX;
     private final double startY;
 
@@ -25,33 +24,13 @@ public class Player extends Entity {
         this.velocity.setMaxSpeed(PLAYER_MAX_SPEED);
         this.weapon = new Sword();
         this.wantMove = false;
-    }
-
-    public void gainXP(int amount) {
-        boolean leveledUp = levelSystem.addXP(amount);
-        if (leveledUp) {
-            levelUpPublisher.onLevelUp();
-        }
-    }
-
-    public LevelSystem getLevelSystem() {
-        return levelSystem;
-    }
-
-    /**
-     * tells game when leveling up
-     */
-    public void setLevelUpPublisher(LevelUpPublisher publisher) {
-        this.levelUpPublisher = publisher;
+        this.obstacleType = ObstacleType.PLAYER;
     }
 
     @Override
-    public void update(double deltaTime)
-    {
-        super.update(deltaTime); // Handle knockback
-
-        if (wantMove)
-        {
+    public void update(double deltaTime) {
+        super.update(deltaTime);
+        if (wantMove) {
             move((deltaTime));
         }
     }
@@ -66,14 +45,13 @@ public class Player extends Entity {
         if (dx != 0 || dy != 0) {
             this.dirX = dx;
             this.dirY = dy;
+            wantMove = true;
 
             // Normalize the vector (for diagonal movement)
             double length = Math.sqrt(dx * dx + dy * dy);
             double normDx = dx / length;
             double normDy = dy / length;
 
-            // Scale by maxSpeed to get velocity
-            wantMove = true;
             velocity.set(normDx * velocity.getMaxSpeed(), normDy * velocity.getMaxSpeed());
         } else {
             // Stop moving
@@ -81,12 +59,42 @@ public class Player extends Entity {
             velocity.stop();
         }
     }
+
     @Override
-    public void revive()
-    {
+    public void revive() {
         super.revive();
         this.x = startX;
         this.y = startY;
+    }
+
+    // ==================== Progression ====================
+
+    /**
+     * tells game when leveling up
+     */
+    public void setLevelUpPublisher(LevelUpPublisher publisher) {
+        this.levelUpPublisher = publisher;
+    }
+
+    public void gainXP(int amount) {
+        boolean leveledUp = levelSystem.addXP(amount);
+        if (leveledUp) {
+            levelUpPublisher.onLevelUp();
+        }
+    }
+
+    // ==================== Getters ====================
+
+    public int getXP() {
+        return levelSystem.getXP();
+    }
+
+    public int getXPToNext() {
+        return levelSystem.getXPToNext();
+    }
+
+    public int getLevel() {
+        return levelSystem.getLevel();
     }
 
     @Override

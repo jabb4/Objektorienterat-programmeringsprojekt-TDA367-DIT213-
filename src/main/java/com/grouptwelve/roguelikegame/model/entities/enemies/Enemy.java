@@ -2,6 +2,7 @@ package com.grouptwelve.roguelikegame.model.entities.enemies;
 
 import com.grouptwelve.roguelikegame.model.Velocity;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
+import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 import com.grouptwelve.roguelikegame.model.weapons.Weapon;
 
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Base class for all enemy entities.
  */
-public class Enemy extends Entity implements Obstacle {
+public class Enemy extends Entity {
 
     /**
      * Represents the current attack state of the enemy.
@@ -59,6 +60,7 @@ public class Enemy extends Entity implements Obstacle {
         this.windUpTime = enemy.windUpTime;
         this.xpValue = enemy.xpValue;
         this.weapon = enemy.weapon.copy();
+        this.obstacleType = ObstacleType.ENEMY;
     }
 
     /**

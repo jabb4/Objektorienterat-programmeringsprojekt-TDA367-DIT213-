@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.weapons;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.PercentAttributeUpgrade;
 
 public class WeaponCritChancePercentUpgrade extends PercentAttributeUpgrade {
@@ -10,9 +10,9 @@ public class WeaponCritChancePercentUpgrade extends PercentAttributeUpgrade {
     }
 
     @Override
-    public void apply(Player player) {
-        double extra = player.getWeapon().getCritChance() * percent;
-        player.getWeapon().addCritChance(extra);
+    public void apply(Entity entity) {
+        double extra = entity.getWeaponCritChance() * percent;
+        entity.addWeaponCritChance(extra);
     }
 
     @Override

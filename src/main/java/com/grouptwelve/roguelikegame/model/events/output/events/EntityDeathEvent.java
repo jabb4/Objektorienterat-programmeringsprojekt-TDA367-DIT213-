@@ -1,23 +1,33 @@
 package com.grouptwelve.roguelikegame.model.events.output.events;
 
-import com.grouptwelve.roguelikegame.model.entities.Entity;
+import com.grouptwelve.roguelikegame.model.entities.Obstacle;
+import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 
 /**
  * Event data for entity death.
  */
 public class EntityDeathEvent {
-    private final Entity entity;
+    private final Obstacle obstacle;
+    private final double x;
+    private final double y;
 
     /**
      * Creates a new entity death event.
      *
-     * @param entity the entity that died
+     * @param obstacle the obstacle that died
      */
-    public EntityDeathEvent(Entity entity) {
-        this.entity = entity;
+    public EntityDeathEvent(Obstacle obstacle, double x, double y) {
+        this.obstacle = obstacle;
+        this.x = x;
+        this.y = y;
+
     }
 
-    public Entity getEntity() {
-        return entity;
+    public Obstacle getObstacle() {
+        return obstacle;
     }
+
+    public double getX(){return x;}
+
+    public  double getY(){return y;}
 }

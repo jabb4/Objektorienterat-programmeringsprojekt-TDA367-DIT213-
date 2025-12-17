@@ -1,6 +1,6 @@
 package com.grouptwelve.roguelikegame.model.upgrades.effects;
 
-import com.grouptwelve.roguelikegame.model.entities.Player;
+import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
 public class KnockbackUpgrade implements UpgradeInterface {
@@ -12,8 +12,8 @@ public class KnockbackUpgrade implements UpgradeInterface {
     }
 
     @Override
-    public void apply(Player player) {
-        player.getWeapon().addKnockback(extraStrength);
+    public void apply(Entity entity) {
+        entity.addWeaponKnockbackStrength(extraStrength);
     }
 
     @Override

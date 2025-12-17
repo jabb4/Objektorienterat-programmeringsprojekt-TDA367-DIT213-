@@ -22,7 +22,6 @@ public abstract class Weapon implements WeaponInterface {
     protected double critMultiplier = DEFAULT_CRIT_MULTIPLIER;
     protected double knockbackStrength;
 
-
     protected List<EffectInterface> effects = new ArrayList<>();
 
     /**
@@ -153,7 +152,7 @@ public abstract class Weapon implements WeaponInterface {
         return knockbackStrength;
     }
 
-    public void addKnockback(double amount) {
+    public void addKnockbackStrength(double amount) {
         this.knockbackStrength += amount;
     }
 
