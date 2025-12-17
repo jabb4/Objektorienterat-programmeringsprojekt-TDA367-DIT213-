@@ -31,13 +31,13 @@ public class HitSystem {
      *
      * @param target The entity to apply effects to
      * @param effects List of effects to apply
-     * @param attackX X coordinate of the attack (for knockback direction)
-     * @param attackY Y coordinate of the attack (for knockback direction)
+     * @param attackerX X coordinate of the attacker (for knockback direction)
+     * @param attackerY Y coordinate of the attacker (for knockback direction)
      * @param knockbackStrength The attacker's knockback strength
      */
-    public static void applyEffects(Entity target, List<EffectInterface> effects, double attackX, double attackY, double knockbackStrength) {
+    public static void applyEffects(Entity target, List<EffectInterface> effects, double attackerX, double attackerY, double knockbackStrength) {
         // Calculate knockback direction if needed
-        double[] direction = CollisionSystem.calculateDirection(attackX, attackY, target.getX(), target.getY());
+        double[] direction = CollisionSystem.calculateDirection(attackerX, attackerY, target.getX(), target.getY());
 
         for (EffectInterface effect : effects) {
             if (effect instanceof KnockbackEffect knockback) {
