@@ -278,12 +278,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   {
       chooseBuff = true;
       this.paused = true;
-      List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
-              .filter(node -> node instanceof Button)
-              .map(node -> (Button) node)
-              .toList();
-
-      menuNavigator = new MenuNavigator(menuButtons);
 
     // Update buttons with the new upgrades
       selectedBuff = 0;

@@ -22,7 +22,7 @@
         </padding>
 
         <!-- Titel Label -->
-        <Label text="Inheritance of Violence" style="-fx-font-size: 25px; -fx-padding:  0 0 20 0;"/>
+        <Label text="Inheritance of Violence" style="-fx-font-size: 25px; -fx-padding: 0 0 20 0;"/>
 
         <!-- Buttons -->
         <Button fx:id="startButton" styleClass="menu-button" text="Start Game" onAction="#onStartGamePressed"/>

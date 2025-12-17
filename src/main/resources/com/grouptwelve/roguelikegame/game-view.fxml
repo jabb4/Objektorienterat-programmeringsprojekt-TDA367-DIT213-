@@ -64,9 +64,8 @@
         <!-- Controls display (bottom-left corner) -->
         <VBox spacing="5" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" alignment="BOTTOM_LEFT">
             <Label text="W A S D - Move" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
-            <Label text="K - Space" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="Space - Attack" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
             <Label text="Esc - Pause" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
-            <Label text="1, 2, 3 - Switch Weapons" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
         </VBox>
 
     </AnchorPane>

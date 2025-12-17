@@ -19,6 +19,7 @@ public class App extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("menu-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
+        scene.getStylesheets().add(App.class.getResource("global.css").toExternalForm());
         stage.setScene(scene);
         stage.show(); 
     }
