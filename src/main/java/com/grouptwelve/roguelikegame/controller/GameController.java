@@ -144,8 +144,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       for (GameEventListener listener : eventListeners) {
         listener.onApplyBuff(selectedBuff);
       }
-      // TODO: Entity should publish a stat change event and the View should subscribe to update
-      gameView.updateHealthBar(game.getPlayerHp(), game.getPlayerMaxHp()); // Unnecessary when not choosing health upgrade
 
       // Moving while pausing will continue the movement when you let go during pause
         // TODO: Generalize this to when game is pausing
@@ -334,6 +332,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       entityPublisher.subscribeEntityHit(gameView);
       entityPublisher.subscribeAttack(gameView);
       entityPublisher.subscribeEntityDeath(gameView);
+      entityPublisher.subscribeHealthChange(gameView);
       chooseBuffPublisher.subscribeBuff(gameView);
       xpPublisher.subscribeXp(gameView);
 
