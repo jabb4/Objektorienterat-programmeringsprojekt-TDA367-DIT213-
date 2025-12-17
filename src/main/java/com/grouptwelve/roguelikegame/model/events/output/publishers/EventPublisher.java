@@ -5,6 +5,7 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.HealthChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
@@ -27,6 +28,7 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
     private List<EntityHitListener> entityHitListeners = new LinkedList<>();
     private List<ChooseBuffListener> chooseBuffListeners = new LinkedList<>();
     private List<XpListener> xpListeners = new LinkedList<>();
+    private List<HealthChangeListener> healthChangeListeners = new LinkedList<>();
 
     @Override
     public void onAttack(AttackEvent attackEvent) {
@@ -142,6 +144,23 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
     public void unsubscribeXp(XpListener xpListener) {
         xpListeners.remove(xpListener);
 
+    }
+
+    @Override
+    public void subscribeHealthChange(HealthChangeListener healthChangeListener) {
+        healthChangeListeners.add(healthChangeListener);
+    }
+
+    @Override
+    public void unsubscribeHealthChange(HealthChangeListener healthChangeListener) {
+        healthChangeListeners.remove(healthChangeListener);
+    }
+
+    @Override
+    public void onHealthChange(HealthChangeEvent healthChangeEvent) {
+        for (HealthChangeListener listener : healthChangeListeners) {
+            listener.onHealthChange(healthChangeEvent);
+        }
     }
 
 
