@@ -1,6 +1,7 @@
 package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
+import com.grouptwelve.roguelikegame.controller.MenuNavigator;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
@@ -49,7 +50,6 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private AnchorPane gameLayer;
     @FXML private AnchorPane gameObjectsLayer;
     @FXML private AnchorPane effectsLayer;
-    @FXML private AnchorPane uiButtonsLayer;
     @FXML private Rectangle hpBackground;
     @FXML private Rectangle hpFill;
     @FXML private Label hpLabel;
@@ -57,8 +57,6 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Rectangle levelFill;
     @FXML private Label levelLabel;
     @FXML private Label xpLabel;
-    @FXML private ImageView firstItemImage;
-    @FXML private Label actionLabel;
     @FXML private Label timerLabel;
     @FXML private VBox pauseMenu;
     @FXML private VBox deathMenu;
@@ -66,16 +64,11 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Button fireBuffBox;
     @FXML private Button speedBuffBox;
     @FXML private Button healthBuffBox;
-    @FXML private Rectangle firstItem;
-    @FXML private Rectangle secondItem;
-    @FXML private Rectangle thirdItem;
-
-    private Rectangle highlightedItem = null;
 
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
-    Random rand;
+    Random rand = new Random();
 
     // This is for setting "FXML" controller
     public void setGameController(GameController controller) {
@@ -85,13 +78,8 @@ public class GameView implements AttackListener, EntityDeathListener,
 
     @FXML
     private void initialize() {
-        // TEMPORARY IMAGE ON SLOT 1
-        Image sword = new Image(getClass().getResourceAsStream("/com/grouptwelve/roguelikegame/img/sword1.png"));
-        firstItemImage.setImage(sword);
-        highlightItem(1); // Weapon in first slot is selected automatically
         root.requestFocus();
 
-        this.rand = new Random();
         this.gc = gameCanvas.getGraphicsContext2D();
         gameLayer.setEffect(blur);
     }
@@ -267,12 +255,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         pauseMenu.setVisible(show);
         pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
         gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
-        uiButtonsLayer.setDisable(show);
         blur.setRadius(show ? 10 : 0);
-
-        if (show) {
-        Platform.runLater(() -> pauseMenu.getChildren().get(1).requestFocus()); // When paused, it should automatically focus on the first button on pause layer
-    }
     }
 
     /**
@@ -415,13 +398,11 @@ public class GameView implements AttackListener, EntityDeathListener,
      */
     public void showDamageNumber(double x, double y, double damage, boolean isCritical) {
         Label dmgLabel = new Label(String.format("%.0f", damage) + (isCritical ? "!" : ""));
-        
+
         if (isCritical) {
-            dmgLabel.setTextFill(Color.GOLD);
-            dmgLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+            dmgLabel.setStyle("-fx-text-fill: gold; -fx-font-size:  20px; -fx-font-family: 'Press Start 2P';");
         } else {
-            dmgLabel.setTextFill(Color.WHITE);
-            dmgLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+            dmgLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Press Start 2P';");
         }
         
         dmgLabel.setLayoutX(x - 10);
@@ -481,34 +462,4 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private void onResume() { gameController.resume(); }
     @FXML private void onQuit() throws IOException { gameController.quit(); }
     @FXML private void onPlayAgain() throws IOException { gameController.playAgain(); }
-    @FXML protected void onOptions() throws IOException { }
-
-
-    // ==================== Item Hotbar (MAYBE REMOVE FOR NOW SINCE WE ONlY HAVE ONE ITEM AT THE MOMENT?) ====================
-    public void highlightItem(int index) {
-        // Reset previous highlight
-        if (highlightedItem != null) {
-            highlightedItem.setStroke(null); // remove border
-            highlightedItem.setStrokeWidth(0);
-        }
-
-        // Highlight new item
-        switch (index) {
-            case 1:
-                highlightedItem = firstItem;
-                break;
-            case 2:
-                highlightedItem = secondItem;
-                break;
-            case 3:
-                highlightedItem = thirdItem;
-                break;
-        }
-
-        // Apply highlight style
-        highlightedItem.setStroke(javafx.scene.paint.Color.YELLOW);
-        highlightedItem.setStrokeWidth(3);
-    }
-
-
 }
