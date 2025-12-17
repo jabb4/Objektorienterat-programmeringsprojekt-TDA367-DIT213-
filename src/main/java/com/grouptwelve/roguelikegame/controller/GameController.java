@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -38,12 +39,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   private boolean chooseBuff;
   private int selectedBuff = 1;
   private MenuNavigator menuNavigator;
-
-  @FXML private VBox pauseMenu;    // Pause menu buttons
-  @FXML private VBox deathMenu;    // Death menu buttons
-
-  private MenuNavigator pauseMenuNavigator;
-  private MenuNavigator deathMenuNavigator;
 
   // All systems that want to observe game events
   private final List<GameEventListener> eventListeners = new ArrayList<>();
@@ -95,30 +90,31 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
    * @param isPressed True if pressed, false if released
    */
   private void handleCommand(Command command, boolean isPressed) {
-    if(chooseBuff)
-    {
-      handleCommandBuff(command, isPressed);
-      return;
-    }
-    if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus()) {
-      togglePause();
-    }
-    if (paused) {
-      return;
-    }
-    // Handle movement commands (trigger on both press and release)
-    if (command.isMovement()) {
-      // Movement changed - recalculate and notify
-      MovementEvent event = createMovementEvent();
-      notifyMovement(event);
-    }
-
-    // Handle action commands (only on press)
-    else if (command == Command.ATTACK && isPressed) {
-      notifyAttack();
-    }
-
-    // TODO: Handle other commands when implemented
+      if (paused && !chooseBuff) {
+          if (isPressed){
+              switch (command) {
+                  case MOVE_UP -> menuNavigator.moveUp();
+                  case MOVE_DOWN -> menuNavigator.moveDown();
+                  case SELECT -> menuNavigator.select();
+                  case PAUSE -> togglePause();
+              }
+          }
+      }
+      else if (command == Command.PAUSE && isPressed && game.getPlayer().getAliveStatus()) {
+          togglePause();
+      }
+      else if (chooseBuff)
+      {
+          handleCommandBuff(command, isPressed);
+      }
+      else if (command.isMovement()) {
+          // Movement changed - recalculate and notify
+          MovementEvent event = createMovementEvent();
+          notifyMovement(event);
+      }
+      else if (command == Command.ATTACK && isPressed) {
+        notifyAttack();
+      }
   }
 
   /**
@@ -128,22 +124,20 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
    */
   private void handleCommandBuff(Command command, boolean isPressed)
   {
-    if (command == Command.MOVE_LEFT && isPressed)
+    if (command == Command.MOVE_UP && isPressed)
     {
       if(this.selectedBuff == 2) this.selectedBuff = 1;
       else this.selectedBuff = 0;
 
       gameView.updateSelectedLabel(selectedBuff);
     }
-    else if (command == Command.MOVE_RIGHT && isPressed)
+    else if (command == Command.MOVE_DOWN && isPressed)
     {
       if(this.selectedBuff == 0) this.selectedBuff = 1;
       else this.selectedBuff = 2;
-        gameView.updateSelectedLabel(selectedBuff);
-
-
+      gameView.updateSelectedLabel(selectedBuff);
     }
-    else if ((command == Command.SELECT || command == Command.ATTACK) && isPressed)
+    else if (command == Command.SELECT && isPressed)
     {
       for (GameEventListener listener : eventListeners) {
         listener.onApplyBuff(selectedBuff);
@@ -269,6 +263,12 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     if(entity instanceof Player)
     {
         paused = true;
+        List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
+                .filter(node -> node instanceof Button)
+                .map(node -> (Button) node)
+                .toList();
+
+        menuNavigator = new MenuNavigator(menuButtons);
     }
     else
     {
@@ -280,8 +280,14 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   @Override
   public void onChooseBuff(UpgradeInterface[] upgrades)
   {
-    chooseBuff = true;
-    this.paused = true;
+      chooseBuff = true;
+      this.paused = true;
+      List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
+              .filter(node -> node instanceof Button)
+              .map(node -> (Button) node)
+              .toList();
+
+      menuNavigator = new MenuNavigator(menuButtons);
 
     // Update buttons with the new upgrades
       selectedBuff = 0;
@@ -294,6 +300,13 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
       if (paused) {   // stop the game loop
           gameView.showPauseMenu(true);
+          List<Button> menuButtons = gameView.getRoot().lookupAll(".pause-menu-button").stream()
+                  .filter(node -> node instanceof Button)
+                  .map(node -> (Button) node)
+                  .toList();
+
+          menuNavigator = new MenuNavigator(menuButtons);
+
       } else {  // resume game loop
           gameView.showPauseMenu(false);
       }

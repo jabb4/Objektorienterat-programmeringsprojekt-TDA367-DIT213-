@@ -13,6 +13,9 @@
 .menu-button {
     -fx-padding: 10 15 10 15;
     -fx-text-fill: black;
+    -fx-background-insets: 0;
+    -fx-border-radius: 3;
+    -fx-background-radius: 5;
 }
 
 /* Optional reusable class */
@@ -33,4 +36,3 @@
     -fx-font-size: 12px;
     -fx-padding: 15;
 }
-

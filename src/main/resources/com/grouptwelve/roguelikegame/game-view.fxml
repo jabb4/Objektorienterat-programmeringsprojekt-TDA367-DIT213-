@@ -64,7 +64,7 @@
         <!-- Controls display (bottom-left corner) -->
         <VBox spacing="5" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" alignment="BOTTOM_LEFT">
             <Label text="W A S D - Move" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
-            <Label text="K - Attack" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+            <Label text="K - Space" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
             <Label text="Esc - Pause" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
             <Label text="1, 2, 3 - Switch Weapons" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
         </VBox>
@@ -76,8 +76,8 @@
     <VBox fx:id="deathMenu" spacing="20" alignment="CENTER" visible="false"
           style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
         <Label text="YOU DIED!" style="-fx-font-size: 32px; -fx-text-fill: white;"/>
-        <Button text="Play Again" styleClass="menu-button" onAction="#onPlayAgain"/>
-        <Button text="Quit" styleClass="menu-button" onAction="#onQuit"/>
+        <Button text="Play Again" styleClass="menu-button, death-menu-button" onAction="#onPlayAgain"/>
+        <Button text="Quit" styleClass="menu-button, death-menu-button" onAction="#onQuit"/>
     </VBox>
 
     <!-- Vertical version -->
@@ -136,8 +136,8 @@
     <VBox fx:id="pauseMenu" spacing="20" alignment="CENTER" visible="false" disable="true"
           style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
         <Label text="GAME PAUSED" style="-fx-font-size: 32px; -fx-text-fill: white;"/>
-        <Button text="Resume" styleClass="menu-button" onAction="#onResume"/>
-        <Button text="Quit" styleClass="menu-button" onAction="#onQuit"/>
+        <Button text="Resume" styleClass="menu-button, pause-menu-button" onAction="#onResume"/>
+        <Button text="Quit" styleClass="menu-button, pause-menu-button" onAction="#onQuit"/>
     </VBox>
 
 </StackPane>

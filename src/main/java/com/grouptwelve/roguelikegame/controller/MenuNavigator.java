@@ -49,10 +49,10 @@ public class MenuNavigator {
             Button b = buttons.get(i);
             if (i == selectedIndex) {
                 // Highlight selected button
-                b.setStyle("-fx-border-color: yellow; -fx-border-width: 3;");
+                b.setStyle("-fx-border-color: red; -fx-border-width: 3; -fx-border-style: solid; -fx-border-radius: 3;");
             } else {
                 // Reset
-                b.setStyle("-fx-border-color: transparent;");
+                b.setStyle("-fx-border-color: transparent; -fx-border-width: 3; -fx-border-style: solid; -fx-border-radius: 3;");
             }
         }
     }

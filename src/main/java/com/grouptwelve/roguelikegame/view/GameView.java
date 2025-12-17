@@ -1,6 +1,7 @@
 package com.grouptwelve.roguelikegame.view;
 
 import com.grouptwelve.roguelikegame.controller.GameController;
+import com.grouptwelve.roguelikegame.controller.MenuNavigator;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
@@ -61,8 +62,6 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Button fireBuffBox;
     @FXML private Button speedBuffBox;
     @FXML private Button healthBuffBox;
-
-    private Rectangle highlightedItem = null;
 
     private GraphicsContext gc;
     private GameController gameController;
@@ -259,10 +258,6 @@ public class GameView implements AttackListener, EntityDeathListener,
         pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
         gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
         blur.setRadius(show ? 10 : 0);
-
-        if (show) {
-        Platform.runLater(() -> pauseMenu.getChildren().get(1).requestFocus()); // When paused, it should automatically focus on the first button on pause layer
-    }
     }
 
     /**

@@ -21,18 +21,16 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MenuController implements InputEventListener {
-    @FXML private Label actionLabel;
     @FXML private AnchorPane root;
     
     private MenuNavigator menuNavigator;
 
     public void initialize(){
         // Extract available buttons from menu-view
-        List<Button> menuButtons = root.getChildren().stream()
-            .filter(node -> node instanceof Button)
-            .map(node -> (Button) node)
-            .toList();
-
+        List<Button> menuButtons = root.lookupAll(".menu-button").stream()
+                .filter(node -> node instanceof Button)
+                .map(node -> (Button) node)
+                .toList();
         menuNavigator = new MenuNavigator(menuButtons);
 
         // Make sure scene exists and attach InputHandler
