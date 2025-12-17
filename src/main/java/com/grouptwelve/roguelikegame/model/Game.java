@@ -238,14 +238,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         return player.getAliveStatus();
     }
 
-    public double getPlayerHp() {
-        return player.getHp();
-    }
-
-    public double getPlayerMaxHp() {
-        return player.getMaxHP();
-    }
-
     public List<Enemy> getEnemies() {
         return enemiesAlive;
     }
