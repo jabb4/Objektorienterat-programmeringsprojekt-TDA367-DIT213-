@@ -96,12 +96,12 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
                   case MOVE_UP -> menuNavigator.moveUp();
                   case MOVE_DOWN -> menuNavigator.moveDown();
                   case SELECT -> menuNavigator.select();
-                  case PAUSE -> togglePause();
+                  case PAUSE -> togglePauseMenu();
               }
           }
       }
       else if (command == Command.PAUSE && isPressed && game.isPlayerAlive()) {
-          togglePause();
+          togglePauseMenu();
       }
       else if (chooseBuff)
       {
@@ -124,29 +124,25 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
    */
   private void handleCommandBuff(Command command, boolean isPressed)
   {
-    if (command == Command.MOVE_UP && isPressed)
-    {
-      if(this.selectedBuff == 2) this.selectedBuff = 1;
-      else this.selectedBuff = 0;
-
-      gameView.updateSelectedLabel(selectedBuff);
-    }
-    else if (command == Command.MOVE_DOWN && isPressed)
-    {
-      if(this.selectedBuff == 0) this.selectedBuff = 1;
-      else this.selectedBuff = 2;
-      gameView.updateSelectedLabel(selectedBuff);
-    }
-    else if (command == Command.SELECT && isPressed)
-    {
-      for (GameEventListener listener : eventListeners) {
-        listener.onApplyBuff(selectedBuff);
+      if (command == Command.MOVE_UP && isPressed)
+      {
+          if(this.selectedBuff == 2) this.selectedBuff = 1;
+          else this.selectedBuff = 0;
+          gameView.updateSelectedLabel(selectedBuff);
+      }
+      else if (command == Command.MOVE_DOWN && isPressed)
+      {
+          if(this.selectedBuff == 0) this.selectedBuff = 1;
+          else this.selectedBuff = 2;
+          gameView.updateSelectedLabel(selectedBuff);
+      }
+      else if (command == Command.SELECT && isPressed)
+      {
+          for (GameEventListener listener : eventListeners) {
+            listener.onApplyBuff(selectedBuff);
       }
 
-      // Moving while pausing will continue the movement when you let go during pause
-        // TODO: Generalize this to when game is pausing
-      game.resetPlayerMovement();
-      this.paused = false;
+      unpause();
       chooseBuff = false;
       gameView.clearBuffVisuals();
       gameView.showLevelMenu(false);
@@ -258,7 +254,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     Obstacle obstacle = event.getObstacle();
     if(obstacle.getObstacleType() == ObstacleType.PLAYER)
     {
-        paused = true;
+        pause();
         List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
                 .filter(node -> node instanceof Button)
                 .map(node -> (Button) node)
@@ -277,17 +273,41 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   public void onChooseBuff(UpgradeInterface[] upgrades)
   {
       chooseBuff = true;
-      this.paused = true;
+      pause();
 
     // Update buttons with the new upgrades
       selectedBuff = 0;
       gameView.updateSelectedLabel(selectedBuff);
   }
 
+    /**
+     * Pause the game loop and stop any player movement
+     */
+  public void pause() {
+      this.paused = true;
+      game.resetPlayerMovement();
+  }
+
+    /**
+     * Unpause the game
+     */
+  public void unpause() {
+      this.paused = false;
+  }
+
+    /**
+     * Toggles the game state. If the game is paused it will be unpaused, if it is unpaused it will be paused
+     */
+  public void togglePause(){
+      if (this.paused) {
+          unpause();
+      } else pause();
+  }
+
 // ==================== FXML ====================
 
-  public void togglePause() {
-      this.paused = !paused;
+  public void togglePauseMenu() {
+      togglePause();
 
       if (paused) {   // stop the game loop
           gameView.showPauseMenu(true);
@@ -305,7 +325,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
   public void resume() {
       if (paused) {
-          paused = false;      
+          unpause();
           gameView.showPauseMenu(false);
       }
   }
