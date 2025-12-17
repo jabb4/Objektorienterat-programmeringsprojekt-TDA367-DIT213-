@@ -51,7 +51,7 @@ public class CombatManager implements AttackListener {
         List<Enemy> hitEnemies = CollisionSystem.getEntitiesInRange(x, y, range, enemies);
         
         for (Enemy enemy : hitEnemies) {
-            HitSystem.applyEffects(enemy, effects, x, y, knockbackStrength);
+            HitSystem.applyEffects(enemy, effects, player.getX(), player.getY(), knockbackStrength);
             HitSystem.applyDamage(enemy, combatResult);
         }
     }
@@ -61,8 +61,8 @@ public class CombatManager implements AttackListener {
      */
     private void attackPlayer(double x, double y, double range,  CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
         if (CollisionSystem.isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
-            HitSystem.applyDamage(player,combatResult );
-            HitSystem.applyEffects(player, effects, x, y, knockbackStrength);
+            HitSystem.applyDamage(player,combatResult);
+            HitSystem.applyEffects(player, effects, player.getX(), player.getY(), knockbackStrength);
         }
     }
 }
