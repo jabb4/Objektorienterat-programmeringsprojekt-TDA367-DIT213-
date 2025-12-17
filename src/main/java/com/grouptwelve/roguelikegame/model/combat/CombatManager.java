@@ -61,8 +61,9 @@ public class CombatManager implements AttackListener {
      */
     private void attackPlayer(double x, double y, double range,  CombatResult combatResult, List<EffectInterface> effects, double knockbackStrength) {
         if (CollisionSystem.isHit(x, y, range, player.getX(), player.getY(), player.getSize())) {
-            HitSystem.applyDamage(player,combatResult);
-            HitSystem.applyEffects(player, effects, player.getX(), player.getY(), knockbackStrength);
+            HitSystem.applyDamage(player, combatResult);
+            //If we want enemies to knockback player then we should give the enemy x and y to calculate the knockback effect
+            //HitSystem.applyEffects(player, effects, enemyX, enemyY, knockbackStrength);
         }
     }
 }
