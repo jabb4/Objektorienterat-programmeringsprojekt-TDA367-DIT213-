@@ -2,11 +2,7 @@ package com.grouptwelve.roguelikegame.model.events.output.publishers;
 
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
-import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.HealthChangeEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.LevelUpListener;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
@@ -65,11 +61,11 @@ public class EventPublisher implements LevelUpPublisher, EntityPublisher, Choose
     }
 
     @Override
-    public void onChooseBuff(UpgradeInterface[] upgrades)
+    public void onChooseBuff(UpgradeEvent upgradeEvent)
     {
         for (ChooseBuffListener chooseBuffListener : chooseBuffListeners)
         {
-            chooseBuffListener.onChooseBuff( upgrades);
+            chooseBuffListener.onChooseBuff(upgradeEvent);
         }
     }
     @Override

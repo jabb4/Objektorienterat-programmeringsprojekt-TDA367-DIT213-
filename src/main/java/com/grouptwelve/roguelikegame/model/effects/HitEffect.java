@@ -5,7 +5,7 @@ import com.grouptwelve.roguelikegame.model.entities.Entity;
 /**
  * Visual effect that causes an entity to flash white when hit.
  * Duration controls how long the flash lasts.
- */
+
 public class HitEffect extends Effects {
     private final double duration;
 
@@ -18,3 +18,4 @@ public class HitEffect extends Effects {
         target.setHit(true, duration);
     }
 }
+ */

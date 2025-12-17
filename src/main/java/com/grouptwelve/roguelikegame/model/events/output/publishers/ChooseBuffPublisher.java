@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.model.events.output.publishers;
 
+import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
@@ -14,7 +15,7 @@ public interface ChooseBuffPublisher {
 
     /**
      * called by game when player levels up and buffs have been generated
-     * @param upgrades buff to select from
+     * @param upgradeEvent buff to select from
      */
-    void onChooseBuff(UpgradeInterface[] upgrades);
+    void onChooseBuff(UpgradeEvent upgradeEvent);
 }

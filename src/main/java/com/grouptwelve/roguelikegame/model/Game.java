@@ -7,6 +7,7 @@ import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
@@ -117,7 +118,7 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         {
             upgrades[i] = UpgradeRegistry.randomUpgrade();
         }
-        chooseBuffPublisher.onChooseBuff(upgrades);
+        chooseBuffPublisher.onChooseBuff(new UpgradeEvent(upgrades));
     }
 
     // ==================== GameEventListener Implementation ====================
@@ -238,8 +239,8 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         return player.getAliveStatus();
     }
 
-    public List<Enemy> getEnemies() {
-        return enemiesAlive;
+    public List<Obstacle> getEnemies() {
+        return new ArrayList<>(enemiesAlive);
     }
 
     public double getGameTime() {

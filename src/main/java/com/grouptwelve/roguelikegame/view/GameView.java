@@ -8,11 +8,7 @@ import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
-import com.grouptwelve.roguelikegame.model.events.output.events.AttackEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.HealthChangeEvent;
-import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
@@ -39,7 +35,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class GameView implements AttackListener, EntityDeathListener,
@@ -65,9 +63,12 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Button speedBuffBox;
     @FXML private Button healthBuffBox;
 
+
+    private final HashMap<Obstacle, ObstacleData> enemyData = new HashMap<>();
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
+    private static final double HIT_FLASH_DURATION = 0.15; // Flash in seconds
     Random rand = new Random();
 
     // This is for setting "FXML" controller
@@ -88,55 +89,76 @@ public class GameView implements AttackListener, EntityDeathListener,
         return root;
     }
 
-    public void render(Game game, double deltaTime) {
+    /**
+     * renders the game visuals by polling information that changes all the time(enemy and player position)
+     * reads from hashMap that updates when events happen see methods below.
+     * @param game model
+     */
+    public void render(Game game) {
         // Clear the canvas
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
-
         // Clear previous frame
         gameObjectsLayer.getChildren().clear();
-        
-        // Render player
-        Player player = game.getPlayer();
+
+        Obstacle player = game.getPlayer();
+        playerRenderer(player);
+
+        List<Obstacle> enemies = game.getEnemies();
+        enemiesRenderer(enemies);
+
+    }
+
+    /**
+     * Only get obstacle information for player and uses it to draw the player
+     * @param player obstacle info
+     */
+    public void playerRenderer(Obstacle player)
+    {
         Circle playerCircle = new Circle(player.getX(), player.getY(), player.getSize());
         playerCircle.setFill(Color.LIGHTBLUE);
         playerCircle.setManaged(false);
         gameObjectsLayer.getChildren().add(playerCircle);
+    }
 
-        // Render enemies
-        List<Enemy> enemies = game.getEnemies();
-        for(Enemy enemy : enemies)
+    /**
+     * draws the list of enemies, this includes the actual body and hp bar
+     * @param enemies list of Obstacle info for enemies
+     */
+    public void enemiesRenderer(List<Obstacle> enemies)
+    {
+        for(Obstacle enemy : enemies)
         {
-            if(enemy.getAliveStatus())
+            Circle enemyCircle = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
+            ObstacleData data = enemyData.get(enemy);
+            double barWidth = 40;
+            double barHeight = 5;
+            double barOffset = 10;
+
+            // HP bar background
+            gc.setFill(Color.GRAY);
+            gc.fillRect(enemy.getX() - barWidth / 2,
+                    enemy.getY() - enemy.getSize() - barOffset,
+                    barWidth, barHeight);
+
+            double hpPercentage;
+
+            if(data != null) // data has been updated by some event so its not default values
             {
-                Circle enemyCircle = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
-                
-                // Hit effect
-                if (enemy.isHit()) {
-                    enemyCircle.setFill(Color.WHITE);
-                } else {
-                    enemyCircle.setFill(Color.RED);
-                }
-                
-                enemyCircle.setManaged(false);
-                gameObjectsLayer.getChildren().add(enemyCircle);
-
-                double barWidth = 40;
-                double barHeight = 5;
-                double barOffset = 10;
-
-                // HP bar background
-                gc.setFill(Color.GRAY);
-                gc.fillRect(enemy.getX() - barWidth / 2,
-                        enemy.getY() - enemy.getSize() - barOffset,
-                        barWidth, barHeight);
-
-                // HP bar fill
-                double hpPercentage = enemy.getHp() / enemy.getMaxHP();
-                gc.setFill(Color.RED);
-                gc.fillRect(enemy.getX() - barWidth / 2,
-                        enemy.getY() - enemy.getSize() - barOffset,
-                        barWidth * hpPercentage, barHeight);
+                enemyCircle.setFill(data.getColor());
+                hpPercentage = data.getHp() / data.getMaxHp();
             }
+            else //no value has been changed since spawning so use default values
+            {
+                enemyCircle.setFill(Color.RED);
+                hpPercentage = 1; //full bar 100%
+            }
+            enemyCircle.setManaged(false);
+            gameObjectsLayer.getChildren().add(enemyCircle);
+
+            gc.setFill(Color.RED);
+            gc.fillRect(enemy.getX() - barWidth / 2,
+                    enemy.getY() - enemy.getSize() - barOffset,
+                    barWidth * hpPercentage, barHeight); // use percent
         }
     }
 
@@ -232,15 +254,13 @@ public class GameView implements AttackListener, EntityDeathListener,
         healthBuffBox.setStyle("-fx-border-color: transparent;");
     }
 
-    /**
-     * Updates the text on the buff buttons.
-     * @param buffs Array of UpgradeInterface (buffs) to display
-     */
+
     @Override
-    public void onChooseBuff(UpgradeInterface[] buffs) {
-        fireBuffBox.setText(buffs[0].getName());
-        speedBuffBox.setText(buffs[1].getName());
-        healthBuffBox.setText(buffs[2].getName());
+    public void onChooseBuff(UpgradeEvent upgradeEvent) {
+        UpgradeInterface[] upgrades = upgradeEvent.getUpgrades();
+        fireBuffBox.setText(upgrades[0].getName());
+        speedBuffBox.setText(upgrades[1].getName());
+        healthBuffBox.setText(upgrades[2].getName());
         // Show level up menu
         showLevelMenu(true);
     }
@@ -287,6 +307,15 @@ public class GameView implements AttackListener, EntityDeathListener,
         }
         else
         {
+            ObstacleData data = enemyData.get(obstacle);
+            if(data != null)
+            {
+
+                //change to read so next time we reuse this enemy its full health and red(
+                PauseTransition pause = new PauseTransition(Duration.seconds(HIT_FLASH_DURATION));
+                pause.setOnFinished(_ -> enemyData.put(obstacle, new ObstacleData(Color.RED,  data.getMaxHp(), data.getMaxHp())));
+                pause.play();
+            }
 
             // TODO: implement effect when eneimes die
             System.out.println("spawning death particles .....////:/.,.,-.,.1&¤/#)#&¤%(#=#");
@@ -301,6 +330,12 @@ public class GameView implements AttackListener, EntityDeathListener,
         {
             showDamageNumber(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
             spawnHitParticles(obstacle.getX(), obstacle.getY());
+            enemyData.put(obstacle, new ObstacleData(Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp()));
+
+            // Timer to change color back to red after 0.1 seconds
+            PauseTransition pause = new PauseTransition(Duration.seconds(HIT_FLASH_DURATION));
+            pause.setOnFinished(_ -> enemyData.put(obstacle, new ObstacleData(Color.RED, entityHitEvent.getHp(), entityHitEvent.getMaxHp())));
+            pause.play();
         }
     }
 
@@ -310,7 +345,7 @@ public class GameView implements AttackListener, EntityDeathListener,
             updateHealthBar(event.getHp(), event.getMaxHp());
         }
     }
-    
+
     /**
      * Plays the player death effect with ripple/shockwave, screen shake, red flash and toggles death menu.
      * 
@@ -326,7 +361,6 @@ public class GameView implements AttackListener, EntityDeathListener,
             showRedFlash();
         });
         freeze.play();
-
         deathMenu.setVisible(true);
         blur.setRadius(10);
     }

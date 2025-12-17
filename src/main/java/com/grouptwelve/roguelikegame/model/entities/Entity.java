@@ -33,8 +33,6 @@ public abstract class Entity implements Obstacle{
 
     protected EntityPublisher entityPublisher;
 
-    protected boolean isHit = false;
-    protected double hitTimer = 0.0;
     private final List<ActiveEffect> activeEffects = new ArrayList<>();
 
     public Entity(String name, double x, double y, double hp, int size, double maxHP){
@@ -61,10 +59,6 @@ public abstract class Entity implements Obstacle{
             weapon.update(deltaTime);
         }
 
-        if (isHit && (hitTimer -= deltaTime) <= 0) {
-            isHit = false;
-        }
-
         Iterator<ActiveEffect> it = activeEffects.iterator();
         while (it.hasNext()) {
             ActiveEffect effect = it.next();
@@ -82,8 +76,6 @@ public abstract class Entity implements Obstacle{
      */
     public void revive()
     {
-        this.isHit = false;
-        this.hitTimer = 0.0;
         this.hp = maxHP;
         this.isAlive = true;
 
@@ -145,7 +137,7 @@ public abstract class Entity implements Obstacle{
         setHp(this.hp - dmg);
 
         if(entityPublisher != null) {
-            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult));
+            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult, hp, maxHP));
             if (this.hp <= 0) {
                 this.isAlive = false;
                 entityPublisher.onEntityDeath(new EntityDeathEvent(this, x, y));
@@ -234,11 +226,6 @@ public abstract class Entity implements Obstacle{
     public ObstacleType getObstacleType() {
         return this.obstacleType;
     }
-
-    public boolean isHit() {
-        return this.isHit;
-    }
-
     public double getWeaponRange() {
         return weapon.getRange();
     }
@@ -332,10 +319,13 @@ public abstract class Entity implements Obstacle{
      * @param hit Whether the entity is currently hit
      * @param duration How long the hit effect should last
      */
+    /*
     public void setHit(boolean hit, double duration) {
         this.isHit = hit;
         this.hitTimer = duration;
     }
+
+     */
 
     @Override
     public String toString() {

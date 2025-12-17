@@ -6,6 +6,7 @@ import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.events.input.GameEventListener;
 import com.grouptwelve.roguelikegame.model.events.input.MovementEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
@@ -234,7 +235,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
    * Renders the current game state.
    */
   private void render() {
-    gameView.render(game, lastUpdate);
+    gameView.render(game);
   }
 
   /**
@@ -270,7 +271,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   }
 
   @Override
-  public void onChooseBuff(UpgradeInterface[] upgrades)
+  public void onChooseBuff(UpgradeEvent upgradeEvent)
   {
       chooseBuff = true;
       pause();
