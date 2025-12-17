@@ -317,8 +317,6 @@ public class GameView implements AttackListener, EntityDeathListener,
                 pause.play();
             }
 
-            // TODO: implement effect when eneimes die
-            System.out.println("spawning death particles .....////:/.,.,-.,.1&¤/#)#&¤%(#=#");
         }
     }
     @Override
@@ -332,7 +330,7 @@ public class GameView implements AttackListener, EntityDeathListener,
             spawnHitParticles(obstacle.getX(), obstacle.getY());
             enemyData.put(obstacle, new ObstacleData(Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp()));
 
-            // Timer to change color back to red after 0.1 seconds
+            // Timer to change color back to red after duration
             PauseTransition pause = new PauseTransition(Duration.seconds(HIT_FLASH_DURATION));
             pause.setOnFinished(_ -> enemyData.put(obstacle, new ObstacleData(Color.RED, entityHitEvent.getHp(), entityHitEvent.getMaxHp())));
             pause.play();

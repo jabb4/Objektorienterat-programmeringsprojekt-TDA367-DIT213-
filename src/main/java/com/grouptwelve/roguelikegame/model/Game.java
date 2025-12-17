@@ -165,9 +165,9 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         double playerY = player.getY();
 
         // Update only living enemies
-        for (Enemy enemy : enemiesAlive) {
-            enemy.velocityAlgorithm(playerX, playerY, enemiesAlive);
-            enemy.update(deltaTime);
+        for (int i = enemiesAlive.size()-1; i >= 0; i--) {
+            enemiesAlive.get(i).velocityAlgorithm(playerX, playerY, enemiesAlive);
+            enemiesAlive.get(i).update(deltaTime);
         }
     }
 

@@ -314,18 +314,7 @@ public abstract class Entity implements Obstacle{
         this.weapon = weapon;
     }
 
-    /**
-     * Sets the hit state for visual feedback.
-     * @param hit Whether the entity is currently hit
-     * @param duration How long the hit effect should last
-     */
-    /*
-    public void setHit(boolean hit, double duration) {
-        this.isHit = hit;
-        this.hitTimer = duration;
-    }
 
-     */
 
     @Override
     public String toString() {
