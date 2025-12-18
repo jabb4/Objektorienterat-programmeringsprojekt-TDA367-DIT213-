@@ -83,7 +83,7 @@ public class SceneManager {
         chooseBuffPublisher.subscribeBuff(gameView);
         xpPublisher.subscribeXp(gameView);
 
-        gameView.setGameController(controller); 
+        gameView.setButtonListener(controller);
         controller.start();
 
         stage.setScene(scene);

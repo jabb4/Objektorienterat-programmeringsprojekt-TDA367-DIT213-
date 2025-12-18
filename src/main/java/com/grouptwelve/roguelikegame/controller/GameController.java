@@ -11,6 +11,7 @@ import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffLis
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.view.ButtonListener;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -29,7 +30,7 @@ import java.util.Set;
 /**
  * Coordinates the game loop and events.
  */
-public class GameController implements InputEventListener, ChooseBuffListener, EntityDeathListener {
+public class GameController implements InputEventListener, ChooseBuffListener, EntityDeathListener, ButtonListener {
   private final Game game;
   private final GameView gameView;
   private final InputHandler inputHandler;
@@ -323,22 +324,33 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       } else {  // resume game loop
           gameView.showPauseMenu(false);
       }
-  }
+    }
 
-  public void resume() {
-      if (paused) {
-          unpause();
-          gameView.showPauseMenu(false);
-      }
-  }
+    @Override
+    public void onResume() {
+        if (paused) {
+            unpause();
+            gameView.showPauseMenu(false);
+        }
+    }
 
-  public void playAgain() throws IOException {
-      stop();
-      sceneManager.startGame();
-  }
+    @Override
+    public void onPlayAgain() {
+        try {
+            stop();
+            sceneManager.startGame();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-  public void quit() throws IOException {
-      stop();
-      sceneManager.showMenu();
-  }
+    @Override
+    public void onQuit() {
+        try {
+            stop();
+            sceneManager.showMenu();
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exception here so View doesn't have to
+        }
+    }
 }
