@@ -12,6 +12,7 @@ import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
 import com.grouptwelve.roguelikegame.view.state.ObstacleData;
 import com.grouptwelve.roguelikegame.view.state.ViewState;
 
@@ -39,7 +40,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 
 public class GameView implements AttackListener, EntityDeathListener,
         ChooseBuffListener, EntityHitListener, XpListener, HealthChangeListener {
@@ -66,11 +66,11 @@ public class GameView implements AttackListener, EntityDeathListener,
 
 
     private final ViewState viewState = new ViewState();
+    private ParticleSystem particleSystem;
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
     private static final double HIT_FLASH_DURATION = 0.15; // Flash in seconds
-    Random rand = new Random();
 
     // This is for setting "FXML" controller
     public void setGameController(GameController controller) {
@@ -83,6 +83,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         root.requestFocus();
 
         this.gc = gameCanvas.getGraphicsContext2D();
+        this.particleSystem = new ParticleSystem(effectsLayer);
         gameLayer.setEffect(blur);
     }
 
@@ -328,7 +329,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         if(obstacle.getObstacleType() != ObstacleType.PLAYER)
         {
             showDamageNumber(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
-            spawnHitParticles(obstacle.getX(), obstacle.getY());
+            particleSystem.spawnHitParticles(obstacle.getX(), obstacle.getY());
             viewState.setObstacleData(obstacle, Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp());
 
             // Timer to change color back to red after duration
@@ -454,41 +455,6 @@ public class GameView implements AttackListener, EntityDeathListener,
 
         floatUp.play();
         fadeOut.play();
-    }
-
-    /**
-     * Spawns particle effects at the hit location.
-     * Particles burst outward and fade, self-cleaning via JavaFX animations.
-     * 
-     * @param x X position of the hit
-     * @param y Y position of the hit
-     */
-    public void spawnHitParticles(double x, double y) {
-        int particleCount = 8;
-        
-        for (int i = 0; i < particleCount; i++) {
-            Circle particle = new Circle(x, y, 3, Color.WHITE);
-            particle.setManaged(false);
-            effectsLayer.getChildren().add(particle);
-            
-            // Random direction and distance
-            double angle = rand.nextDouble() * 2 * Math.PI;
-            double distance = 30 + rand.nextDouble() * 20;
-            
-            // Move outward
-            TranslateTransition move = new TranslateTransition(Duration.millis(300), particle);
-            move.setByX(Math.cos(angle) * distance);
-            move.setByY(Math.sin(angle) * distance);
-            
-            // Fade out
-            FadeTransition fade = new FadeTransition(Duration.millis(300), particle);
-            fade.setFromValue(1.0);
-            fade.setToValue(0.0);
-            fade.setOnFinished(e -> effectsLayer.getChildren().remove(particle));
-            
-            move.play();
-            fade.play();
-        }
     }
 
     // ==================== FXML Controls ====================
