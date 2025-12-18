@@ -196,7 +196,16 @@ public abstract class Entity implements Obstacle{
     }
 
     // ==================== Getters ====================
-
+    @Override
+    public double getDirX()
+    {
+        return velocity.getX();
+    }
+    @Override
+    public double getDirY()
+    {
+        return velocity.getY();
+    }
     public String getName() {
         return this.name;
     }
