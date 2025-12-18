@@ -23,7 +23,6 @@ import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
@@ -42,10 +41,8 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private AnchorPane gameLayer;
     @FXML private AnchorPane gameObjectsLayer;
     @FXML private AnchorPane effectsLayer;
-    @FXML private Rectangle hpBackground;
     @FXML private Rectangle hpFill;
     @FXML private Label hpLabel;
-    @FXML private Rectangle levelBackground;
     @FXML private Rectangle levelFill;
     @FXML private Label levelLabel;
     @FXML private Label xpLabel;
@@ -57,7 +54,6 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Button speedBuffBox;
     @FXML private Button healthBuffBox;
 
-
     private final ViewState viewState = new ViewState();
     private ParticleSystem particleSystem;
     private DamageNumberEffect damageNumberEffect;
@@ -67,7 +63,6 @@ public class GameView implements AttackListener, EntityDeathListener,
     private MenuManager menuManager;
     private BuffSelectionUI buffSelectionUI;
     private EntityRenderer entityRenderer;
-    private GraphicsContext gc;
     private ButtonListener buttonListener;
     private GaussianBlur blur = new GaussianBlur(0);
     private static final double HIT_FLASH_DURATION = 0.15; // Flash in seconds
@@ -77,12 +72,10 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.buttonListener = listener;
     }
 
-
     @FXML
     private void initialize() {
         root.requestFocus();
 
-        this.gc = gameCanvas.getGraphicsContext2D();
         this.particleSystem = new ParticleSystem(effectsLayer);
         this.damageNumberEffect = new DamageNumberEffect(effectsLayer);
         this.deathEffect = new DeathEffect(effectsLayer);
@@ -90,7 +83,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
         this.menuManager = new MenuManager(pauseMenu, deathMenu, upgradeMenu, gameLayer, blur);
         this.buffSelectionUI = new BuffSelectionUI(fireBuffBox, speedBuffBox, healthBuffBox);
-        this.entityRenderer = new EntityRenderer(gameObjectsLayer, gc, viewState);
+        this.entityRenderer = new EntityRenderer(gameObjectsLayer, gameCanvas.getGraphicsContext2D(), viewState);
         gameLayer.setEffect(blur);
     }
 
@@ -116,16 +109,8 @@ public class GameView implements AttackListener, EntityDeathListener,
         attackVisualEffect.show(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange(), isPlayer);
     }
 
-    // ==================== FOR DEBUGGING PURPOSES ====================
-    public void updateDirectionLabel(int dx, int dy) {
-        // actionLabel.setText(String.format("Direction: [%d, %d]", dx, dy));
-    }
-
-    public void updateStatusLabel(String status) {
-        // actionLabel.setText(status);
-    }
-
     // ==================== Updating FXML UI Components ====================
+
     public void updateGameTimeLabel(double gameTime) {
         hudManager.updateGameTimeLabel(gameTime);
     }
@@ -166,7 +151,6 @@ public class GameView implements AttackListener, EntityDeathListener,
         buffSelectionUI.clearBuffVisuals();
     }
 
-
     @Override
     public void onChooseBuff(UpgradeEvent upgradeEvent) {
         UpgradeInterface[] upgrades = upgradeEvent.getUpgrades();
@@ -175,6 +159,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     }
 
     // ==================== FXML Layers state (pause, death, levelUp) ====================
+
     /**
      * Changes visibility of pause menu layer in FXML
      * 
@@ -262,6 +247,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     }
 
     // ==================== FXML Controls ====================
+    
     @FXML private void onResume() {
         if (buttonListener != null) buttonListener.onResume();
     }
