@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        Font.loadFont(getClass().getResource("fonts/PressStart2P-Regular.ttf").toExternalForm(), 12);
+        Font.loadFont(getClass().getResourceAsStream("fonts/PressStart2P-Regular.ttf"), 12);
         SceneManager sceneManager = new SceneManager(stage);
         sceneManager.showMenu();
     }
