@@ -102,14 +102,6 @@ public abstract class Weapon implements WeaponInterface {
         this.range += amount;
     }
 
-    /**
-     * Gets the attack cooldown duration.
-     *
-     * @return Cooldown duration in seconds
-     */
-    public double getAttackCooldown() {
-        return attackCooldown;
-    }
 
     /**
      * Gets the critical hit chance.
@@ -156,9 +148,6 @@ public abstract class Weapon implements WeaponInterface {
         this.knockbackStrength += amount;
     }
 
-    public void multiplyKnockback(double percent) {
-        this.knockbackStrength *= (1 + percent);
-    }
 
     @Override
     public List<EffectInterface> getEffects() { return effects; }
