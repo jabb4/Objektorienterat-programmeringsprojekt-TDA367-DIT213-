@@ -36,3 +36,14 @@
     -fx-font-size: 12px;
     -fx-padding: 15;
 }
+
+/* Statistics display on death screen */
+.stat-label {
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+}
+
+.stat-score {
+    -fx-text-fill: #FFD700;
+    -fx-font-size: 14px;
+}
