@@ -1,18 +1,18 @@
-package com.grouptwelve.roguelikegame.view;
+package com.grouptwelve.roguelikegame.view.state;
 
 import javafx.scene.paint.Color;
 
 /**
- * stores information about an obstacle(only used for enemies currently)
- * this is necessary because obstacle don't store these values themselves
- * these values are changed by events like onEntityHit
+ * Stores information about an obstacle (only used for enemies currently).
+ * This is necessary because obstacles don't store these values themselves.
+ * These values are changed by events like onEntityHit.
  */
-class ObstacleData {
+public class ObstacleData {
     private Color color;
     private double hp;
     private double maxHp;
 
-    ObstacleData(Color color, double hp, double maxHp) {
+    public ObstacleData(Color color, double hp, double maxHp) {
         this.color = color;
         this.hp = hp;
         this.maxHp = maxHp;

@@ -12,6 +12,8 @@ import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.view.state.ObstacleData;
+import com.grouptwelve.roguelikegame.view.state.ViewState;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -36,9 +38,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class GameView implements AttackListener, EntityDeathListener,
@@ -65,7 +65,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Button healthBuffBox;
 
 
-    private final HashMap<Obstacle, ObstacleData> enemyData = new HashMap<>();
+    private final ViewState viewState = new ViewState();
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -130,7 +130,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         for(Obstacle enemy : enemies)
         {
             Circle enemyCircle = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
-            ObstacleData data = enemyData.get(enemy);
+            ObstacleData data = viewState.getObstacleData(enemy);
             double barWidth = 40;
             double barHeight = 5;
             double barOffset = 10;
@@ -308,13 +308,13 @@ public class GameView implements AttackListener, EntityDeathListener,
         }
         else
         {
-            ObstacleData data = enemyData.get(obstacle);
+            ObstacleData data = viewState.getObstacleData(obstacle);
             if(data != null)
             {
 
                 //change to read so next time we reuse this enemy its full health and red(
                 PauseTransition pause = new PauseTransition(Duration.seconds(HIT_FLASH_DURATION));
-                pause.setOnFinished(_ -> enemyData.put(obstacle, new ObstacleData(Color.RED,  data.getMaxHp(), data.getMaxHp())));
+                pause.setOnFinished(_ -> viewState.setObstacleData(obstacle, Color.RED, data.getMaxHp(), data.getMaxHp()));
                 pause.play();
             }
 
@@ -329,11 +329,11 @@ public class GameView implements AttackListener, EntityDeathListener,
         {
             showDamageNumber(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
             spawnHitParticles(obstacle.getX(), obstacle.getY());
-            enemyData.put(obstacle, new ObstacleData(Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp()));
+            viewState.setObstacleData(obstacle, Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp());
 
             // Timer to change color back to red after duration
             PauseTransition pause = new PauseTransition(Duration.seconds(HIT_FLASH_DURATION));
-            pause.setOnFinished(_ -> enemyData.put(obstacle, new ObstacleData(Color.RED, entityHitEvent.getHp(), entityHitEvent.getMaxHp())));
+            pause.setOnFinished(_ -> viewState.setObstacleData(obstacle, Color.RED, entityHitEvent.getHp(), entityHitEvent.getMaxHp()));
             pause.play();
         }
     }
