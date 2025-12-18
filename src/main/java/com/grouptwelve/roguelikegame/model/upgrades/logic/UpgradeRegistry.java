@@ -1,10 +1,7 @@
 package com.grouptwelve.roguelikegame.model.upgrades.logic;
 
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.MaxHpFlatUpgradeFlat;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.MaxHpPercentUpgrade;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.SpeedFlatUpgradeFlat;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.SpeedPercentUpgrade;
+import com.grouptwelve.roguelikegame.model.upgrades.attributes.*;
 import com.grouptwelve.roguelikegame.model.upgrades.effects.*;
 import com.grouptwelve.roguelikegame.model.upgrades.weapons.*;
 
@@ -17,7 +14,7 @@ public class UpgradeRegistry {
     private static final List<Supplier<UpgradeInterface>> upgrades = new ArrayList<>();
 
     static {
-
+/*
         // Damage upgrades (flat 5–15, percent 3–10%)
         upgrades.add(() -> new WeaponDamageFlatUpgradeFlat(
                 Rand.range(5, 15)
@@ -70,7 +67,10 @@ public class UpgradeRegistry {
         upgrades.add(() -> new WeaponCritMultiplierPercentUpgrade(Rand.range(0.05, 0.15))); // +5%–15%
 
         upgrades.add(() -> new KnockbackFlatUpgrade(Rand.range(20, 60)));
-        upgrades.add(() -> new KnockbackPercentUpgrade(Rand.range(0.10, 0.25)));
+        upgrades.add(() -> new KnockbackPercentUpgrade(Rand.range(0.10, 0.25)));*/
+
+        upgrades.add(() -> new HpHealingUpgradeFlat(Rand.range(5, 25)));
+        upgrades.add(() -> new HpHealingPercentUpgrade(Rand.range(0.10, 0.25)));
 
 
     }

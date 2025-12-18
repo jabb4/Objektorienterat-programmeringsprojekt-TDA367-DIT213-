@@ -2,6 +2,7 @@ module com.grouptwelve.roguelikegame {
     requires transitive javafx.controls;
     requires javafx.fxml;
     requires transitive javafx.graphics;
+    //requires com.grouptwelve.roguelikegame;
 
 
     opens com.grouptwelve.roguelikegame to javafx.fxml;

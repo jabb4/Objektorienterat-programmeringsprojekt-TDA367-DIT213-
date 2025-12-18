@@ -299,6 +299,15 @@ public abstract class Entity implements Obstacle{
         this.y = y;
     }
 
+    public void heal(double amount) {
+        if ((this.hp + amount) >= this.maxHP){
+            setHp(this.maxHP);
+        }
+        else{
+            setHp(this.hp + amount);
+        }
+    }
+
     public void setHp(double hp) {
         this.hp = hp;
         if (entityPublisher != null) {

@@ -1,21 +1,22 @@
-package com.grouptwelve.roguelikegame.model.upgrades.weapons;
+package com.grouptwelve.roguelikegame.model.upgrades.attributes;
 
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.logic.FlatAttributeUpgrade;
 
-public class RangeFlatUpgradeFlat extends FlatAttributeUpgrade {
+public class HpHealingUpgradeFlat extends FlatAttributeUpgrade {
 
-    public RangeFlatUpgradeFlat(double amount) {
+    public HpHealingUpgradeFlat(double amount) {
         super(amount);
     }
 
     @Override
     public void apply(Entity entity) {
-        entity.addWeaponRange(amount);
+        entity.heal(amount);
+
     }
 
     @Override
     public String getName() {
-        return "Range +" + (int) amount;
+        return "+ " + (int)amount + " HP";
     }
 }
