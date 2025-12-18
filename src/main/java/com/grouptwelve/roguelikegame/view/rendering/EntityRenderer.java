@@ -28,6 +28,12 @@ public class EntityRenderer {
     private static final Color ENEMY_DEFAULT_COLOR = Color.RED;
     private static final Color HP_BAR_BACKGROUND_COLOR = Color.GRAY;
     private static final Color HP_BAR_FILL_COLOR = Color.RED;
+    private static final Color DIRECTION_ARROW_COLOR = Color.YELLOW;
+
+    private static final double ARROW_DISTANCE = 20;
+    private static final double ARROW_LENGTH = 10;
+    private static final double ARROW_HEAD_LENGTH = 8;
+    private static final double ARROW_HEAD_ANGLE = Math.PI / 6;
 
     public EntityRenderer(AnchorPane gameObjectsLayer, GraphicsContext gc, ViewState viewState) {
         this.gameObjectsLayer = gameObjectsLayer;
@@ -56,6 +62,48 @@ public class EntityRenderer {
         playerCircle.setFill(PLAYER_COLOR);
         playerCircle.setManaged(false);
         gameObjectsLayer.getChildren().add(playerCircle);
+
+        renderDirectionArrow(player);
+    }
+
+    /**
+     * Renders an arrow showing the direction the obstacle is looking.
+     *
+     * @param obstacle The obstacle to render the direction arrow for
+     */
+    private void renderDirectionArrow(Obstacle obstacle) {
+        double dirX = obstacle.getDirX();
+        double dirY = obstacle.getDirY();
+
+        // Normalize direction vector
+        double magnitude = Math.sqrt(dirX * dirX + dirY * dirY);
+        if (magnitude == 0) {
+            return; // No direction to show
+        }
+        dirX /= magnitude;
+        dirY /= magnitude;
+
+        // Calculate arrow start position (at distance from obstacle)
+        double startX = obstacle.getX() + dirX * ARROW_DISTANCE;
+        double startY = obstacle.getY() + dirY * ARROW_DISTANCE;
+
+        // Calculate arrow end position
+        double endX = startX + dirX * ARROW_LENGTH;
+        double endY = startY + dirY * ARROW_LENGTH;
+
+        // Draw main arrow line
+        gc.setStroke(DIRECTION_ARROW_COLOR);
+
+        // Calculate arrowhead lines
+        double angle = Math.atan2(dirY, dirX);
+        double arrowHead1X = endX - ARROW_HEAD_LENGTH * Math.cos(angle - ARROW_HEAD_ANGLE);
+        double arrowHead1Y = endY - ARROW_HEAD_LENGTH * Math.sin(angle - ARROW_HEAD_ANGLE);
+        double arrowHead2X = endX - ARROW_HEAD_LENGTH * Math.cos(angle + ARROW_HEAD_ANGLE);
+        double arrowHead2Y = endY - ARROW_HEAD_LENGTH * Math.sin(angle + ARROW_HEAD_ANGLE);
+
+        // Draw arrowhead
+        gc.strokeLine(endX, endY, arrowHead1X, arrowHead1Y);
+        gc.strokeLine(endX, endY, arrowHead2X, arrowHead2Y);
     }
 
     /**

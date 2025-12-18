@@ -5,6 +5,12 @@ package com.grouptwelve.roguelikegame.model.entities;
  */
 public interface Obstacle {
     int getSize();
+
+    // ==================== Getters ====================
+    double getDirX();
+
+    double getDirY();
+
     double getX();
     double getY();
     ObstacleType getObstacleType();
