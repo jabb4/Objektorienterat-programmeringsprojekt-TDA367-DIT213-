@@ -76,11 +76,6 @@ public class MenuController implements InputEventListener {
     }
 
     @FXML
-    protected void onOptionsPressed() throws IOException {
-        sceneManager.showOptions();
-    }
-
-    @FXML
     protected void onExitPressed() {
         System.exit(0);
     }

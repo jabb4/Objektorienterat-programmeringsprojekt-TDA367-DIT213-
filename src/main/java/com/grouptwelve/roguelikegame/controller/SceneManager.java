@@ -90,23 +90,6 @@ public class SceneManager {
         stage.show();
     }
 
-    /** Loads option-view.fxml with OptionsController*/
-    public void showOptions() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/option-view.fxml"));
-        Parent root = loader.load();  // FXML creates the GameView instance
-        OptionsController controller = loader.getController();
-        
-        controller.setSceneManager(this);
-        
-        Scene scene = createScene(root); 
-        
-        inputHandler.setupInputHandling(scene); 
-        inputHandler.setListener(controller);
-
-        stage.setScene(scene);
-        stage.show(); 
-    }
-
     // ==================== Helper functions ====================
     /** Applies font on each scene
      * @param root contains scene root
