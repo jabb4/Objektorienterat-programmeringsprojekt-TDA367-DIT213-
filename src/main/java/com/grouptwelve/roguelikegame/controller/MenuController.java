@@ -1,10 +1,12 @@
 package com.grouptwelve.roguelikegame.controller;
 
+import com.grouptwelve.roguelikegame.model.statistics.HighScore;
 import com.grouptwelve.roguelikegame.model.statistics.HighScoreManager;
 
 import java.io.IOException;
 import java.util.List;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -12,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 
 public class MenuController implements InputEventListener {
     @FXML private AnchorPane root;
+    @FXML private Label highScoreLabel;
     
     private MenuNavigator menuNavigator;
     private SceneManager sceneManager;
@@ -45,6 +48,20 @@ public class MenuController implements InputEventListener {
 
     public void setHighScoreManager(HighScoreManager highScoreManager) {
         this.highScoreManager = highScoreManager;
+        updateHighScoreDisplay();
+    }
+
+    private void updateHighScoreDisplay() {
+        if (highScoreManager == null || highScoreLabel == null) {
+            return;
+        }
+        
+        HighScore best = highScoreManager.getCurrentBest();
+        if (best != null) {
+            highScoreLabel.setText("BEST: " + best.score());
+        } else {
+            highScoreLabel.setText("");
+        }
     }
 
     // ================= InputEventListener =================

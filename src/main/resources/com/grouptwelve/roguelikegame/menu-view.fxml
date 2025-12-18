@@ -24,6 +24,9 @@
         <!-- Titel Label -->
         <Label text="Inheritance of Violence" style="-fx-font-size: 25px; -fx-padding: 0 0 20 0;"/>
 
+        <!-- High Score Display -->
+        <Label fx:id="highScoreLabel" text="" style="-fx-font-size: 12px; -fx-text-fill: #FFD700;"/>
+
         <!-- Buttons -->
         <Button fx:id="startButton" styleClass="menu-button" text="Start Game" onAction="#onStartGamePressed"/>
         <Button fx:id="exitButton" styleClass="menu-button" text="Exit" onAction="#onExitPressed"/>
