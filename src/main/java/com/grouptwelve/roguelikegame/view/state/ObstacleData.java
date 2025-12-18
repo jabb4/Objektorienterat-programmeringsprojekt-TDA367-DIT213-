@@ -3,9 +3,8 @@ package com.grouptwelve.roguelikegame.view.state;
 import javafx.scene.paint.Color;
 
 /**
- * Stores information about an obstacle (only used for enemies currently).
+ * Stores information about an obstacle
  * This is necessary because obstacles don't store these values themselves.
- * These values are changed by events like onEntityHit.
  */
 public class ObstacleData {
     private Color color;

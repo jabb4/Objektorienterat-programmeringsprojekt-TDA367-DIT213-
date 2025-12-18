@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /**
  * Holds shared visual state for the view layer.
- * Tracks obstacle visual data (color, HP) between events and render frames.
+ * Tracks obstacle visual data between events and render frames.
  */
 public class ViewState {
     private final HashMap<Obstacle, ObstacleData> obstacleData = new HashMap<>();
