@@ -105,6 +105,16 @@ public abstract class Entity implements Obstacle{
         activeEffects.add(effect);
     }
 
+    public <T extends ActiveEffect> T getActiveEffect(Class<T> type) {
+        for (ActiveEffect effect : activeEffects) {
+            if (type.isInstance(effect)) {
+                return type.cast(effect);
+            }
+        }
+        return null;
+    }
+
+
     /**
      * moves entitiy based on direction and speed
      * @param deltaTime -multiply change by delta time so frame rate not affect speed
@@ -139,17 +149,29 @@ public abstract class Entity implements Obstacle{
      * @param combatResult damage ifo
      */
     public void takeDamage(CombatResult combatResult) {
+        if (!isAlive) return;
+
         double dmg = combatResult.getDamage();
         setHp(this.hp - dmg);
 
-        if(entityPublisher != null) {
-            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult, hp, maxHP));
-            if (this.hp <= 0) {
-                this.isAlive = false;
-                entityPublisher.onEntityDeath(new EntityDeathEvent(this, x, y));
+        if (entityPublisher != null) {
+            //fire hit event for damage numbers
+            entityPublisher.onEntityHit(
+                    new EntityHitEvent(this, combatResult, hp, maxHP)
+            );
+        }
+
+        if (this.hp <= 0) {
+            isAlive = false;
+            if (entityPublisher != null) {
+                entityPublisher.onEntityDeath(
+                        new EntityDeathEvent(this, x, y)
+                );
             }
         }
     }
+
+
 
     /**
      * Attempts to attack using the equipped weapon.

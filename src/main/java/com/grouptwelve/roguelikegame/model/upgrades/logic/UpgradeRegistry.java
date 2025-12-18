@@ -14,7 +14,7 @@ public class UpgradeRegistry {
     private static final List<Supplier<UpgradeInterface>> upgrades = new ArrayList<>();
 
     static {
-
+/*
         // Damage upgrades (flat 5–15, percent 3–10%)
         upgrades.add(() -> new WeaponDamageFlatUpgradeFlat(
                 Rand.range(5, 15)
@@ -38,7 +38,7 @@ public class UpgradeRegistry {
         upgrades.add(() -> new MaxHpPercentUpgrade(
                 Rand.range(0.05, 0.15)
         ));
-
+*/
         // Fire Effect (dps 1–4, duration 1–3 seconds)
         upgrades.add(() -> new FireEffectAddToWeapon(
                 Rand.rangeInt(1, 3),
@@ -51,7 +51,7 @@ public class UpgradeRegistry {
         upgrades.add(() -> new FireEffectFlatDuration(
                 Rand.range(1, 3)
         ));
-
+/*
         // Range (flat 3–10, percent 5–15%)
         upgrades.add(() -> new RangeFlatUpgradeFlat(
                 Rand.range(3, 10)
@@ -71,7 +71,7 @@ public class UpgradeRegistry {
 
         upgrades.add(() -> new HpHealingUpgradeFlat(Rand.range(5, 25)));
         upgrades.add(() -> new HpHealingPercentUpgrade(Rand.range(0.10, 0.25)));
-
+*/
 
     }
 

@@ -17,4 +17,10 @@ public class DamageOverTime extends ActiveEffect {
         target.takeDamage(new CombatResult(dps * deltaTime, false));
         duration -= deltaTime;
     }
+
+    public void refresh(double newDps, double newDuration) {
+        this.dps = Math.max(this.dps, newDps);
+        this.duration = Math.max(this.duration, newDuration);
+    }
+
 }
