@@ -1,6 +1,5 @@
 package com.grouptwelve.roguelikegame.view;
 
-import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.GameDrawInfo;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
@@ -15,17 +14,16 @@ import com.grouptwelve.roguelikegame.view.effects.DeathEffect;
 import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
 import com.grouptwelve.roguelikegame.view.state.ObstacleData;
 import com.grouptwelve.roguelikegame.view.state.ViewState;
+import com.grouptwelve.roguelikegame.view.ui.BuffSelectionUI;
 import com.grouptwelve.roguelikegame.view.ui.HudManager;
 import com.grouptwelve.roguelikegame.view.ui.MenuManager;
 
-import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.animation.TranslateTransition;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.AnchorPane;
@@ -36,7 +34,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.util.List;
 
 public class GameView implements AttackListener, EntityDeathListener,
@@ -70,6 +67,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     private AttackVisualEffect attackVisualEffect;
     private HudManager hudManager;
     private MenuManager menuManager;
+    private BuffSelectionUI buffSelectionUI;
     private GraphicsContext gc;
     private ButtonListener buttonListener;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -92,6 +90,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.attackVisualEffect = new AttackVisualEffect(effectsLayer);
         this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
         this.menuManager = new MenuManager(pauseMenu, deathMenu, upgradeMenu, gameLayer, blur);
+        this.buffSelectionUI = new BuffSelectionUI(fireBuffBox, speedBuffBox, healthBuffBox);
         gameLayer.setEffect(blur);
     }
 
@@ -219,36 +218,21 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param selectedBuff index of selected buff (0, 1, or 2)
      */
     public void updateSelectedLabel(int selectedBuff) {
-        // Reset all buttons' border
-        fireBuffBox.setStyle("-fx-border-color: transparent;");
-        speedBuffBox.setStyle("-fx-border-color: transparent;");
-        healthBuffBox.setStyle("-fx-border-color: transparent;");
-
-        // Highlight selected button
-        switch (selectedBuff) {
-            case 0 -> fireBuffBox.setStyle("-fx-border-color: orange; -fx-border-width: 3;");
-            case 1 -> speedBuffBox.setStyle("-fx-border-color: cyan; -fx-border-width: 3;");
-            case 2 -> healthBuffBox.setStyle("-fx-border-color: lime; -fx-border-width: 3;");
-        }
+        buffSelectionUI.updateSelectedLabel(selectedBuff);
     }
 
     /**
      * Clears buff selection highlights.
      */
     public void clearBuffVisuals() {
-        fireBuffBox.setStyle("-fx-border-color: transparent;");
-        speedBuffBox.setStyle("-fx-border-color: transparent;");
-        healthBuffBox.setStyle("-fx-border-color: transparent;");
+        buffSelectionUI.clearBuffVisuals();
     }
 
 
     @Override
     public void onChooseBuff(UpgradeEvent upgradeEvent) {
         UpgradeInterface[] upgrades = upgradeEvent.getUpgrades();
-        fireBuffBox.setText(upgrades[0].getName());
-        speedBuffBox.setText(upgrades[1].getName());
-        healthBuffBox.setText(upgrades[2].getName());
-        // Show level up menu
+        buffSelectionUI.setBuffOptions(upgrades);
         showLevelMenu(true);
     }
 
