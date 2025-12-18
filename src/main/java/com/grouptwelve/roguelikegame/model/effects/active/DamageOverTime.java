@@ -18,6 +18,13 @@ public class DamageOverTime extends ActiveEffect {
         duration -= deltaTime;
     }
 
+    /**
+     * Refreshes this damage-over-time effect.
+     * The effect keeps the higher of the current and new DPS values,
+     * and the longer of the current and new durations if multiple.
+     * @param newDps      the DPS value to compare against the current DPS
+     * @param newDuration the duration (in seconds) to compare against the current duration
+     */
     public void refresh(double newDps, double newDuration) {
         this.dps = Math.max(this.dps, newDps);
         this.duration = Math.max(this.duration, newDuration);

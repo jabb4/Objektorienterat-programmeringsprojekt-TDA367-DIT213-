@@ -105,6 +105,13 @@ public abstract class Entity implements Obstacle{
         activeEffects.add(effect);
     }
 
+
+    /**
+     * Returns the first active effect of the specified type, if present.
+     * @param type the class of the active effect to search for
+     * @param <T>  the specific type of active effect
+     * @return the active effect of the given type, or {@code null} if none is present
+     */
     public <T extends ActiveEffect> T getActiveEffect(Class<T> type) {
         for (ActiveEffect effect : activeEffects) {
             if (type.isInstance(effect)) {
