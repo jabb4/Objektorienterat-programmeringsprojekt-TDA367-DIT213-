@@ -24,6 +24,8 @@ public class MenuController implements InputEventListener {
     @FXML private AnchorPane root;
     
     private MenuNavigator menuNavigator;
+    private SceneManager sceneManager;
+
 
     public void initialize(){
         // Extract available buttons from menu-view
@@ -46,6 +48,10 @@ public class MenuController implements InputEventListener {
         });
     }
 
+    public void setSceneManager(SceneManager sceneManager) {
+        this.sceneManager = sceneManager;
+    }
+
     // ================= InputEventListener =================
     @Override
     public void onCommandPressed(Command command) {
@@ -60,63 +66,13 @@ public class MenuController implements InputEventListener {
     public void onCommandReleased(Command command) {
         // Nothing needed for menu navigation
     }
-    
+
+
+    // ================= FXML Buttons =================
 
     @FXML
     protected void onStartGamePressed() throws IOException {
-        Stage stage = (Stage) root.getScene().getWindow();
-
-        // Get the event manager (acts as event bus between model and controller)
-        EventPublisher eventPublisher = new EventPublisher();
-
-        LevelUpPublisher levelUpPublisher = (LevelUpPublisher) eventPublisher;
-        EntityPublisher entityPublisher = (EntityPublisher) eventPublisher;
-        ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
-        XpPublisher xpPublisher = (XpPublisher) eventPublisher;
-
-        //inputHandler.setListener(this);
-        //eventPublisher.subscribeBuff(this);
-
-        // Create game with event publisher
-        Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher, xpPublisher);
-
-        // Load FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));
-        Parent root = loader.load();  // FXML creates the GameView instance
-
-        // Create view and input handler
-        GameView gameView = loader.getController();
-        InputHandler inputHandler = new InputHandler();
-
-
-
-        Scene gameScene = new Scene(root, 1280, 720);
-        inputHandler.setupInputHandling(gameScene);
-        
-        // Apply font on scene
-        gameScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
-        
-        GameController gameController = new GameController(game, gameView, inputHandler);
-        inputHandler.setListener(gameController);
-        System.out.println("created");
-        gameController.addEventListener(game);
-
-        entityPublisher.subscribeEntityDeath(gameController);
-        chooseBuffPublisher.subscribeBuff(gameController);
-
-        entityPublisher.subscribeEntityHit(gameView);
-        entityPublisher.subscribeAttack(gameView);
-        entityPublisher.subscribeEntityDeath(gameView);
-        entityPublisher.subscribeHealthChange(gameView);
-        chooseBuffPublisher.subscribeBuff(gameView);
-        xpPublisher.subscribeXp(gameView);
-
-        gameView.setGameController(gameController); // Connect FXML components with GameController
-        gameController.start();
-        
-        stage.setTitle("Inheritance of Violance");
-        stage.setScene(gameScene);
-        stage.show();
+        sceneManager.startGame();
     }
 
     @FXML

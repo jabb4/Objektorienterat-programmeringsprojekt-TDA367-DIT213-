@@ -1,5 +1,8 @@
 package com.grouptwelve.roguelikegame.model.level;
 
+/**
+ *
+ */
 public class LevelSystem {
 
     private static final int BASE_XP_TO_LEVEL = 100;

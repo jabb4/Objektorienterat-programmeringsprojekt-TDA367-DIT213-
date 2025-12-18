@@ -7,6 +7,9 @@ import com.grouptwelve.roguelikegame.model.entities.*;
 import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.entities.enemies.EnemyPool;
 import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent;
+import com.grouptwelve.roguelikegame.model.events.output.events.EntityHitEvent;
+import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityHitListener;
+import com.grouptwelve.roguelikegame.model.statistics.GameStatistics;
 import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.events.XpChangeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
@@ -26,12 +29,8 @@ import java.util.Random;
 
 /**
  * Core game model containing all game state and logic.
- *
- * Implements AttackListener to handle combat resolution when entities attack.
- * This follows the Observer pattern - entities notify Game when they attack,
- * and Game handles the combat logic.
  */
-public class Game implements GameEventListener, LevelUpListener, EntityDeathListener {
+public class Game implements GameEventListener, LevelUpListener, EntityDeathListener, EntityHitListener, GameDrawInfo {
 
     private final Random rand = new Random();
 
@@ -46,6 +45,7 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     private final ChooseBuffPublisher chooseBuffPublisher;
     private final LevelUpPublisher levelUpPublisher;
     private final UpgradeInterface[] upgrades =  new UpgradeInterface[3];
+    private final GameStatistics statistics = new GameStatistics();
 
     // World dimensions
     private static final int WORLD_WIDTH = 1280;
@@ -80,6 +80,7 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
 
         levelUpPublisher.subscribeLevelUp(this);
         entityPublisher.subscribeEntityDeath(this);
+        entityPublisher.subscribeEntityHit(this);
 
         // Initialize world and constraint system
         this.world = new GameWorld(WORLD_WIDTH, WORLD_HEIGHT);
@@ -92,7 +93,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         this.player.setLevelUpPublisher(levelUpPublisher);
         this.player.setEntityPublisher(entityPublisher);
 
-
         // Initialize combat system
         this.enemiesAlive = new ArrayList<>();
         this.combatManager = new CombatManager(player, () -> enemiesAlive);
@@ -104,10 +104,23 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     @Override
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getObstacle() instanceof Enemy enemy) {
+            statistics.incrementKills();
             player.gainXP(enemy.getXpValue());
             EnemyPool.getInstance().returnEnemy(enemy);
             enemiesAlive.remove(enemy);
             xpPublisher.onUpdateXp(new XpChangeEvent(player.getXP(), player.getXPToNext(), player.getLevel()));
+        }
+    }
+
+    @Override
+    public void onEntityHit(EntityHitEvent event) {
+        // Track damage dealt by player to entities
+        if (event.getObstacle().getObstacleType() != ObstacleType.PLAYER) {
+            statistics.addDamage(event.getCombatResult().getDamage());
+        }
+        // Track damage taken by player from entities
+        if (event.getObstacle().getObstacleType() == ObstacleType.PLAYER) {
+            statistics.addDamageTaken(event.getCombatResult().getDamage());
         }
     }
 
@@ -140,7 +153,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     public void onAttack() {
         player.attack();
     }
-
 
     // ==================== Game Logic ====================
 
@@ -220,9 +232,32 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     public void reset() {
         this.gameTime = 0;
         this.lastEnemySpawnTime = 0;
+        statistics.reset();
 
         player.revive();
         enemiesAlive.clear();
+    }
+
+    /**
+     * Finalizes the statistics for the current run.
+     * Should be called when the player dies to capture final time and level.
+     */
+    public void finalizeStatistics() {
+        statistics.setTimeSurvived(gameTime);
+        statistics.setLevelReached(player.getLevel());
+        
+        // Console output for testing
+        int minutes = (int) (statistics.getTimeSurvived() / 60);
+        int seconds = (int) (statistics.getTimeSurvived() % 60);
+        System.out.println("========== GAME OVER ==========");
+        System.out.println("Time Survived: " + minutes + ":" + String.format("%02d", seconds));
+        System.out.println("Level Reached: " + statistics.getLevelReached());
+        System.out.println("Damage Dealt: " + (int) statistics.getTotalDamageDealt());
+        System.out.println("Damage Taken: " + (int) statistics.getTotalDamageTaken());
+        System.out.println("Enemies Killed: " + statistics.getEnemiesKilled());
+        System.out.println("--------------------------------");
+        System.out.println("TOTAL SCORE: " + statistics.calculateScore());
+        System.out.println("================================");
     }
 
     public void resetPlayerMovement() {
@@ -245,5 +280,14 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
 
     public double getGameTime() {
         return gameTime;
+    }
+
+    /**
+     * Should be called by the controller on player death to retrieve statistics.
+     *
+     * @return the current game statistics.
+     */
+    public GameStatistics getStatistics() {
+        return statistics;
     }
 }

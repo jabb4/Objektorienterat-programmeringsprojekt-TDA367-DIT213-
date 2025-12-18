@@ -11,6 +11,7 @@ import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffLis
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.view.ButtonListener;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -29,7 +30,7 @@ import java.util.Set;
 /**
  * Coordinates the game loop and events.
  */
-public class GameController implements InputEventListener, ChooseBuffListener, EntityDeathListener {
+public class GameController implements InputEventListener, ChooseBuffListener, EntityDeathListener, ButtonListener {
   private final Game game;
   private final GameView gameView;
   private final InputHandler inputHandler;
@@ -41,13 +42,16 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   private int selectedBuff = 1;
   private MenuNavigator menuNavigator;
 
+  private SceneManager sceneManager;
+
   // All systems that want to observe game events
   private final List<GameEventListener> eventListeners = new ArrayList<>();
 
-  public GameController(Game game, GameView gameView, InputHandler inputHandler) {
+  public GameController(Game game, GameView gameView, InputHandler inputHandler, SceneManager sceneManager) {
     this.game = game;
     this.gameView = gameView;
     this.inputHandler = inputHandler;
+    this.sceneManager = sceneManager;
 
     addEventListener(game);
   }
@@ -253,20 +257,18 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   @Override
   public void onEntityDeath(EntityDeathEvent event) {
     Obstacle obstacle = event.getObstacle();
-    if(obstacle.getObstacleType() == ObstacleType.PLAYER)
-    {
+    if (obstacle.getObstacleType() == ObstacleType.PLAYER) {
         pause();
+        
+        // statistics (prints to console for testing)
+        game.finalizeStatistics();
+        
         List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
                 .filter(node -> node instanceof Button)
                 .map(node -> (Button) node)
                 .toList();
 
         menuNavigator = new MenuNavigator(menuButtons);
-    }
-    else
-    {
-        //TODO: implement show game statistics that are also not done
-        System.out.println("enmy died");
     }
   }
 
@@ -322,73 +324,33 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
       } else {  // resume game loop
           gameView.showPauseMenu(false);
       }
-  }
+    }
 
-  public void resume() {
-      if (paused) {
-          unpause();
-          gameView.showPauseMenu(false);
-      }
-  }
+    @Override
+    public void onResume() {
+        if (paused) {
+            unpause();
+            gameView.showPauseMenu(false);
+        }
+    }
 
-  public void playAgain() throws IOException {
-      stop();
+    @Override
+    public void onPlayAgain() {
+        try {
+            stop();
+            sceneManager.startGame();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-      Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
-
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/game-view.fxml"));
-      Parent root = loader.load();
-      GameView gameView = loader.getController();
-      InputHandler inputHandler = new InputHandler();
-
-      EventPublisher eventPublisher = new EventPublisher();
-      LevelUpPublisher levelUpPublisher = (LevelUpPublisher) eventPublisher;
-      EntityPublisher entityPublisher = (EntityPublisher) eventPublisher;
-      ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
-      XpPublisher xpPublisher = (XpPublisher) eventPublisher;
-
-      Game game = new Game(entityPublisher,chooseBuffPublisher, levelUpPublisher, xpPublisher);
-
-      Scene scene = new Scene(root, 1280, 720);
-      inputHandler.setupInputHandling(scene);
-      
-      // Create controller (subscribes to event manager)
-      GameController gameController = new GameController(game, gameView, inputHandler);
-      inputHandler.setListener(gameController);
-
-      gameController.addEventListener(game);
-
-      entityPublisher.subscribeEntityDeath(gameController);
-      chooseBuffPublisher.subscribeBuff(gameController);
-
-      entityPublisher.subscribeEntityHit(gameView);
-      entityPublisher.subscribeAttack(gameView);
-      entityPublisher.subscribeEntityDeath(gameView);
-      entityPublisher.subscribeHealthChange(gameView);
-      chooseBuffPublisher.subscribeBuff(gameView);
-      xpPublisher.subscribeXp(gameView);
-
-      gameView.setGameController(gameController); // Connect FXML components with GameController
-      gameView.setGameController(gameController);
-      gameController.start();
-
-      stage.setTitle("Roguelike Game");
-      stage.setScene(scene);
-      stage.show();
-  }
-
-  public void quit() throws IOException {
-      stop();
-
-      Stage stage = (Stage) gameView.getRoot().getScene().getWindow();
-
-      FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));
-      Scene menuScene = new Scene(menuLoader.load(), 1280, 720);
-
-      // Attach global CSS
-      menuScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
-
-      stage.setScene(menuScene);
-      stage.show();
-  }
+    @Override
+    public void onQuit() {
+        try {
+            stop();
+            sceneManager.showMenu();
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exception here so View doesn't have to
+        }
+    }
 }

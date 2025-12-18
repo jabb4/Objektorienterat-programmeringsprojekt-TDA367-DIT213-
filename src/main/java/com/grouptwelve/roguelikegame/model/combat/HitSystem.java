@@ -17,8 +17,7 @@ public class HitSystem {
      * Applies damage to an entity.
      *
      * @param target The entity to damage
-     * @param damage Amount of damage to apply
-     * @return true if the entity died from this damage
+     * @param combatResult contains amount of damage to apply
      */
     public static void applyDamage(Entity target, CombatResult combatResult)
     {
