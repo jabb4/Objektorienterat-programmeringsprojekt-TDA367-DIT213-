@@ -12,6 +12,7 @@ import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.view.effects.AttackVisualEffect;
 import com.grouptwelve.roguelikegame.view.effects.DamageNumberEffect;
 import com.grouptwelve.roguelikegame.view.effects.DeathEffect;
 import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
@@ -70,6 +71,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     private ParticleSystem particleSystem;
     private DamageNumberEffect damageNumberEffect;
     private DeathEffect deathEffect;
+    private AttackVisualEffect attackVisualEffect;
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -89,6 +91,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.particleSystem = new ParticleSystem(effectsLayer);
         this.damageNumberEffect = new DamageNumberEffect(effectsLayer);
         this.deathEffect = new DeathEffect(effectsLayer);
+        this.attackVisualEffect = new AttackVisualEffect(effectsLayer);
         gameLayer.setEffect(blur);
     }
 
@@ -171,19 +174,9 @@ public class GameView implements AttackListener, EntityDeathListener,
 
     @Override
     public void onAttack(AttackEvent attackEvent) {
-
-        Circle attackCircle = new Circle(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange());
         Obstacle attacker = attackEvent.getAttacker();
-        if(attacker.getObstacleType() == ObstacleType.PLAYER) attackCircle.setFill(Color.BLUE);
-        else  attackCircle.setFill(Color.VIOLET);
-
-        attackCircle.setManaged(false);
-        effectsLayer.getChildren().add(attackCircle);
-
-        //remove attackcircle after a short timer
-        PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
-        pause.setOnFinished(_ -> effectsLayer.getChildren().remove(attackCircle));
-        pause.play();
+        boolean isPlayer = attacker.getObstacleType() == ObstacleType.PLAYER;
+        attackVisualEffect.show(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange(), isPlayer);
     }
 
     // ==================== FOR DEBUGGING PURPOSES ====================
