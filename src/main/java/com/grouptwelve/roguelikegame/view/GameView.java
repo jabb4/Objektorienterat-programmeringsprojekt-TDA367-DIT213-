@@ -12,6 +12,7 @@ import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.view.effects.DamageNumberEffect;
 import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
 import com.grouptwelve.roguelikegame.view.state.ObstacleData;
 import com.grouptwelve.roguelikegame.view.state.ViewState;
@@ -67,6 +68,7 @@ public class GameView implements AttackListener, EntityDeathListener,
 
     private final ViewState viewState = new ViewState();
     private ParticleSystem particleSystem;
+    private DamageNumberEffect damageNumberEffect;
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -84,6 +86,7 @@ public class GameView implements AttackListener, EntityDeathListener,
 
         this.gc = gameCanvas.getGraphicsContext2D();
         this.particleSystem = new ParticleSystem(effectsLayer);
+        this.damageNumberEffect = new DamageNumberEffect(effectsLayer);
         gameLayer.setEffect(blur);
     }
 
@@ -328,7 +331,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         CombatResult combatResult = entityHitEvent.getCombatResult();
         if(obstacle.getObstacleType() != ObstacleType.PLAYER)
         {
-            showDamageNumber(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
+            damageNumberEffect.show(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
             particleSystem.spawnHitParticles(obstacle.getX(), obstacle.getY());
             viewState.setObstacleData(obstacle, Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp());
 
@@ -419,42 +422,6 @@ public class GameView implements AttackListener, EntityDeathListener,
         fadeFlash.setToValue(0.0);
         fadeFlash.setOnFinished(e -> effectsLayer.getChildren().remove(flash));
         fadeFlash.play();
-    }
-
-    /**
-     * Displays a floating damage number that rises and fades out.
-     * Critical hits are displayed larger and in a different color.
-     * 
-     * @param x X position of the damage
-     * @param y Y position of the damage
-     * @param damage Amount of damage to display
-     * @param isCritical Whether this was a critical hit
-     */
-    public void showDamageNumber(double x, double y, double damage, boolean isCritical) {
-        Label dmgLabel = new Label(String.format("%.0f", damage) + (isCritical ? "!" : ""));
-
-        if (isCritical) {
-            dmgLabel.setStyle("-fx-text-fill: gold; -fx-font-size:  20px; -fx-font-family: 'Press Start 2P';");
-        } else {
-            dmgLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Press Start 2P';");
-        }
-        
-        dmgLabel.setLayoutX(x - 10);
-        dmgLabel.setLayoutY(y - 30);
-        effectsLayer.getChildren().add(dmgLabel);
-
-        // Float up animation
-        TranslateTransition floatUp = new TranslateTransition(Duration.millis(400), dmgLabel);
-        floatUp.setByY(-25);
-
-        // Fade out animation
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(400), dmgLabel);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-        fadeOut.setOnFinished(e -> effectsLayer.getChildren().remove(dmgLabel));
-
-        floatUp.play();
-        fadeOut.play();
     }
 
     // ==================== FXML Controls ====================
