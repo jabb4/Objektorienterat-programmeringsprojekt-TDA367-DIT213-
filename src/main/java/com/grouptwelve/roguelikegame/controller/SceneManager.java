@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.controller;
 import java.io.IOException;
 
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.model.statistics.HighScoreManager;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.ChooseBuffPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EntityPublisher;
 import com.grouptwelve.roguelikegame.model.events.output.publishers.EventPublisher;
@@ -21,6 +22,7 @@ import javafx.stage.Stage;
 public class SceneManager {
     private final Stage stage;
     private final InputHandler inputHandler;
+    private final HighScoreManager highScoreManager;
     
     // Screen resolution
     private int x = 1280; 
@@ -29,6 +31,7 @@ public class SceneManager {
     public SceneManager(Stage stage) {
         this.stage = stage;
         this.inputHandler = new InputHandler();
+        this.highScoreManager = new HighScoreManager();
     }
     
     /** Loads menu-view.fxml with MenuController*/
@@ -37,6 +40,7 @@ public class SceneManager {
         Parent root = loader.load(); 
         MenuController controller = loader.getController();
         controller.setSceneManager(this);
+        controller.setHighScoreManager(highScoreManager);
 
         Scene scene = createScene(root); 
 
@@ -70,10 +74,9 @@ public class SceneManager {
         Scene scene = createScene(root);
         inputHandler.setupInputHandling(scene); 
         
-        GameController controller = new GameController(game, gameView, inputHandler, this);
+        GameController controller = new GameController(game, gameView, inputHandler, this, highScoreManager);
         inputHandler.setListener(controller);
         controller.addEventListener(game);
-
 
         entityPublisher.subscribeEntityDeath(controller);
         chooseBuffPublisher.subscribeBuff(controller);
