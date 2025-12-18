@@ -1,5 +1,6 @@
 package com.grouptwelve.roguelikegame.controller;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
+
+import com.grouptwelve.roguelikegame.model.statistics.HighScoreManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +15,7 @@ public class MenuController implements InputEventListener {
     
     private MenuNavigator menuNavigator;
     private SceneManager sceneManager;
+    private HighScoreManager highScoreManager;
 
 
     public void initialize(){
@@ -39,6 +41,10 @@ public class MenuController implements InputEventListener {
 
     public void setSceneManager(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
+    }
+
+    public void setHighScoreManager(HighScoreManager highScoreManager) {
+        this.highScoreManager = highScoreManager;
     }
 
     // ================= InputEventListener =================

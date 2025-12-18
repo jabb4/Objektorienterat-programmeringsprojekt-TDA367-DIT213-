@@ -232,19 +232,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     public void finalizeStatistics() {
         statistics.setTimeSurvived(gameTime);
         statistics.setLevelReached(player.getLevel());
-        
-        // Console output for testing
-        int minutes = (int) (statistics.getTimeSurvived() / 60);
-        int seconds = (int) (statistics.getTimeSurvived() % 60);
-        System.out.println("========== GAME OVER ==========");
-        System.out.println("Time Survived: " + minutes + ":" + String.format("%02d", seconds));
-        System.out.println("Level Reached: " + statistics.getLevelReached());
-        System.out.println("Damage Dealt: " + (int) statistics.getTotalDamageDealt());
-        System.out.println("Damage Taken: " + (int) statistics.getTotalDamageTaken());
-        System.out.println("Enemies Killed: " + statistics.getEnemiesKilled());
-        System.out.println("--------------------------------");
-        System.out.println("TOTAL SCORE: " + statistics.calculateScore());
-        System.out.println("================================");
     }
 
     public void resetPlayerMovement() {
