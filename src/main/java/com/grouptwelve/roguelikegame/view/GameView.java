@@ -12,6 +12,7 @@ import com.grouptwelve.roguelikegame.view.effects.AttackVisualEffect;
 import com.grouptwelve.roguelikegame.view.effects.DamageNumberEffect;
 import com.grouptwelve.roguelikegame.view.effects.DeathEffect;
 import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
+import com.grouptwelve.roguelikegame.view.rendering.EntityRenderer;
 import com.grouptwelve.roguelikegame.view.state.ObstacleData;
 import com.grouptwelve.roguelikegame.view.state.ViewState;
 import com.grouptwelve.roguelikegame.view.ui.BuffSelectionUI;
@@ -30,11 +31,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import java.util.List;
 
 public class GameView implements AttackListener, EntityDeathListener,
         ChooseBuffListener, EntityHitListener, XpListener, HealthChangeListener {
@@ -68,6 +66,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     private HudManager hudManager;
     private MenuManager menuManager;
     private BuffSelectionUI buffSelectionUI;
+    private EntityRenderer entityRenderer;
     private GraphicsContext gc;
     private ButtonListener buttonListener;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -91,6 +90,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
         this.menuManager = new MenuManager(pauseMenu, deathMenu, upgradeMenu, gameLayer, blur);
         this.buffSelectionUI = new BuffSelectionUI(fireBuffBox, speedBuffBox, healthBuffBox);
+        this.entityRenderer = new EntityRenderer(gameObjectsLayer, gc, viewState);
         gameLayer.setEffect(blur);
     }
 
@@ -104,71 +104,9 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param game model info interface containing only gets methods
      */
     public void render(GameDrawInfo game) {
-        // Clear the canvas
-        gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
-        // Clear previous frame
-        gameObjectsLayer.getChildren().clear();
-
-        Obstacle player = game.getPlayer();
-        playerRenderer(player);
-
-        List<Obstacle> enemies = game.getEnemies();
-        enemiesRenderer(enemies);
-
-    }
-
-    /**
-     * Only get obstacle information for player and uses it to draw the player
-     * @param player obstacle info
-     */
-    public void playerRenderer(Obstacle player)
-    {
-        Circle playerCircle = new Circle(player.getX(), player.getY(), player.getSize());
-        playerCircle.setFill(Color.LIGHTBLUE);
-        playerCircle.setManaged(false);
-        gameObjectsLayer.getChildren().add(playerCircle);
-    }
-
-    /**
-     * draws the list of enemies, this includes the actual body and hp bar
-     * @param enemies list of Obstacle info for enemies
-     */
-    public void enemiesRenderer(List<Obstacle> enemies)
-    {
-        for(Obstacle enemy : enemies)
-        {
-            Circle enemyCircle = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
-            ObstacleData data = viewState.getObstacleData(enemy);
-            double barWidth = 40;
-            double barHeight = 5;
-            double barOffset = 10;
-
-            // HP bar background
-            gc.setFill(Color.GRAY);
-            gc.fillRect(enemy.getX() - barWidth / 2,
-                    enemy.getY() - enemy.getSize() - barOffset,
-                    barWidth, barHeight);
-
-            double hpPercentage;
-
-            if(data != null) // data has been updated by some event so its not default values
-            {
-                enemyCircle.setFill(data.getColor());
-                hpPercentage = data.getHp() / data.getMaxHp();
-            }
-            else //no value has been changed since spawning so use default values
-            {
-                enemyCircle.setFill(Color.RED);
-                hpPercentage = 1; //full bar 100%
-            }
-            enemyCircle.setManaged(false);
-            gameObjectsLayer.getChildren().add(enemyCircle);
-
-            gc.setFill(Color.RED);
-            gc.fillRect(enemy.getX() - barWidth / 2,
-                    enemy.getY() - enemy.getSize() - barOffset,
-                    barWidth * hpPercentage, barHeight); // use percent
-        }
+        entityRenderer.clear(gameCanvas.getWidth(), gameCanvas.getHeight());
+        entityRenderer.renderPlayer(game.getPlayer());
+        entityRenderer.renderEnemies(game.getEnemies());
     }
 
     @Override
