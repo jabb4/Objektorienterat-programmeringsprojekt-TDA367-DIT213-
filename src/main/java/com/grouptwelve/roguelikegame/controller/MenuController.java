@@ -1,24 +1,13 @@
 package com.grouptwelve.roguelikegame.controller;
+import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
 
 import java.io.IOException;
-
-import com.grouptwelve.roguelikegame.model.Game;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
-import com.grouptwelve.roguelikegame.view.GameView;
-
-import javafx.scene.control.Button;
 import java.util.List;
-
+import javafx.scene.control.Button;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class MenuController implements InputEventListener {
     @FXML private AnchorPane root;

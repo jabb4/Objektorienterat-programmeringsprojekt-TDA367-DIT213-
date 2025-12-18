@@ -9,18 +9,10 @@ import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent
 import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
-import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.ButtonListener;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,12 +29,11 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   private AnimationTimer gameLoop;
   private long lastUpdate = 0;
   private boolean paused = false;
-  private boolean death;
   private boolean chooseBuff;
   private int selectedBuff = 1;
   private MenuNavigator menuNavigator;
 
-  private SceneManager sceneManager;
+  private final SceneManager sceneManager;
 
   // All systems that want to observe game events
   private final List<GameEventListener> eventListeners = new ArrayList<>();
@@ -65,15 +56,6 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     if (!eventListeners.contains(listener)) {
       eventListeners.add(listener);
     }
-  }
-
-  /**
-   * Unregisters a system from receiving game events.
-   *
-   * @param listener The system to unregister
-   */
-  public void removeEventListener(GameEventListener listener) {
-    eventListeners.remove(listener);
   }
 
   // ==================== Input Event Handling ====================

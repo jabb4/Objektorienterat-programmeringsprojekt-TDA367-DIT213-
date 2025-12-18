@@ -56,9 +56,4 @@ public class MenuNavigator {
             }
         }
     }
-
-    public void reset() {
-        selectedIndex = 0;
-        updateSelection();
-    }
 }
