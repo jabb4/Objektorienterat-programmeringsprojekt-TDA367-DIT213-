@@ -16,6 +16,7 @@ import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
 import com.grouptwelve.roguelikegame.view.state.ObstacleData;
 import com.grouptwelve.roguelikegame.view.state.ViewState;
 import com.grouptwelve.roguelikegame.view.ui.HudManager;
+import com.grouptwelve.roguelikegame.view.ui.MenuManager;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -68,6 +69,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     private DeathEffect deathEffect;
     private AttackVisualEffect attackVisualEffect;
     private HudManager hudManager;
+    private MenuManager menuManager;
     private GraphicsContext gc;
     private ButtonListener buttonListener;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -89,6 +91,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.deathEffect = new DeathEffect(effectsLayer);
         this.attackVisualEffect = new AttackVisualEffect(effectsLayer);
         this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
+        this.menuManager = new MenuManager(pauseMenu, deathMenu, upgradeMenu, gameLayer, blur);
         gameLayer.setEffect(blur);
     }
 
@@ -256,10 +259,7 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param show If show is true, then pause menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
      */
     public void showPauseMenu(boolean show) {
-        pauseMenu.setVisible(show);
-        pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
-        gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
-        blur.setRadius(show ? 10 : 0);
+        menuManager.showPauseMenu(show);
     }
 
     /**
@@ -268,8 +268,7 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param show If show is true, then upgrade menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
      */
     public void showLevelMenu(boolean show) {
-        upgradeMenu.setVisible(show);
-        blur.setRadius(show ? 10 : 0);
+        menuManager.showLevelMenu(show);
     }
 
     // ==================== GameListeners ====================
@@ -337,8 +336,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     public void playerDied(double x, double y)
     {
         deathEffect.play(x, y);
-        deathMenu.setVisible(true);
-        blur.setRadius(10);
+        menuManager.showDeathMenu();
     }
 
     // ==================== FXML Controls ====================
