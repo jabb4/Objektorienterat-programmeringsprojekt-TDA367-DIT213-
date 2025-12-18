@@ -253,20 +253,18 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   @Override
   public void onEntityDeath(EntityDeathEvent event) {
     Obstacle obstacle = event.getObstacle();
-    if(obstacle.getObstacleType() == ObstacleType.PLAYER)
-    {
+    if (obstacle.getObstacleType() == ObstacleType.PLAYER) {
         pause();
+        
+        // statistics (prints to console for testing)
+        game.finalizeStatistics();
+        
         List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
                 .filter(node -> node instanceof Button)
                 .map(node -> (Button) node)
                 .toList();
 
         menuNavigator = new MenuNavigator(menuButtons);
-    }
-    else
-    {
-        //TODO: implement show game statistics that are also not done
-        System.out.println("enmy died");
     }
   }
 
