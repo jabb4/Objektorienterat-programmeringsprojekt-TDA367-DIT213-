@@ -226,19 +226,6 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     }
 
     /**
-     * used when player died and want to play again
-     * resets game state
-     */
-    public void reset() {
-        this.gameTime = 0;
-        this.lastEnemySpawnTime = 0;
-        statistics.reset();
-
-        player.revive();
-        enemiesAlive.clear();
-    }
-
-    /**
      * Finalizes the statistics for the current run.
      * Should be called when the player dies to capture final time and level.
      */
