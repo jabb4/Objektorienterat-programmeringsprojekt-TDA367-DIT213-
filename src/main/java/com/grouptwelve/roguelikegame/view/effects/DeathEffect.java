@@ -22,7 +22,7 @@ public class DeathEffect {
     }
 
     /**
-     * Plays the player death visual effects with brief freeze fram and then shockwave and red flash.
+     * Plays the player death visual effects with brief freeze frame and then shockwave and red flash.
      *
      * @param x X position of the player
      * @param y Y position of the player
