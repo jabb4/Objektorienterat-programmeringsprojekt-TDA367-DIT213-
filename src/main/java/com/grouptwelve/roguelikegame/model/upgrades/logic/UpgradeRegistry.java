@@ -1,10 +1,7 @@
 package com.grouptwelve.roguelikegame.model.upgrades.logic;
 
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.MaxHpFlatUpgradeFlat;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.MaxHpPercentUpgrade;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.SpeedFlatUpgradeFlat;
-import com.grouptwelve.roguelikegame.model.upgrades.attributes.SpeedPercentUpgrade;
+import com.grouptwelve.roguelikegame.model.upgrades.attributes.*;
 import com.grouptwelve.roguelikegame.model.upgrades.effects.*;
 import com.grouptwelve.roguelikegame.model.upgrades.weapons.*;
 
@@ -71,6 +68,9 @@ public class UpgradeRegistry {
 
         upgrades.add(() -> new KnockbackFlatUpgrade(Rand.range(20, 60)));
         upgrades.add(() -> new KnockbackPercentUpgrade(Rand.range(0.10, 0.25)));
+
+        upgrades.add(() -> new HpHealingUpgradeFlat(Rand.range(5, 25)));
+        upgrades.add(() -> new HpHealingPercentUpgrade(Rand.range(0.10, 0.25)));
 
 
     }

@@ -57,6 +57,7 @@ public class SceneManager {
         ChooseBuffPublisher chooseBuffPublisher = (ChooseBuffPublisher) eventPublisher;
         XpPublisher xpPublisher = (XpPublisher) eventPublisher;
 
+
         Game game = new Game(entityPublisher, chooseBuffPublisher, levelUpPublisher, xpPublisher);
 
         // ==========================================
@@ -79,11 +80,12 @@ public class SceneManager {
 
         entityPublisher.subscribeEntityHit(gameView);
         entityPublisher.subscribeAttack(gameView);
+        entityPublisher.subscribeHealthChange(gameView);
         entityPublisher.subscribeEntityDeath(gameView);
         chooseBuffPublisher.subscribeBuff(gameView);
         xpPublisher.subscribeXp(gameView);
 
-        gameView.setGameController(controller); 
+        gameView.setButtonListener(controller);
         controller.start();
 
         stage.setScene(scene);

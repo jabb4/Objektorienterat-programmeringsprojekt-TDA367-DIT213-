@@ -15,6 +15,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * class that represent object that can move and attack(player and Enemies)
+ * contains both information but also methods how they should behave
+ * abstract class that should not be created without extending it, because this is just a template
+ * use composition to store objects like velocity and weapon
+ */
 public abstract class Entity implements Obstacle{
     protected String name;
     protected double x, y;
@@ -181,10 +187,6 @@ public abstract class Entity implements Obstacle{
         return velocity.getMaxSpeed();
     }
 
-    public void setMoveSpeed(double speed) {
-        velocity.setMaxSpeed(speed);
-    }
-
     public void increaseMoveSpeed(double amount) {
         velocity.setMaxSpeed(velocity.getMaxSpeed() + amount);
     }
@@ -287,9 +289,6 @@ public abstract class Entity implements Obstacle{
         }
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public void setX(double x) {
         this.x = x;
@@ -297,6 +296,15 @@ public abstract class Entity implements Obstacle{
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public void heal(double amount) {
+        if ((this.hp + amount) >= this.maxHP){
+            setHp(this.maxHP);
+        }
+        else{
+            setHp(this.hp + amount);
+        }
     }
 
     public void setHp(double hp) {

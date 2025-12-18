@@ -2,7 +2,6 @@ package com.grouptwelve.roguelikegame.model.events.output.publishers;
 
 import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
-import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
 /**
  * publisher interface that EventPublisher implements,

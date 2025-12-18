@@ -5,6 +5,9 @@ import com.grouptwelve.roguelikegame.model.weapons.Sword;
 
 import java.util.HashMap;
 
+/**
+ * Factory for creating new enemies
+ */
 public class EnemyFactory {
     private static final EnemyFactory instance = new EnemyFactory();
 
@@ -64,6 +67,13 @@ public class EnemyFactory {
         ));
     }
 
+    /**
+     * Creates a new enemy
+     * @param type What type of enemy to create (Troll, Goblin)
+     * @param x What x coordinate to put the new enemy at
+     * @param y What y coordinate to put the new enemy at
+     * @return The new enemy
+     */
     public Enemy createEnemy(Enemies type, double x, double y){
         Enemy enemy = enemyRegistry.get(type);
         if (enemy == null){

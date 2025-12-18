@@ -3,6 +3,9 @@ package com.grouptwelve.roguelikegame.model.weapons;
 //import com.grouptwelve.roguelikegame.model.effects.HitEffect;
 import com.grouptwelve.roguelikegame.model.effects.KnockbackEffect;
 
+/**
+ * subclass of weapon with concrete values . High power but also high cooldown
+ */
 public class Club extends Weapon {
     private static final double CLUB_DAMAGE = 20;
     private static final double CLUB_RANGE = 40;

@@ -1,14 +1,11 @@
 package com.grouptwelve.roguelikegame.view;
 
-import com.grouptwelve.roguelikegame.controller.GameController;
-import com.grouptwelve.roguelikegame.controller.MenuNavigator;
 import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.GameDrawInfo;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.entities.Player;
-import com.grouptwelve.roguelikegame.model.entities.enemies.Enemy;
 import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
@@ -28,11 +25,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -75,13 +69,13 @@ public class GameView implements AttackListener, EntityDeathListener,
     private AttackVisualEffect attackVisualEffect;
     private HudManager hudManager;
     private GraphicsContext gc;
-    private GameController gameController;
+    private ButtonListener buttonListener;
     private GaussianBlur blur = new GaussianBlur(0);
     private static final double HIT_FLASH_DURATION = 0.15; // Flash in seconds
 
     // This is for setting "FXML" controller
-    public void setGameController(GameController controller) {
-        this.gameController = controller;
+    public void setButtonListener(ButtonListener listener) {
+        this.buttonListener = listener;
     }
 
 
@@ -348,7 +342,13 @@ public class GameView implements AttackListener, EntityDeathListener,
     }
 
     // ==================== FXML Controls ====================
-    @FXML private void onResume() { gameController.resume(); }
-    @FXML private void onQuit() throws IOException { gameController.quit(); }
-    @FXML private void onPlayAgain() throws IOException { gameController.playAgain(); }
+    @FXML private void onResume() {
+        if (buttonListener != null) buttonListener.onResume();
+    }
+    @FXML private void onQuit() {
+        if (buttonListener != null) buttonListener.onQuit();
+    }
+    @FXML private void onPlayAgain() {
+        if (buttonListener != null) buttonListener.onPlayAgain();
+    }
 }
