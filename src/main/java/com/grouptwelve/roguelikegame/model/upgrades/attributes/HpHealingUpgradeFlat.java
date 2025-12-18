@@ -17,6 +17,6 @@ public class HpHealingUpgradeFlat extends FlatAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (int)amount + " HP";
+        return "+ " + (int)amount + " Heal";
     }
 }

@@ -17,6 +17,6 @@ public class RangePercentUpgrade extends PercentAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "Range +" + (int)(percent * 100) + "%";
+        return "Attack Range +" + (int)(percent * 100) + "%";
     }
 }

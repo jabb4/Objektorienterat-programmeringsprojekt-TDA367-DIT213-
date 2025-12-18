@@ -4,10 +4,22 @@ import com.grouptwelve.roguelikegame.model.effects.FireEffect;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 
+/**
+ * Upgrade that adds a fire damage effect to the entity's weapon.
+ * <p>
+ * This upgrade can only be applied once.
+ */
 public class FireEffectAddToWeapon implements UpgradeInterface {
+
     private final double dps;
     private final double duration;
 
+    /**
+     * Creates a fire effect upgrade.
+     *
+     * @param dps      damage per second
+     * @param duration effect duration in seconds
+     */
     public FireEffectAddToWeapon(double dps, double duration) {
         this.dps = dps;
         this.duration = duration;
@@ -19,8 +31,13 @@ public class FireEffectAddToWeapon implements UpgradeInterface {
     }
 
     @Override
+    public boolean isAvailable(Entity entity) {
+        return !entity.hasWeaponEffect(FireEffect.class);
+    }
+
+    @Override
     public String getName() {
-        return "Add Fire Effect (" + (int)dps + " DPS for " + (int)duration + "s)";
+        return "Fire Effect: " + (int)dps + " Damage per second for " + (int)duration + "s";
     }
 }
 

@@ -17,6 +17,6 @@ public class HpHealingPercentUpgrade extends PercentAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (int)(percent*100) + "% HP";
+        return "+ " + (int)(percent*100) + "% Heal";
     }
 }
