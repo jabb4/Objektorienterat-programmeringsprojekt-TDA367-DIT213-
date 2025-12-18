@@ -2,6 +2,8 @@ package com.grouptwelve.roguelikegame;
 
 import java.io.IOException;
 
+import com.grouptwelve.roguelikegame.controller.SceneManager;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,14 +16,9 @@ import javafx.stage.Stage;
 public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        // Load the font
-        Font.loadFont(App.class.getResourceAsStream("fonts/PressStart2P-Regular.ttf"), 12);
-
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("menu-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
-        scene.getStylesheets().add(App.class.getResource("global.css").toExternalForm());
-        stage.setScene(scene);
-        stage.show(); 
+        Font.loadFont(getClass().getResource("fonts/PressStart2P-Regular.ttf").toExternalForm(), 12);
+        SceneManager sceneManager = new SceneManager(stage);
+        sceneManager.showMenu();
     }
 
     public static void main(String[] args) {
