@@ -1,6 +1,5 @@
 package com.grouptwelve.roguelikegame.view;
 
-import com.grouptwelve.roguelikegame.model.Game;
 import com.grouptwelve.roguelikegame.model.GameDrawInfo;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
@@ -9,29 +8,30 @@ import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
+import com.grouptwelve.roguelikegame.view.effects.AttackVisualEffect;
+import com.grouptwelve.roguelikegame.view.effects.DamageNumberEffect;
+import com.grouptwelve.roguelikegame.view.effects.DeathEffect;
+import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
+import com.grouptwelve.roguelikegame.view.rendering.EntityRenderer;
+import com.grouptwelve.roguelikegame.view.state.ObstacleData;
+import com.grouptwelve.roguelikegame.view.state.ViewState;
+import com.grouptwelve.roguelikegame.view.ui.BuffSelectionUI;
+import com.grouptwelve.roguelikegame.view.ui.HudManager;
+import com.grouptwelve.roguelikegame.view.ui.MenuManager;
 
-import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
 
 public class GameView implements AttackListener, EntityDeathListener,
         ChooseBuffListener, EntityHitListener, XpListener, HealthChangeListener {
@@ -41,10 +41,8 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private AnchorPane gameLayer;
     @FXML private AnchorPane gameObjectsLayer;
     @FXML private AnchorPane effectsLayer;
-    @FXML private Rectangle hpBackground;
     @FXML private Rectangle hpFill;
     @FXML private Label hpLabel;
-    @FXML private Rectangle levelBackground;
     @FXML private Rectangle levelFill;
     @FXML private Label levelLabel;
     @FXML private Label xpLabel;
@@ -56,25 +54,36 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Button speedBuffBox;
     @FXML private Button healthBuffBox;
 
-
-    private final HashMap<Obstacle, ObstacleData> enemyData = new HashMap<>();
-    private GraphicsContext gc;
+    private final ViewState viewState = new ViewState();
+    private ParticleSystem particleSystem;
+    private DamageNumberEffect damageNumberEffect;
+    private DeathEffect deathEffect;
+    private AttackVisualEffect attackVisualEffect;
+    private HudManager hudManager;
+    private MenuManager menuManager;
+    private BuffSelectionUI buffSelectionUI;
+    private EntityRenderer entityRenderer;
     private ButtonListener buttonListener;
     private GaussianBlur blur = new GaussianBlur(0);
     private static final double HIT_FLASH_DURATION = 0.15; // Flash in seconds
-    Random rand = new Random();
 
     // This is for setting "FXML" controller
     public void setButtonListener(ButtonListener listener) {
         this.buttonListener = listener;
     }
 
-
     @FXML
     private void initialize() {
         root.requestFocus();
 
-        this.gc = gameCanvas.getGraphicsContext2D();
+        this.particleSystem = new ParticleSystem(effectsLayer);
+        this.damageNumberEffect = new DamageNumberEffect(effectsLayer);
+        this.deathEffect = new DeathEffect(effectsLayer);
+        this.attackVisualEffect = new AttackVisualEffect(effectsLayer);
+        this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
+        this.menuManager = new MenuManager(pauseMenu, deathMenu, upgradeMenu, gameLayer, blur);
+        this.buffSelectionUI = new BuffSelectionUI(fireBuffBox, speedBuffBox, healthBuffBox);
+        this.entityRenderer = new EntityRenderer(gameObjectsLayer, gameCanvas.getGraphicsContext2D(), viewState);
         gameLayer.setEffect(blur);
     }
 
@@ -88,104 +97,22 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param game model info interface containing only gets methods
      */
     public void render(GameDrawInfo game) {
-        // Clear the canvas
-        gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
-        // Clear previous frame
-        gameObjectsLayer.getChildren().clear();
-
-        Obstacle player = game.getPlayer();
-        playerRenderer(player);
-
-        List<Obstacle> enemies = game.getEnemies();
-        enemiesRenderer(enemies);
-
-    }
-
-    /**
-     * Only get obstacle information for player and uses it to draw the player
-     * @param player obstacle info
-     */
-    public void playerRenderer(Obstacle player)
-    {
-        Circle playerCircle = new Circle(player.getX(), player.getY(), player.getSize());
-        playerCircle.setFill(Color.LIGHTBLUE);
-        playerCircle.setManaged(false);
-        gameObjectsLayer.getChildren().add(playerCircle);
-    }
-
-    /**
-     * draws the list of enemies, this includes the actual body and hp bar
-     * @param enemies list of Obstacle info for enemies
-     */
-    public void enemiesRenderer(List<Obstacle> enemies)
-    {
-        for(Obstacle enemy : enemies)
-        {
-            Circle enemyCircle = new Circle(enemy.getX(), enemy.getY(), enemy.getSize());
-            ObstacleData data = enemyData.get(enemy);
-            double barWidth = 40;
-            double barHeight = 5;
-            double barOffset = 10;
-
-            // HP bar background
-            gc.setFill(Color.GRAY);
-            gc.fillRect(enemy.getX() - barWidth / 2,
-                    enemy.getY() - enemy.getSize() - barOffset,
-                    barWidth, barHeight);
-
-            double hpPercentage;
-
-            if(data != null) // data has been updated by some event so its not default values
-            {
-                enemyCircle.setFill(data.getColor());
-                hpPercentage = data.getHp() / data.getMaxHp();
-            }
-            else //no value has been changed since spawning so use default values
-            {
-                enemyCircle.setFill(Color.RED);
-                hpPercentage = 1; //full bar 100%
-            }
-            enemyCircle.setManaged(false);
-            gameObjectsLayer.getChildren().add(enemyCircle);
-
-            gc.setFill(Color.RED);
-            gc.fillRect(enemy.getX() - barWidth / 2,
-                    enemy.getY() - enemy.getSize() - barOffset,
-                    barWidth * hpPercentage, barHeight); // use percent
-        }
+        entityRenderer.clear(gameCanvas.getWidth(), gameCanvas.getHeight());
+        entityRenderer.renderPlayer(game.getPlayer());
+        entityRenderer.renderEnemies(game.getEnemies());
     }
 
     @Override
     public void onAttack(AttackEvent attackEvent) {
-
-        Circle attackCircle = new Circle(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange());
         Obstacle attacker = attackEvent.getAttacker();
-        if(attacker.getObstacleType() == ObstacleType.PLAYER) attackCircle.setFill(Color.BLUE);
-        else  attackCircle.setFill(Color.VIOLET);
-
-        attackCircle.setManaged(false);
-        effectsLayer.getChildren().add(attackCircle);
-
-        //remove attackcircle after a short timer
-        PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
-        pause.setOnFinished(_ -> effectsLayer.getChildren().remove(attackCircle));
-        pause.play();
-    }
-
-    // ==================== FOR DEBUGGING PURPOSES ====================
-    public void updateDirectionLabel(int dx, int dy) {
-        // actionLabel.setText(String.format("Direction: [%d, %d]", dx, dy));
-    }
-
-    public void updateStatusLabel(String status) {
-        // actionLabel.setText(status);
+        boolean isPlayer = attacker.getObstacleType() == ObstacleType.PLAYER;
+        attackVisualEffect.show(attackEvent.getX(), attackEvent.getY(), attackEvent.getRange(), isPlayer);
     }
 
     // ==================== Updating FXML UI Components ====================
+
     public void updateGameTimeLabel(double gameTime) {
-        int minutes = (int) (gameTime / 60);
-        int seconds = (int) (gameTime % 60);
-        timerLabel.setText(String.format("%d:%02d", minutes, seconds));
+        hudManager.updateGameTimeLabel(gameTime);
     }
 
     /**
@@ -195,15 +122,7 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param maxHp Entity's max hp
      */
     public void updateHealthBar(double currentHp, double maxHp) {
-        double percentage = currentHp / maxHp;
-
-        hpFill.setWidth(200 * percentage);
-
-        // Update HP label
-        int roundedHp = (int)Math.round(currentHp);
-        int roundedMaxHp = (int)Math.round(maxHp);
-        hpLabel.setText(roundedHp + " / " + roundedMaxHp);
-
+        hudManager.updateHealthBar(currentHp, maxHp);
     }
 
     /**
@@ -214,10 +133,7 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param level Player's level amount
      */
     public void updateLevelBar(int xp, int xpToNext, int level) {
-        double percentage = (double) xp / xpToNext;
-        levelFill.setWidth(200 * percentage);  // adjust width according to percentage
-        levelLabel.setText("LVL: " + level);
-        xpLabel.setText(xp + "/" + xpToNext);
+        hudManager.updateLevelBar(xp, xpToNext, level);
     }
 
     /**
@@ -225,50 +141,32 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param selectedBuff index of selected buff (0, 1, or 2)
      */
     public void updateSelectedLabel(int selectedBuff) {
-        // Reset all buttons' border
-        fireBuffBox.setStyle("-fx-border-color: transparent;");
-        speedBuffBox.setStyle("-fx-border-color: transparent;");
-        healthBuffBox.setStyle("-fx-border-color: transparent;");
-
-        // Highlight selected button
-        switch (selectedBuff) {
-            case 0 -> fireBuffBox.setStyle("-fx-border-color: orange; -fx-border-width: 3;");
-            case 1 -> speedBuffBox.setStyle("-fx-border-color: cyan; -fx-border-width: 3;");
-            case 2 -> healthBuffBox.setStyle("-fx-border-color: lime; -fx-border-width: 3;");
-        }
+        buffSelectionUI.updateSelectedLabel(selectedBuff);
     }
 
     /**
      * Clears buff selection highlights.
      */
     public void clearBuffVisuals() {
-        fireBuffBox.setStyle("-fx-border-color: transparent;");
-        speedBuffBox.setStyle("-fx-border-color: transparent;");
-        healthBuffBox.setStyle("-fx-border-color: transparent;");
+        buffSelectionUI.clearBuffVisuals();
     }
-
 
     @Override
     public void onChooseBuff(UpgradeEvent upgradeEvent) {
         UpgradeInterface[] upgrades = upgradeEvent.getUpgrades();
-        fireBuffBox.setText(upgrades[0].getName());
-        speedBuffBox.setText(upgrades[1].getName());
-        healthBuffBox.setText(upgrades[2].getName());
-        // Show level up menu
+        buffSelectionUI.setBuffOptions(upgrades);
         showLevelMenu(true);
     }
 
     // ==================== FXML Layers state (pause, death, levelUp) ====================
+
     /**
      * Changes visibility of pause menu layer in FXML
      * 
      * @param show If show is true, then pause menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
      */
     public void showPauseMenu(boolean show) {
-        pauseMenu.setVisible(show);
-        pauseMenu.setDisable(!show);    // Only focus on pauseMenu 
-        gameLayer.setDisable(show);     // No other UI buttons beside pauseMenu
-        blur.setRadius(show ? 10 : 0);
+        menuManager.showPauseMenu(show);
     }
 
     /**
@@ -277,8 +175,7 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param show If show is true, then upgrade menu is set to be visible and blur is set to 10. If show is false, then nothing happens.
      */
     public void showLevelMenu(boolean show) {
-        upgradeMenu.setVisible(show);
-        blur.setRadius(show ? 10 : 0);
+        menuManager.showLevelMenu(show);
     }
 
     // ==================== GameListeners ====================
@@ -300,13 +197,13 @@ public class GameView implements AttackListener, EntityDeathListener,
         }
         else
         {
-            ObstacleData data = enemyData.get(obstacle);
+            ObstacleData data = viewState.getObstacleData(obstacle);
             if(data != null)
             {
 
                 //change to read so next time we reuse this enemy its full health and red(
                 PauseTransition pause = new PauseTransition(Duration.seconds(HIT_FLASH_DURATION));
-                pause.setOnFinished(_ -> enemyData.put(obstacle, new ObstacleData(Color.RED,  data.getMaxHp(), data.getMaxHp())));
+                pause.setOnFinished(_ -> viewState.setObstacleData(obstacle, Color.RED, data.getMaxHp(), data.getMaxHp()));
                 pause.play();
             }
 
@@ -319,13 +216,13 @@ public class GameView implements AttackListener, EntityDeathListener,
         CombatResult combatResult = entityHitEvent.getCombatResult();
         if(obstacle.getObstacleType() != ObstacleType.PLAYER)
         {
-            showDamageNumber(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
-            spawnHitParticles(obstacle.getX(), obstacle.getY());
-            enemyData.put(obstacle, new ObstacleData(Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp()));
+            damageNumberEffect.show(obstacle.getX(), obstacle.getY(), combatResult.getDamage(), combatResult.isCritical());
+            particleSystem.spawnHitParticles(obstacle.getX(), obstacle.getY());
+            viewState.setObstacleData(obstacle, Color.WHITE, entityHitEvent.getHp(), entityHitEvent.getMaxHp());
 
             // Timer to change color back to red after duration
             PauseTransition pause = new PauseTransition(Duration.seconds(HIT_FLASH_DURATION));
-            pause.setOnFinished(_ -> enemyData.put(obstacle, new ObstacleData(Color.RED, entityHitEvent.getHp(), entityHitEvent.getMaxHp())));
+            pause.setOnFinished(_ -> viewState.setObstacleData(obstacle, Color.RED, entityHitEvent.getHp(), entityHitEvent.getMaxHp()));
             pause.play();
         }
     }
@@ -345,145 +242,12 @@ public class GameView implements AttackListener, EntityDeathListener,
      */
     public void playerDied(double x, double y)
     {
-        // Brief freeze frame before effects start
-        PauseTransition freeze = new PauseTransition(Duration.millis(100));
-        freeze.setOnFinished(e -> {
-            spawnRipple(x, y);
-            showRedFlash();
-        });
-        freeze.play();
-        deathMenu.setVisible(true);
-        blur.setRadius(10);
-    }
-
-
-    /**
-     * Creates an expanding ripple/shockwave effect from the death location.
-     * 
-     * @param x X position of the ripple center
-     * @param y Y position of the ripple center
-     */
-    private void spawnRipple(double x, double y) {
-        int rippleCount = 3;
-        
-        for (int i = 0; i < rippleCount; i++) {
-            Circle ripple = new Circle(x, y, 10);
-            ripple.setFill(Color.TRANSPARENT);
-            ripple.setStroke(Color.WHITE);
-            ripple.setStrokeWidth(3);
-            effectsLayer.getChildren().add(ripple);
-            
-            // Delay each ripple slightly
-            PauseTransition delay = new PauseTransition(Duration.millis(i * 150));
-            delay.setOnFinished(e -> {
-                // Expand outward
-                ScaleTransition expand = new ScaleTransition(Duration.millis(500), ripple);
-                expand.setFromX(1);
-                expand.setFromY(1);
-                expand.setToX(15);
-                expand.setToY(15);
-                
-                // Fade out as it expands
-                FadeTransition fade = new FadeTransition(Duration.millis(500), ripple);
-                fade.setFromValue(1.0);
-                fade.setToValue(0.0);
-                fade.setOnFinished(ev -> effectsLayer.getChildren().remove(ripple));
-                
-                expand.play();
-                fade.play();
-            });
-            delay.play();
-        }
-    }
-
-    /**
-     * Shows a brief red flash overlay on the screen.
-     */
-    private void showRedFlash() {
-        Rectangle flash = new Rectangle(0, 0, 1280, 720);
-        flash.setFill(Color.RED);
-        flash.setOpacity(0.4);
-        effectsLayer.getChildren().add(flash);
-        
-        FadeTransition fadeFlash = new FadeTransition(Duration.millis(300), flash);
-        fadeFlash.setFromValue(0.4);
-        fadeFlash.setToValue(0.0);
-        fadeFlash.setOnFinished(e -> effectsLayer.getChildren().remove(flash));
-        fadeFlash.play();
-    }
-
-    /**
-     * Displays a floating damage number that rises and fades out.
-     * Critical hits are displayed larger and in a different color.
-     * 
-     * @param x X position of the damage
-     * @param y Y position of the damage
-     * @param damage Amount of damage to display
-     * @param isCritical Whether this was a critical hit
-     */
-    public void showDamageNumber(double x, double y, double damage, boolean isCritical) {
-        Label dmgLabel = new Label(String.format("%.0f", damage) + (isCritical ? "!" : ""));
-
-        if (isCritical) {
-            dmgLabel.setStyle("-fx-text-fill: gold; -fx-font-size:  20px; -fx-font-family: 'Press Start 2P';");
-        } else {
-            dmgLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-family: 'Press Start 2P';");
-        }
-        
-        dmgLabel.setLayoutX(x - 10);
-        dmgLabel.setLayoutY(y - 30);
-        effectsLayer.getChildren().add(dmgLabel);
-
-        // Float up animation
-        TranslateTransition floatUp = new TranslateTransition(Duration.millis(400), dmgLabel);
-        floatUp.setByY(-25);
-
-        // Fade out animation
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(400), dmgLabel);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-        fadeOut.setOnFinished(e -> effectsLayer.getChildren().remove(dmgLabel));
-
-        floatUp.play();
-        fadeOut.play();
-    }
-
-    /**
-     * Spawns particle effects at the hit location.
-     * Particles burst outward and fade, self-cleaning via JavaFX animations.
-     * 
-     * @param x X position of the hit
-     * @param y Y position of the hit
-     */
-    public void spawnHitParticles(double x, double y) {
-        int particleCount = 8;
-        
-        for (int i = 0; i < particleCount; i++) {
-            Circle particle = new Circle(x, y, 3, Color.WHITE);
-            particle.setManaged(false);
-            effectsLayer.getChildren().add(particle);
-            
-            // Random direction and distance
-            double angle = rand.nextDouble() * 2 * Math.PI;
-            double distance = 30 + rand.nextDouble() * 20;
-            
-            // Move outward
-            TranslateTransition move = new TranslateTransition(Duration.millis(300), particle);
-            move.setByX(Math.cos(angle) * distance);
-            move.setByY(Math.sin(angle) * distance);
-            
-            // Fade out
-            FadeTransition fade = new FadeTransition(Duration.millis(300), particle);
-            fade.setFromValue(1.0);
-            fade.setToValue(0.0);
-            fade.setOnFinished(e -> effectsLayer.getChildren().remove(particle));
-            
-            move.play();
-            fade.play();
-        }
+        deathEffect.play(x, y);
+        menuManager.showDeathMenu();
     }
 
     // ==================== FXML Controls ====================
+    
     @FXML private void onResume() {
         if (buttonListener != null) buttonListener.onResume();
     }
