@@ -24,20 +24,20 @@ public class BuffSelectionUI {
     }
 
     /**
-     * Sets the text on buff buttons based on available Buffs.
+     * Sets the text on buff buttons based on available buffs.
      *
-     * @param Buffs Array of 3 Buffs to display
+     * @param buffs array of 3 buffs to display
      */
-    public void setBuffOptions(UpgradeInterface[] Buffs) {
-        fireBuffBox.setText(Buffs[0].getName());
-        speedBuffBox.setText(Buffs[1].getName());
-        healthBuffBox.setText(Buffs[2].getName());
+    public void setBuffOptions(UpgradeInterface[] buffs) {
+        fireBuffBox.setText(buffs[0].getName());
+        speedBuffBox.setText(buffs[1].getName());
+        healthBuffBox.setText(buffs[2].getName());
     }
 
     /**
      * Highlights the selected buff button based on the index.
      *
-     * @param selectedBuff index of selected Buff (0, 1, or 2)
+     * @param selectedBuff index of selected buff (0, 1, or 2)
      */
     public void updateSelectedLabel(int selectedBuff) {
         clearBuffVisuals();
