@@ -9,6 +9,7 @@ import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent
 import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
+import com.grouptwelve.roguelikegame.model.statistics.GameStatistics;
 import com.grouptwelve.roguelikegame.model.statistics.HighScoreManager;
 import com.grouptwelve.roguelikegame.view.ButtonListener;
 import com.grouptwelve.roguelikegame.view.GameView;
@@ -245,13 +246,14 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     if (obstacle.getObstacleType() == ObstacleType.PLAYER) {
         pause();
         
-        // statistics (prints to console for testing)
+        // Finalize and save statistics
         game.finalizeStatistics();
+        GameStatistics stats = game.getStatistics();
+        boolean isNewBest = highScoreManager.saveIfBest(stats);
         
-        List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
-                .filter(node -> node instanceof Button)
-                .map(node -> (Button) node)
-                .toList();
+        gameView.showDeathStatistics(stats, isNewBest);
+        
+        List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream().filter(node -> node instanceof Button).map(node -> (Button) node).toList();
 
         menuNavigator = new MenuNavigator(menuButtons);
     }

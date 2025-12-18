@@ -7,6 +7,7 @@ import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
+import com.grouptwelve.roguelikegame.model.statistics.GameStatistics;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.effects.AttackVisualEffect;
 import com.grouptwelve.roguelikegame.view.effects.DamageNumberEffect;
@@ -18,6 +19,7 @@ import com.grouptwelve.roguelikegame.view.state.ViewState;
 import com.grouptwelve.roguelikegame.view.ui.BuffSelectionUI;
 import com.grouptwelve.roguelikegame.view.ui.HudManager;
 import com.grouptwelve.roguelikegame.view.ui.MenuManager;
+import com.grouptwelve.roguelikegame.view.ui.StatisticsDisplay;
 
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -41,18 +43,29 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private AnchorPane gameLayer;
     @FXML private AnchorPane gameObjectsLayer;
     @FXML private AnchorPane effectsLayer;
+
     @FXML private Rectangle hpFill;
     @FXML private Label hpLabel;
     @FXML private Rectangle levelFill;
     @FXML private Label levelLabel;
     @FXML private Label xpLabel;
     @FXML private Label timerLabel;
+
     @FXML private VBox pauseMenu;
     @FXML private VBox deathMenu;
+
     @FXML private VBox upgradeMenu;
     @FXML private Button fireBuffBox;
     @FXML private Button speedBuffBox;
     @FXML private Button healthBuffBox;
+    
+    @FXML private Label newBestLabel;
+    @FXML private Label statTimeLabel;
+    @FXML private Label statLevelLabel;
+    @FXML private Label statKillsLabel;
+    @FXML private Label statDamageLabel;
+    @FXML private Label statDamageTakenLabel;
+    @FXML private Label statScoreLabel;
 
     private final ViewState viewState = new ViewState();
     private ParticleSystem particleSystem;
@@ -62,6 +75,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     private HudManager hudManager;
     private MenuManager menuManager;
     private BuffSelectionUI buffSelectionUI;
+    private StatisticsDisplay statisticsDisplay;
     private EntityRenderer entityRenderer;
     private ButtonListener buttonListener;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -83,6 +97,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
         this.menuManager = new MenuManager(pauseMenu, deathMenu, upgradeMenu, gameLayer, blur);
         this.buffSelectionUI = new BuffSelectionUI(fireBuffBox, speedBuffBox, healthBuffBox);
+        this.statisticsDisplay = new StatisticsDisplay(statTimeLabel, statLevelLabel, statKillsLabel, statDamageLabel, statDamageTakenLabel, statScoreLabel, newBestLabel);
         this.entityRenderer = new EntityRenderer(gameObjectsLayer, gameCanvas.getGraphicsContext2D(), viewState);
         gameLayer.setEffect(blur);
     }
@@ -235,7 +250,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     }
 
     /**
-     * Plays the player death effect with ripple/shockwave, screen shake, red flash and toggles death menu.
+     * Plays the player death effect with shockwave, screen shake, red flash and toggles death menu.
      * 
      * @param x X position of the player
      * @param y Y position of the player
@@ -244,6 +259,16 @@ public class GameView implements AttackListener, EntityDeathListener,
     {
         deathEffect.play(x, y);
         menuManager.showDeathMenu();
+    }
+
+    /**
+     * Updates the death screen with final game statistics.
+     *
+     * @param stats The game statistics from the completed run
+     * @param isNewBest True if this run achieved a new high score
+     */
+    public void showDeathStatistics(GameStatistics stats, boolean isNewBest) {
+        statisticsDisplay.updateStatistics(stats, isNewBest);
     }
 
     // ==================== FXML Controls ====================

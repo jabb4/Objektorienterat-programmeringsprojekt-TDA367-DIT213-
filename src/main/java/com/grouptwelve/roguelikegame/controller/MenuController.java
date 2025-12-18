@@ -51,6 +51,9 @@ public class MenuController implements InputEventListener {
         updateHighScoreDisplay();
     }
 
+    /**
+     * Updates the high score label with the current best score.
+     */
     private void updateHighScoreDisplay() {
         if (highScoreManager == null || highScoreLabel == null) {
             return;
@@ -60,7 +63,7 @@ public class MenuController implements InputEventListener {
         if (best != null) {
             highScoreLabel.setText("BEST: " + best.score());
         } else {
-            highScoreLabel.setText("");
+            highScoreLabel.setText("BEST: NONE");
         }
     }
 
