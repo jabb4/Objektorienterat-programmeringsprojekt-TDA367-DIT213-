@@ -9,6 +9,8 @@ import com.grouptwelve.roguelikegame.model.events.output.events.EntityDeathEvent
 import com.grouptwelve.roguelikegame.model.events.output.events.UpgradeEvent;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.ChooseBuffListener;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.EntityDeathListener;
+import com.grouptwelve.roguelikegame.model.statistics.GameStatistics;
+import com.grouptwelve.roguelikegame.model.statistics.HighScoreManager;
 import com.grouptwelve.roguelikegame.view.ButtonListener;
 import com.grouptwelve.roguelikegame.view.GameView;
 import javafx.animation.AnimationTimer;
@@ -26,6 +28,9 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   private final Game game;
   private final GameView gameView;
   private final InputHandler inputHandler;
+  private final SceneManager sceneManager;
+  private final HighScoreManager highScoreManager;
+  
   private AnimationTimer gameLoop;
   private long lastUpdate = 0;
   private boolean paused = false;
@@ -33,16 +38,15 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
   private int selectedBuff = 1;
   private MenuNavigator menuNavigator;
 
-  private final SceneManager sceneManager;
-
   // All systems that want to observe game events
   private final List<GameEventListener> eventListeners = new ArrayList<>();
 
-  public GameController(Game game, GameView gameView, InputHandler inputHandler, SceneManager sceneManager) {
+  public GameController(Game game, GameView gameView, InputHandler inputHandler, SceneManager sceneManager, HighScoreManager highScoreManager) {
     this.game = game;
     this.gameView = gameView;
     this.inputHandler = inputHandler;
     this.sceneManager = sceneManager;
+    this.highScoreManager = highScoreManager;
 
     addEventListener(game);
   }
@@ -242,8 +246,12 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
     if (obstacle.getObstacleType() == ObstacleType.PLAYER) {
         pause();
         
-        // statistics (prints to console for testing)
+        // Finalize and save statistics
         game.finalizeStatistics();
+        GameStatistics stats = game.getStatistics();
+        boolean isNewBest = highScoreManager.saveIfBest(stats);
+        
+        gameView.showDeathStatistics(stats, isNewBest);
         
         List<Button> deathButtons = gameView.getDeathMenuButtons();
         menuNavigator = new MenuNavigator(deathButtons);

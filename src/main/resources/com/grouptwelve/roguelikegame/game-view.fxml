@@ -72,9 +72,22 @@
 
 
     <!-- Death menu overlay (centered, initially hidden) -->
-    <VBox fx:id="deathMenu" spacing="20" alignment="CENTER" visible="false"
-          style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20;">
-        <Label text="YOU DIED!" style="-fx-font-size: 32px; -fx-text-fill: white;"/>
+    <VBox fx:id="deathMenu" spacing="15" alignment="CENTER" visible="false"
+          style="-fx-background-color: rgba(0,0,0,0.85); -fx-padding: 30;">
+        <Label text="YOU DIED!" style="-fx-font-size: 32px; -fx-text-fill: #FF4444;"/>
+        <Label fx:id="newBestLabel" text="NEW BEST!" visible="false" 
+               style="-fx-font-size: 16px; -fx-text-fill: #FFD700;"/>
+        
+        <!-- Statistics Display -->
+        <VBox spacing="8" alignment="CENTER" style="-fx-padding: 15 0 15 0;">
+            <Label fx:id="statTimeLabel" text="TIME: 0:00" styleClass="stat-label"/>
+            <Label fx:id="statLevelLabel" text="LEVEL: 1" styleClass="stat-label"/>
+            <Label fx:id="statKillsLabel" text="KILLS: 0" styleClass="stat-label"/>
+            <Label fx:id="statDamageLabel" text="DAMAGE: 0" styleClass="stat-label"/>
+            <Label fx:id="statDamageTakenLabel" text="DAMAGE TAKEN: 0" styleClass="stat-label"/>
+            <Label fx:id="statScoreLabel" text="SCORE: 0" styleClass="stat-score"/>
+        </VBox>
+        
         <Button text="Play Again" styleClass="menu-button, death-menu-button" onAction="#onPlayAgain"/>
         <Button text="Quit" styleClass="menu-button, death-menu-button" onAction="#onQuit"/>
     </VBox>

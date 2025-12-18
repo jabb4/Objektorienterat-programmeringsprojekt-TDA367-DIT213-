@@ -35,9 +35,6 @@ public class HighScoreManager {
     
     /**
      * Gets the current best high score.
-     *
-     * Controller should call in MenuController.initialize() to display best score on main menu.
-     * View should use the returned HighScore to show a best score label.
      * 
      * @return The current best HighScore, or null if no high score exists
      */
@@ -47,9 +44,6 @@ public class HighScoreManager {
     
     /**
      * Saves the statistics as the new high score if it beats the current best.
-     *
-     * Controller should call in GameController.onEntityDeath() after game.finalizeStatistics() to save the score and determine if it's a new best.
-     * View should use the returned boolean to show/hide a "NEW BEST!" indicator.
      *
      * @param stats The game statistics to potentially save
      * @return true if this was a new best score and was saved, false otherwise
