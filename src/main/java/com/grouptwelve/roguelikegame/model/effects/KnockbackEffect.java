@@ -2,7 +2,7 @@ package com.grouptwelve.roguelikegame.model.effects;
 
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 
-public class KnockbackEffect extends Effects {
+public class KnockbackEffect implements EffectInterface {
 
     private double dirX;
     private double dirY;

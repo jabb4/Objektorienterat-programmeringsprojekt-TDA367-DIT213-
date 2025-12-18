@@ -105,6 +105,23 @@ public abstract class Entity implements Obstacle{
         activeEffects.add(effect);
     }
 
+
+    /**
+     * Returns the first active effect of the specified type, if present.
+     * @param type the class of the active effect to search for
+     * @param <T>  the specific type of active effect
+     * @return the active effect of the given type, or {@code null} if none is present
+     */
+    public <T extends ActiveEffect> T getActiveEffect(Class<T> type) {
+        for (ActiveEffect effect : activeEffects) {
+            if (type.isInstance(effect)) {
+                return type.cast(effect);
+            }
+        }
+        return null;
+    }
+
+
     /**
      * moves entitiy based on direction and speed
      * @param deltaTime -multiply change by delta time so frame rate not affect speed
@@ -139,17 +156,29 @@ public abstract class Entity implements Obstacle{
      * @param combatResult damage ifo
      */
     public void takeDamage(CombatResult combatResult) {
+        if (!isAlive) return;
+
         double dmg = combatResult.getDamage();
         setHp(this.hp - dmg);
 
-        if(entityPublisher != null) {
-            entityPublisher.onEntityHit(new EntityHitEvent(this, combatResult, hp, maxHP));
-            if (this.hp <= 0) {
-                this.isAlive = false;
-                entityPublisher.onEntityDeath(new EntityDeathEvent(this, x, y));
+        if (entityPublisher != null) {
+            //fire hit event for damage numbers
+            entityPublisher.onEntityHit(
+                    new EntityHitEvent(this, combatResult, hp, maxHP)
+            );
+        }
+
+        if (this.hp <= 0) {
+            isAlive = false;
+            if (entityPublisher != null) {
+                entityPublisher.onEntityDeath(
+                        new EntityDeathEvent(this, x, y)
+                );
             }
         }
     }
+
+
 
     /**
      * Attempts to attack using the equipped weapon.

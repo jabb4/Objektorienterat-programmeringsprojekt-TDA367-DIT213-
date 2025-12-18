@@ -4,7 +4,7 @@ import com.grouptwelve.roguelikegame.model.effects.active.DamageOverTime;
 import com.grouptwelve.roguelikegame.model.entities.Entity;
 import com.grouptwelve.roguelikegame.model.entities.Player;
 
-public class FireEffect extends Effects {
+public class FireEffect implements EffectInterface {
 
     private double dps;
     private double duration;
@@ -26,8 +26,16 @@ public class FireEffect extends Effects {
     public void apply(Entity target) {
         if (target instanceof Player)
             return;
-        target.addEffect(new DamageOverTime(dps, duration));
+
+        DamageOverTime dot = target.getActiveEffect(DamageOverTime.class);
+
+        if (dot != null) {
+            dot.refresh(dps, duration);
+        } else {
+            target.addEffect(new DamageOverTime(dps, duration));
+        }
     }
+
 }
 
 
