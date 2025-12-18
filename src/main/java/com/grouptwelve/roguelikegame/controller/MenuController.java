@@ -1,5 +1,4 @@
 package com.grouptwelve.roguelikegame.controller;
-import com.grouptwelve.roguelikegame.model.events.output.publishers.*;
 
 import java.io.IOException;
 import java.util.List;

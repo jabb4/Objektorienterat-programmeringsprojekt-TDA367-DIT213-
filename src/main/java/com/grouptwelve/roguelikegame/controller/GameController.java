@@ -245,12 +245,10 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
         // statistics (prints to console for testing)
         game.finalizeStatistics();
         
-        List<Button> menuButtons = gameView.getRoot().lookupAll(".death-menu-button").stream()
-                .filter(node -> node instanceof Button)
-                .map(node -> (Button) node)
-                .toList();
+        List<Button> deathButtons = gameView.getDeathMenuButtons();
+        menuNavigator = new MenuNavigator(deathButtons);
 
-        menuNavigator = new MenuNavigator(menuButtons);
+
     }
   }
 
@@ -296,11 +294,7 @@ public class GameController implements InputEventListener, ChooseBuffListener, E
 
       if (paused) {   // stop the game loop
           gameView.showPauseMenu(true);
-          List<Button> menuButtons = gameView.getRoot().lookupAll(".pause-menu-button").stream()
-                  .filter(node -> node instanceof Button)
-                  .map(node -> (Button) node)
-                  .toList();
-
+          List<Button> menuButtons = gameView.getPauseMenuButtons();
           menuNavigator = new MenuNavigator(menuButtons);
 
       } else {  // resume game loop
