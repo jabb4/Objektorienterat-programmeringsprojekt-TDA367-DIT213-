@@ -283,7 +283,9 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
     }
 
     /**
-     Should be called by controller on player death to retrieve stats.
+     * Should be called by the controller on player death to retrieve statistics.
+     *
+     * @return the current game statistics.
      */
     public GameStatistics getStatistics() {
         return statistics;
