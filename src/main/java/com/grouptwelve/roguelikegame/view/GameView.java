@@ -18,6 +18,7 @@ import com.grouptwelve.roguelikegame.view.effects.DeathEffect;
 import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
 import com.grouptwelve.roguelikegame.view.state.ObstacleData;
 import com.grouptwelve.roguelikegame.view.state.ViewState;
+import com.grouptwelve.roguelikegame.view.ui.HudManager;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -72,6 +73,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     private DamageNumberEffect damageNumberEffect;
     private DeathEffect deathEffect;
     private AttackVisualEffect attackVisualEffect;
+    private HudManager hudManager;
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -92,6 +94,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.damageNumberEffect = new DamageNumberEffect(effectsLayer);
         this.deathEffect = new DeathEffect(effectsLayer);
         this.attackVisualEffect = new AttackVisualEffect(effectsLayer);
+        this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
         gameLayer.setEffect(blur);
     }
 
@@ -190,9 +193,7 @@ public class GameView implements AttackListener, EntityDeathListener,
 
     // ==================== Updating FXML UI Components ====================
     public void updateGameTimeLabel(double gameTime) {
-        int minutes = (int) (gameTime / 60);
-        int seconds = (int) (gameTime % 60);
-        timerLabel.setText(String.format("%d:%02d", minutes, seconds));
+        hudManager.updateGameTimeLabel(gameTime);
     }
 
     /**
@@ -202,15 +203,7 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param maxHp Entity's max hp
      */
     public void updateHealthBar(double currentHp, double maxHp) {
-        double percentage = currentHp / maxHp;
-
-        hpFill.setWidth(200 * percentage);
-
-        // Update HP label
-        int roundedHp = (int)Math.round(currentHp);
-        int roundedMaxHp = (int)Math.round(maxHp);
-        hpLabel.setText(roundedHp + " / " + roundedMaxHp);
-
+        hudManager.updateHealthBar(currentHp, maxHp);
     }
 
     /**
@@ -221,10 +214,7 @@ public class GameView implements AttackListener, EntityDeathListener,
      * @param level Player's level amount
      */
     public void updateLevelBar(int xp, int xpToNext, int level) {
-        double percentage = (double) xp / xpToNext;
-        levelFill.setWidth(200 * percentage);  // adjust width according to percentage
-        levelLabel.setText("LVL: " + level);
-        xpLabel.setText(xp + "/" + xpToNext);
+        hudManager.updateLevelBar(xp, xpToNext, level);
     }
 
     /**
