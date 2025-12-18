@@ -13,6 +13,7 @@ import com.grouptwelve.roguelikegame.model.events.output.events.*;
 import com.grouptwelve.roguelikegame.model.events.output.listeners.*;
 import com.grouptwelve.roguelikegame.model.upgrades.UpgradeInterface;
 import com.grouptwelve.roguelikegame.view.effects.DamageNumberEffect;
+import com.grouptwelve.roguelikegame.view.effects.DeathEffect;
 import com.grouptwelve.roguelikegame.view.effects.ParticleSystem;
 import com.grouptwelve.roguelikegame.view.state.ObstacleData;
 import com.grouptwelve.roguelikegame.view.state.ViewState;
@@ -24,7 +25,6 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -69,6 +69,7 @@ public class GameView implements AttackListener, EntityDeathListener,
     private final ViewState viewState = new ViewState();
     private ParticleSystem particleSystem;
     private DamageNumberEffect damageNumberEffect;
+    private DeathEffect deathEffect;
     private GraphicsContext gc;
     private GameController gameController;
     private GaussianBlur blur = new GaussianBlur(0);
@@ -87,6 +88,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.gc = gameCanvas.getGraphicsContext2D();
         this.particleSystem = new ParticleSystem(effectsLayer);
         this.damageNumberEffect = new DamageNumberEffect(effectsLayer);
+        this.deathEffect = new DeathEffect(effectsLayer);
         gameLayer.setEffect(blur);
     }
 
@@ -357,71 +359,9 @@ public class GameView implements AttackListener, EntityDeathListener,
      */
     public void playerDied(double x, double y)
     {
-        // Brief freeze frame before effects start
-        PauseTransition freeze = new PauseTransition(Duration.millis(100));
-        freeze.setOnFinished(e -> {
-            spawnRipple(x, y);
-            showRedFlash();
-        });
-        freeze.play();
+        deathEffect.play(x, y);
         deathMenu.setVisible(true);
         blur.setRadius(10);
-    }
-
-
-    /**
-     * Creates an expanding ripple/shockwave effect from the death location.
-     * 
-     * @param x X position of the ripple center
-     * @param y Y position of the ripple center
-     */
-    private void spawnRipple(double x, double y) {
-        int rippleCount = 3;
-        
-        for (int i = 0; i < rippleCount; i++) {
-            Circle ripple = new Circle(x, y, 10);
-            ripple.setFill(Color.TRANSPARENT);
-            ripple.setStroke(Color.WHITE);
-            ripple.setStrokeWidth(3);
-            effectsLayer.getChildren().add(ripple);
-            
-            // Delay each ripple slightly
-            PauseTransition delay = new PauseTransition(Duration.millis(i * 150));
-            delay.setOnFinished(e -> {
-                // Expand outward
-                ScaleTransition expand = new ScaleTransition(Duration.millis(500), ripple);
-                expand.setFromX(1);
-                expand.setFromY(1);
-                expand.setToX(15);
-                expand.setToY(15);
-                
-                // Fade out as it expands
-                FadeTransition fade = new FadeTransition(Duration.millis(500), ripple);
-                fade.setFromValue(1.0);
-                fade.setToValue(0.0);
-                fade.setOnFinished(ev -> effectsLayer.getChildren().remove(ripple));
-                
-                expand.play();
-                fade.play();
-            });
-            delay.play();
-        }
-    }
-
-    /**
-     * Shows a brief red flash overlay on the screen.
-     */
-    private void showRedFlash() {
-        Rectangle flash = new Rectangle(0, 0, 1280, 720);
-        flash.setFill(Color.RED);
-        flash.setOpacity(0.4);
-        effectsLayer.getChildren().add(flash);
-        
-        FadeTransition fadeFlash = new FadeTransition(Duration.millis(300), flash);
-        fadeFlash.setFromValue(0.4);
-        fadeFlash.setToValue(0.0);
-        fadeFlash.setOnFinished(e -> effectsLayer.getChildren().remove(flash));
-        fadeFlash.play();
     }
 
     // ==================== FXML Controls ====================
