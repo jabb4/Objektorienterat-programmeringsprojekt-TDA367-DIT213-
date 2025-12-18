@@ -4,6 +4,8 @@
 
 A top-down roguelike survival game built with Java and JavaFX. Fight waves of enemies, level up, and choose upgrades to survive as long as possible.
 
+![Gameplay](gameplay.gif)
+
 ---
 
 ## Features
