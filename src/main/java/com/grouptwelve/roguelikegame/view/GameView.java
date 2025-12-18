@@ -3,6 +3,7 @@ package com.grouptwelve.roguelikegame.view;
 import com.grouptwelve.roguelikegame.controller.GameController;
 import com.grouptwelve.roguelikegame.controller.MenuNavigator;
 import com.grouptwelve.roguelikegame.model.Game;
+import com.grouptwelve.roguelikegame.model.GameDrawInfo;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
 import com.grouptwelve.roguelikegame.model.entities.ObstacleType;
@@ -92,9 +93,9 @@ public class GameView implements AttackListener, EntityDeathListener,
     /**
      * renders the game visuals by polling information that changes all the time(enemy and player position)
      * reads from hashMap that updates when events happen see methods below.
-     * @param game model
+     * @param game model info interface containing only gets methods
      */
-    public void render(Game game) {
+    public void render(GameDrawInfo game) {
         // Clear the canvas
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         // Clear previous frame

@@ -30,7 +30,7 @@ import java.util.Random;
 /**
  * Core game model containing all game state and logic.
  */
-public class Game implements GameEventListener, LevelUpListener, EntityDeathListener, EntityHitListener {
+public class Game implements GameEventListener, LevelUpListener, EntityDeathListener, EntityHitListener, GameDrawInfo {
 
     private final Random rand = new Random();
 
