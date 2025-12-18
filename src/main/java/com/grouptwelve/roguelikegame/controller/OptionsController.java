@@ -17,6 +17,7 @@ public class OptionsController implements InputEventListener {
     @FXML private VBox root;
 
     private MenuNavigator menuNavigator;
+    private SceneManager sceneManager;
 
 
     public void initialize(){
@@ -56,6 +57,10 @@ public class OptionsController implements InputEventListener {
         // Nothing needed for menu navigation
     }
 
+    public void setSceneManager(SceneManager sceneManager) {
+        this.sceneManager = sceneManager;
+    }
+
 
     @FXML
     protected void onSRPressed() throws IOException {
@@ -74,17 +79,6 @@ public class OptionsController implements InputEventListener {
 
     @FXML
     protected void onBackPressed() throws IOException  {
-        actionLabel.setText("Back pressed...");
-
-        Stage stage = (Stage) root.getScene().getWindow();
-
-        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/com/grouptwelve/roguelikegame/menu-view.fxml"));
-        Scene menuScene = new Scene(menuLoader.load(), 1280, 720);
-        
-        // Attach global CSS
-        menuScene.getStylesheets().add(getClass().getResource("/com/grouptwelve/roguelikegame/global.css").toExternalForm());
-
-        stage.setScene(menuScene);
-        stage.show();
+        sceneManager.startGame();
     }
 }
