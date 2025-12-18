@@ -35,7 +35,7 @@ public class BuffSelectionUI {
     }
 
     /**
-     * Highlights the selected up button based on the index.
+     * Highlights the selected buff button based on the index.
      *
      * @param selectedBuff index of selected Buff (0, 1, or 2)
      */
