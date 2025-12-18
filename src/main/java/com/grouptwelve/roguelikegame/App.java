@@ -5,8 +5,6 @@ import java.io.IOException;
 import com.grouptwelve.roguelikegame.controller.SceneManager;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 

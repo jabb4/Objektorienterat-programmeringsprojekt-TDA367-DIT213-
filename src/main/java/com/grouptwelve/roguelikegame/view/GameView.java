@@ -1,5 +1,7 @@
 package com.grouptwelve.roguelikegame.view;
 
+import java.util.List;
+
 import com.grouptwelve.roguelikegame.model.GameDrawInfo;
 import com.grouptwelve.roguelikegame.model.combat.CombatResult;
 import com.grouptwelve.roguelikegame.model.entities.Obstacle;
@@ -192,6 +194,29 @@ public class GameView implements AttackListener, EntityDeathListener,
     public void showLevelMenu(boolean show) {
         menuManager.showLevelMenu(show);
     }
+
+    /**
+     * Extract buttons in pauseMenu layer for navigation
+     * 
+     */
+    public List<Button> getPauseMenuButtons() {
+        return pauseMenu.getChildren().stream()
+            .filter(node -> node instanceof Button)
+            .map(node -> (Button) node)
+            .toList();
+    }
+
+    /**
+     * Extract buttons in deathMenu layer for navigation
+     * 
+     */
+    public List<Button> getDeathMenuButtons() {
+        return deathMenu.getChildren().stream()
+            .filter(node -> node instanceof Button)
+            .map(node -> (Button) node)
+            .toList();
+    }   
+
 
     // ==================== GameListeners ====================
 
