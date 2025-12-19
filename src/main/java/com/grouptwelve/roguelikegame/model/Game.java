@@ -124,13 +124,27 @@ public class Game implements GameEventListener, LevelUpListener, EntityDeathList
         }
     }
 
+    /**
+     * Handles player level-up logic.
+     * <p>
+     * When the player levels up, a fixed number of upgrade options are generated.
+     * Each upgrade is randomly selected from the {@link UpgradeRegistry} and
+     * re-rolled until it is available for the current player state.
+     * <p>
+     * Once all valid upgrades are selected, an {@link UpgradeEvent} is published
+     * to prompt the user to choose one of the available upgrades.
+     */
     @Override
-    public void onLevelUp()
-    {
-        for(int i = 0; i < upgrades.length; i++)
-        {
+    public void onLevelUp() {
+        for (int i = 0; i < upgrades.length; i++) {
             upgrades[i] = UpgradeRegistry.randomUpgrade();
+
+            // Ensure the upgrade is valid for the current player state
+            while (!upgrades[i].isAvailable(player)) {
+                upgrades[i] = UpgradeRegistry.randomUpgrade();
+            }
         }
+
         chooseBuffPublisher.onChooseBuff(new UpgradeEvent(upgrades));
     }
 

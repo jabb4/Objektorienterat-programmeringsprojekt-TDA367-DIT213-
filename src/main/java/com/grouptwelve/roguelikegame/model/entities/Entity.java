@@ -107,9 +107,13 @@ public abstract class Entity implements Obstacle{
 
 
     /**
-     * Returns the first active effect of the specified type, if present.
-     * @param type the class of the active effect to search for
-     * @param <T>  the specific type of active effect
+     * Returns the first active effect of the specified type currently applied to this entity.
+     * <p>
+     * This method is typically used to check whether an effect is already active
+     * in order to refresh or modify it instead of adding a duplicate.
+     *
+     * @param type the class object representing the active effect type to search for
+     * @param <T>  the specific subclass of {@link ActiveEffect}
      * @return the active effect of the given type, or {@code null} if none is present
      */
     public <T extends ActiveEffect> T getActiveEffect(Class<T> type) {
@@ -120,6 +124,28 @@ public abstract class Entity implements Obstacle{
         }
         return null;
     }
+
+
+    /**
+     * Checks whether the entity's weapon has an effect of the specified type.
+     * <p>
+     * This is used to enforce upgrade prerequisites,
+     * such as requiring a base effect before allowing effect upgrades.
+     *
+     * @param type the class object representing the weapon effect type to check for
+     * @return {@code true} if the weapon has an effect of the given type, otherwise {@code false}
+     */
+    public boolean hasWeaponEffect(Class<? extends EffectInterface> type) {
+        for (EffectInterface effect : weapon.getEffects()) {
+            if (type.isInstance(effect)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 
 
     /**
@@ -151,9 +177,17 @@ public abstract class Entity implements Obstacle{
     }
 
     /**
-     * Applies damage to itself. Sets isAlive to false if HP drops to 0 or below.
-     * publishes onEntityHit and onEntityDeath events
-     * @param combatResult damage ifo
+     * Applies damage to this entity and updates its alive state.
+     * <p>
+     * If the entity is already dead, the method returns immediately.
+     * Otherwise, the entity's health is reduced by the damage value
+     * contained in the given {@link CombatResult}.
+     * <p>
+     * An {@link EntityHitEvent} is published for visual feedback (e.g. damage numbers).
+     * If health drops to zero or below, the entity is marked as dead and an
+     * {@link EntityDeathEvent} is published.
+     *
+     * @param combatResult the result of the combat calculation containing damage information
      */
     public void takeDamage(CombatResult combatResult) {
         if (!isAlive) return;

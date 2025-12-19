@@ -1,6 +1,7 @@
 package com.grouptwelve.roguelikegame.view.ui;
 
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -14,16 +15,33 @@ public class HudManager {
     private final Label levelLabel;
     private final Label xpLabel;
     private final Label timerLabel;
+    private final Rectangle hpBackground;
+    private final Rectangle levelBackground;
 
     private static final double BAR_WIDTH = 200;
 
-    public HudManager(Rectangle hpFill, Label hpLabel, Rectangle levelFill, Label levelLabel, Label xpLabel, Label timerLabel) {
+    public HudManager(Rectangle hpFill, Label hpLabel, Rectangle levelFill, Label levelLabel, Label xpLabel, Label timerLabel, Rectangle hpBackground, Rectangle levelBackground) {
         this.hpFill = hpFill;
         this.hpLabel = hpLabel;
         this.levelFill = levelFill;
         this.levelLabel = levelLabel;
         this.xpLabel = xpLabel;
         this.timerLabel = timerLabel;
+        this.hpBackground = hpBackground;
+        this.levelBackground = levelBackground;
+
+        hpFill.setArcWidth(20);
+        hpFill.setArcHeight(20);
+
+        hpBackground.setArcWidth(20);
+        hpBackground.setArcHeight(20);
+
+        levelFill.setArcWidth(20);
+        levelFill.setArcHeight(20);
+
+        levelBackground.setArcWidth(20);
+        levelBackground.setArcHeight(20);
+
     }
 
     /**

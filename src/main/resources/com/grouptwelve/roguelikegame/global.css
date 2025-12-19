@@ -35,6 +35,11 @@
     -fx-text-fill: white;
     -fx-font-size: 12px;
     -fx-padding: 15;
+
+    /* Center text */
+        -fx-alignment: center;
+        -fx-text-alignment: center;
+        -fx-wrap-text: true;
 }
 
 /* Statistics display on death screen */

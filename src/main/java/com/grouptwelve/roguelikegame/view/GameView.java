@@ -52,6 +52,8 @@ public class GameView implements AttackListener, EntityDeathListener,
     @FXML private Label levelLabel;
     @FXML private Label xpLabel;
     @FXML private Label timerLabel;
+    @FXML private Rectangle hpBackground;
+    @FXML private Rectangle levelBackground;
 
     @FXML private VBox pauseMenu;
     @FXML private VBox deathMenu;
@@ -96,7 +98,7 @@ public class GameView implements AttackListener, EntityDeathListener,
         this.damageNumberEffect = new DamageNumberEffect(effectsLayer);
         this.deathEffect = new DeathEffect(effectsLayer);
         this.attackVisualEffect = new AttackVisualEffect(effectsLayer);
-        this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel);
+        this.hudManager = new HudManager(hpFill, hpLabel, levelFill, levelLabel, xpLabel, timerLabel, hpBackground, levelBackground);
         this.menuManager = new MenuManager(pauseMenu, deathMenu, upgradeMenu, gameLayer, blur);
         this.buffSelectionUI = new BuffSelectionUI(fireBuffBox, speedBuffBox, healthBuffBox);
         this.statisticsDisplay = new StatisticsDisplay(statTimeLabel, statLevelLabel, statKillsLabel, statDamageLabel, statDamageTakenLabel, statScoreLabel, newBestLabel);

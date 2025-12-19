@@ -1,7 +1,10 @@
 package com.grouptwelve.roguelikegame.model.level;
 
 /**
- *
+ * Manages player leveling and experience progression.
+ * <p>
+ * Experience required to level up increases multiplicatively,
+ * making each new level progressively harder to reach.
  */
 public class LevelSystem {
 
@@ -12,6 +15,13 @@ public class LevelSystem {
     private int xp = 0;
     private int xpToNext = BASE_XP_TO_LEVEL;
 
+    /**
+     * If accumulated XP reaches or exceeds the required amount,
+     * the player levels up and excess XP is carried over.
+     *
+     * @param amount the amount of XP to add
+     * @return {@code true} if a level-up occurred, otherwise {@code false}
+     */
     public boolean addXP(int amount) {
         xp += amount;
         if (xp >= xpToNext) {

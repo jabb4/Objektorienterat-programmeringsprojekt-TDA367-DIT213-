@@ -17,6 +17,6 @@ public class WeaponCritChancePercentUpgrade extends PercentAttributeUpgrade {
 
     @Override
     public String getName() {
-        return "+ " + (int)(percent * 100) + "% Crit Chance (relative)";
+        return "+ " + (int)(percent * 100) + "% Crit Chance";
     }
 }
