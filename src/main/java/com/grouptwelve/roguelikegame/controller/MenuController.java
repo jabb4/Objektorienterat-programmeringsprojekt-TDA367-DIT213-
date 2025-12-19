@@ -12,6 +12,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 
+/**
+ * Handles main menu buttons, and display of highscore 
+ */
 public class MenuController implements InputEventListener {
     @FXML private AnchorPane root;
     @FXML private Label highScoreLabel;
@@ -20,7 +23,9 @@ public class MenuController implements InputEventListener {
     private SceneManager sceneManager;
     private HighScoreManager highScoreManager;
 
-
+    /**
+     * Initializes buttons from menu-view.fxml for navigation
+     */
     public void initialize(){
         // Extract available buttons from menu-view
         List<Button> menuButtons = root.lookupAll(".menu-button").stream()
@@ -68,6 +73,7 @@ public class MenuController implements InputEventListener {
     }
 
     // ================= InputEventListener =================
+    
     @Override
     public void onCommandPressed(Command command) {
         switch (command) {
@@ -82,14 +88,20 @@ public class MenuController implements InputEventListener {
         // Nothing needed for menu navigation
     }
 
-
     // ================= FXML Buttons =================
 
+    /**
+     * Transition from menu-view scene to game-view scene
+     */
     @FXML
     protected void onStartGamePressed() throws IOException {
         sceneManager.startGame();
     }
 
+    
+    /**
+     * Exit the application
+     */
     @FXML
     protected void onExitPressed() {
         System.exit(0);
